@@ -1,0 +1,29 @@
+[
+    {
+      "name": "default",
+      "driver": {
+        "type": "postgres",
+        "host": "localhost",
+        "port": 5432,
+        "username": "test_user",
+        "password": "test",
+        "database": "test"
+      },
+      "entities": [
+        "src/entities/*.js"
+      ],
+      "autoSchemaSync": true
+    },
+    {
+      "name": "production",
+      "driver": {
+        "type": "postgres",
+        "host": "prello.herokuapp.com",
+        "port": 5432,
+        "username": "",
+        "password": "",
+        "database": ""
+      },
+      "autoSchemaSync": true
+    }
+  ]
