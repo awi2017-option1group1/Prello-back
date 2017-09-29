@@ -65,6 +65,9 @@ jobs:
     steps:
       - *restore_repo
       - run:
+          name: Prepare build
+          command: npm run build
+      - run:
           name: Setup Heroku
           command: bash .circleci/setup-heroku.sh
       - run:
