@@ -45,7 +45,9 @@
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "express": "^4.14.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "tslint": "^5.0.0",
+    "typescript": "^2.4.0"
   },
   "devDependencies": {
     "@types/bcrypt-nodejs": "0.0.30",
@@ -61,8 +63,6 @@
     "nodemon": "^1.11.0",
     "shelljs": "^0.7.8",
     "supertest": "^2.0.1",
-    "ts-jest": "^19.0.8",
-    "tslint": "^5.0.0",
-    "typescript": "^2.4.0"
+    "ts-jest": "^19.0.8"
   }
 }
