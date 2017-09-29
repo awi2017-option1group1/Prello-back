@@ -8,8 +8,12 @@
   },
   "author": "Bowden Kelly",
   "license": "MIT",
+  "engines": {
+    "node": "8.3.0"
+  },
   "scripts": {
-    "start": "npm run build && npm run watch",
+    "start": "node dist/server.js",
+    "start:dev": "npm run build && npm run watch",
     "build": "npm run build-ts && npm run tslint && npm run copy-static-assets",
     "serve": "nodemon dist/server.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve\"",
@@ -17,7 +21,8 @@
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "copy-static-assets": "node copyStaticAssets.js"
+    "copy-static-assets": "node copyStaticAssets.js",
+    "postinstall": "npm run build"
   },
   "jest": {
     "globals": {
