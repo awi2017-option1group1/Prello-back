@@ -79,4 +79,4 @@ workflows:
             - build
       - tests_linting:
           requires:
-            - build                       
+            - build            
