@@ -60,11 +60,25 @@ jobs:
           name: Linting tests
           command: npm run tslint
 
-  deployment:
-    production:
-      branch: master
-      heroku:
-        appname: prello-api
+  deploy:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run:
+          name: Prepare build
+          command: npm run build
+      - run:
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh
+      - run:
+          name: Deploy on Heroku
+          command: |
+            git add -f dist/\*.js
+            git commit -m "Add dist folder" 
+            git push -f heroku master
+            sleep 5 # sleep for 5 seconds to wait for dynos
+            heroku restart
 
 workflows:
   version: 2
@@ -79,4 +93,11 @@ workflows:
             - build
       - tests_linting:
           requires:
-            - build            
+            - build 
+      - deploy:
+          filters:
+            branches:
+              only: master
+          requires:
+            - tests
+            - tests_linting                       
