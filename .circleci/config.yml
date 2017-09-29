@@ -60,6 +60,12 @@ jobs:
           name: Linting tests
           command: npm run tslint
 
+  deployment:
+    production:
+      branch: master
+      heroku:
+        appname: prello-api
+
 workflows:
   version: 2
   build_test_deploy:
@@ -73,4 +79,4 @@ workflows:
             - build
       - tests_linting:
           requires:
-            - build            
+            - build                       
