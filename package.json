@@ -4,9 +4,9 @@
   "description": "Prello's backend applications",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahat/hackathon-starter.git"
+    "url": "https://github.com/awi2017-option1group1/Prello-back.git"
   },
-  "author": "Bowden Kelly",
+  "author": "Photon Team",
   "license": "MIT",
   "engines": {
     "node": "8.3.0"
