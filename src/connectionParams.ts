@@ -25,5 +25,5 @@ export const connectionOptions: MultipleConnections = {'development': {
         database: 'test'
     },
     autoSchemaSync: true,
-    entities: [__dirname + 'dist/entities/*.js'],
+    entities: [__dirname + '/entities/*.js'],
 }}
