@@ -1,6 +1,7 @@
-import { ConnectionOptions } from 'typeorm';
-interface MultipleConnections {
-    [key: string]: ConnectionOptions;
+import { ConnectionOptions } from 'typeorm'
+
+export interface MultipleConnections {
+    [key: string]: ConnectionOptions
 }
 export const connectionOptions: MultipleConnections = {development: {
     driver: {
