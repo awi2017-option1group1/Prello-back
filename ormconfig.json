@@ -10,7 +10,7 @@
         "database": "test"
       },
       "entities": [
-        "src/entities/*.js"
+        "dist/entities/*.js"
       ],
       "autoSchemaSync": true
     },
