@@ -7,8 +7,9 @@ import { User } from './entities/user'
 import  { connectionOptions } from './connectionParams'
 
 const app = express()
-
-createConnection(connectionOptions[process.env.NODE_ENV]).then(connection => {
+export const ENV = process.env.NODE_ENV || 'development'
+console.log(connectionOptions[ENV])
+createConnection(connectionOptions[ENV]).then(connection => {
 
     app.set('port', process.env.PORT || 3000)
     app.use(compression())

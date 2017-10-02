@@ -3,7 +3,7 @@ import { ConnectionOptions } from 'typeorm'
 export interface MultipleConnections {
     [key: string]: ConnectionOptions
 }
-export const connectionOptions: MultipleConnections = {development: {
+export const connectionOptions: MultipleConnections = {'development': {
     driver: {
         type: 'postgres',
         host: 'localhost',
@@ -13,9 +13,9 @@ export const connectionOptions: MultipleConnections = {development: {
         database: 'test'
     },
     autoSchemaSync: true,
-    entities: [__dirname + 'dist/entities/*.js'],
+    entities: [__dirname + '/entities/*.js'],
 },
-production: {
+'production': {
     driver: {
         type: 'postgres',
         host: 'localhost',
