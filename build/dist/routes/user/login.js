@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import * as jwt from 'jsonwebtoken';
 import { UserFacade } from '../../bl/userFacade';
+import { encryptionKey } from '../../do_not_open_plz';
 var Login = (function () {
     function Login() {
     }
@@ -49,7 +50,7 @@ var Login = (function () {
                     case 1:
                         user = _a.sent();
                         res.writeHead(200, { 'Content-Type': 'application/jwt' });
-                        cookieToSet = jwt.sign({ 'user_id': user.id }, 'secret');
+                        cookieToSet = jwt.sign({ 'user_id': user.id }, encryptionKey);
                         res.cookie('photon', cookieToSet, { maxAge: 900000, httpOnly: true });
                         res.end();
                         return [3 /*break*/, 3];

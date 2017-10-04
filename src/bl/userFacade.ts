@@ -1,6 +1,6 @@
-import {getEntityManager} from 'typeorm'
-import {User} from '../entities/user'
-import {Password} from './password'
+import { getEntityManager } from 'typeorm'
+import { User } from '../entities/user'
+import { Password } from './password'
 
 export class UserFacade {
     static async authenticate(email: string, password: string): Promise<User>  {

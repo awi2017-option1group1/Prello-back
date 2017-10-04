@@ -20,9 +20,7 @@ app.get('/', (req, res) => {
     console.log('Requester : ', requester)
 })
 
-app.post('/login', (req, res) => {
-  Login.authenticate(req, res)
-})
+app.post('/login', Login.authenticate)
 
 createConnection(connectionOptions[ENV]).then(connection => {
     app.listen(app.get('port'), () => {

@@ -15,9 +15,7 @@ app.get('/', function (req, res) {
     var requester = Requester.fromJWT(req.headers.jwt);
     console.log('Requester : ', requester);
 });
-app.post('/login', function (req, res) {
-    Login.authenticate(req, res);
-});
+app.post('/login', Login.authenticate);
 createConnection(connectionOptions[ENV]).then(function (connection) {
     app.listen(app.get('port'), function () {
         console.log(('App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'));

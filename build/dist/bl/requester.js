@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import * as jwt from 'jsonwebtoken';
 import { getEntityManager } from 'typeorm';
 import { User } from '../entities/user';
+import { encryptionKey } from '../do_not_open_plz';
 var TokenContent = (function () {
     function TokenContent() {
     }
@@ -51,7 +52,7 @@ var Requester = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        tokenContent = jwt.verify(token, 'secret');
+                        tokenContent = jwt.verify(token, encryptionKey);
                         if (!(tokenContent instanceof TokenContent && tokenContent.hasOwnProperty('userId'))) return [3 /*break*/, 2];
                         return [4 /*yield*/, getEntityManager().getRepository(User).findOneById(tokenContent.userId)];
                     case 1:

@@ -10,10 +10,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var UserNotFoundException = (function (_super) {
     __extends(UserNotFoundException, _super);
-    function UserNotFoundException(s) {
-        var _this = _super.call(this, s) || this;
-        _this.s = s;
-        return _this;
+    function UserNotFoundException(message) {
+        return _super.call(this, message) || this;
     }
     return UserNotFoundException;
 }(Error));

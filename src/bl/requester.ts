@@ -1,7 +1,8 @@
 import * as jwt from 'jsonwebtoken'
 
-import {getEntityManager} from 'typeorm'
-import {User} from '../entities/user'
+import { getEntityManager } from 'typeorm'
+import { User } from '../entities/user'
+import { encryptionKey } from '../do_not_open_plz'
 
 class TokenContent {
     userId: Number
@@ -10,7 +11,7 @@ class TokenContent {
 export class Requester {
 
     static async fromJWT(token: string): Promise<Requester> {
-        const tokenContent = jwt.verify(token, 'secret')
+        const tokenContent = jwt.verify(token, encryptionKey)
         if (tokenContent instanceof TokenContent  && tokenContent.hasOwnProperty('userId')) {
             const user = await getEntityManager().getRepository(User).findOneById(tokenContent.userId)
             if (user) {
@@ -21,7 +22,6 @@ export class Requester {
         } else {
             throw new UserNotFoundException('User was not found')
         }
-
     }
 
     constructor(public user: User) {}
