@@ -12,16 +12,15 @@
     "node": "8.3.0"
   },
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node build/dist/server.js",
     "start:dev": "npm run build && npm run watch",
-    "build": "npm run build-ts && npm run tslint && npm run copy-static-assets",
-    "serve": "nodemon dist/server.js",
+    "build": "npm run build-ts && npm run tslint",
+    "serve": "nodemon build/dist/server.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve\"",
     "test": "jest --forceExit",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
-    "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "copy-static-assets": "node copyStaticAssets.js"
+    "tslint": "tslint -c tslint.json -p tsconfig.json"
   },
   "jest": {
     "globals": {
@@ -55,6 +54,7 @@
     "@types/compression": "0.0.33",
     "@types/express": "^4.0.35",
     "@types/jest": "^19.2.2",
+    "@types/jsonwebtoken": "^7.2.3",
     "@types/lodash": "^4.14.63",
     "@types/node": "^7.0.12",
     "@types/supertest": "^2.0.0",
