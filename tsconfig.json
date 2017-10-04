@@ -4,7 +4,7 @@
       "module": "esnext",
       "target": "es5",
       "lib": ["es6", "dom", "esnext.asynciterable"],
-      "sourceMap": true,
+      "sourceMap": false,
       "allowJs": true,
       "jsx": "react",
       "moduleResolution": "node",
@@ -28,5 +28,5 @@
       "jest",
       "src/setupTests.ts"
     ]
-  }
+}
   
