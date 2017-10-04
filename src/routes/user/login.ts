@@ -16,6 +16,5 @@ export class Login {
             res.writeHead(401, e)
             res.end()
         }
-
     }
 }
