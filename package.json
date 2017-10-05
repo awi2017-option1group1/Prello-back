@@ -21,7 +21,8 @@
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "copy-static-assets": "node copyStaticAssets.js"
+    "copy-static-assets": "node copyStaticAssets.js",
+    "sync:schema": "node syncSchema.js"
   },
   "jest": {
     "globals": {
