@@ -10,7 +10,7 @@ export class Login {
             const user = await UserFacade.authenticate(req.params.email, req.params.password)
             res.writeHead(200, {'Content-Type': 'application/jwt'})
             const cookieToSet = jwt.sign({'user_id': user.id}, encryptionKey)
-            res.cookie('photon', cookieToSet, { maxAge: 900000, httpOnly: true })
+            res.cookie('photon', cookieToSet, { maxAge: 900000, httpOnly: true, secure: true })
             res.end()
         } catch (e) {
             res.writeHead(401, e)
