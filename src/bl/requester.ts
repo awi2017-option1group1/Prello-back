@@ -11,16 +11,17 @@ class TokenContent {
 export class Requester {
 
     static async fromJWT(token: string): Promise<Requester> {
-        const tokenContent = jwt.verify(token, encryptionKey)
-        if (tokenContent instanceof TokenContent  && tokenContent.hasOwnProperty('userId')) {
+        try {
+            const tokenContent = <TokenContent> jwt.verify(token, encryptionKey)
             const user = await getEntityManager().getRepository(User).findOneById(tokenContent.userId)
             if (user) {
                 return new Requester(user)
             } else {
                 throw new UserNotFoundException('User was not found')
             }
-        } else {
-            throw new UserNotFoundException('User was not found')
+        } catch (e) {
+            console.log('Invalid token')
+            return
         }
     }
 
