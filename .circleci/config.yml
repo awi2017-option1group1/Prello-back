@@ -3,7 +3,7 @@ version: 2
 references:
   container_config: &container_config
     docker:
-      - image: circleci/node:8.3 
+      - image: circleci/node:8.3
     working_directory: ~/app
 
   restore_repo: &restore_repo
@@ -46,7 +46,7 @@ jobs:
     <<: *container_config
     steps:
       - *restore_repo
-      - *restore_node_modules 
+      - *restore_node_modules
       - run:
           name: Unit tests
           command: npm test
@@ -55,7 +55,7 @@ jobs:
     <<: *container_config
     steps:
       - *restore_repo
-      - *restore_node_modules 
+      - *restore_node_modules
       - run:
           name: Linting tests
           command: npm run tslint
@@ -75,7 +75,7 @@ jobs:
           name: Deploy on Heroku
           command: |
             git add -f dist/\*.js
-            git commit -m "Add dist folder" 
+            git commit -m "Add dist folder"
             git push -f heroku master
             sleep 5 # sleep for 5 seconds to wait for dynos
             heroku restart
@@ -93,11 +93,11 @@ workflows:
             - build
       - tests_linting:
           requires:
-            - build 
+            - build
       - deploy:
           filters:
             branches:
               only: master
           requires:
             - tests
-            - tests_linting                       
+            - tests_linting
