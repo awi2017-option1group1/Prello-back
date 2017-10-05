@@ -7,9 +7,9 @@ typeorm.createConnection(
     Object.assign(
         {}, 
         config[env],
-        { synchronize: true }
+        { autoSchemaSync: true }
     )
-).then(function (connection) {
+).then(function(connection) {
     console.log("Schema synchronized!");
 }).catch(function(error) {
     console.log("Error: ", error);
