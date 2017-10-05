@@ -19,7 +19,5 @@ export class Requester {
             throw new UserNotFoundException('User was not found')
         }
     }
-
     constructor(public user: User) {}
-
 }
