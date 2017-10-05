@@ -3,6 +3,7 @@ import { Team } from './team'
 import { TeamRole } from './teamRole'
 import { Board } from './board'
 import { Notification } from './notification'
+import { Comment } from './comment'
 @Entity()
 export class User {
 // ------------------------------------
@@ -55,4 +56,7 @@ export class User {
 
     @OneToMany(type => Notification, notification => notification.id)
     notifications: Notification[]
+ 
+    @OneToMany(type => Comment, comment => comment.user) // Many Comments to One User
+    comments: Comment
  }
