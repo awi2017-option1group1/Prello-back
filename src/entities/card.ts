@@ -13,20 +13,21 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 500
+    })
     description: string
 
-    @Column('date')
+    @Column({
+        type: 'date'
+    })
     dueDate: Date
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
-    @ManyToMany(type => Tag, tag => tag.cards, {   // ManyToMany betwen Tag and Card
-        cascadeInsert: true,
-        cascadeUpdate: true
-        })
+    @ManyToMany(type => Tag, tag => tag.cards)   // ManyToMany betwen Tag and Card
     @JoinTable({
         name: 'card_tags',
         joinColumn: {
@@ -49,7 +50,6 @@ export class Card {
     @OneToMany(type => Comment, comment => comment.card) // One Card to many Comments
     comments: Comment[]
 
-    @OneToMany(type => Attachment, attachment => attachment.card) // One Card to many Attchments
+    @OneToMany(type => Attachment, attachment => attachment.card )// One Card to many Attchments
     attachments: Attachment[]
-
  }

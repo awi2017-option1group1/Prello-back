@@ -10,23 +10,29 @@ export class TaskList {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 25
+    })
     title: string
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 500
+    })
     description: string
     
-    @Column('boolean')
+    @Column({
+        type: 'boolean'
+    })
     isDone: boolean
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
     @ManyToOne(type => Card, card => card.tasksList) // ManyToOne betwen TaskList and Card
     card: Card
 
     @OneToMany(type => Task, task => task.tasksList) // OneToMany betwen Card and TaskList
     tasks: Task[]
-
  }

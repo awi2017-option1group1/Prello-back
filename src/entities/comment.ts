@@ -10,10 +10,15 @@ export class Comment {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 25
+    })
     title: string
 
-    @Column('int')
+    @Column({
+        type: 'int'
+    })
     rank: number
 
 // ------------------------------------
@@ -24,5 +29,4 @@ export class Comment {
 
     @ManyToOne(type => User, user => user.comments) // Many Comments to One User
     user: User
-
  }
