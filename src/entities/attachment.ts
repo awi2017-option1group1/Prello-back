@@ -21,5 +21,4 @@ export class Attachment {
 
     @ManyToOne(type => Card, card => card.attachments) // Many Attachment to One Card
     card: Card
-
  }

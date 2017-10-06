@@ -1,7 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm'
 import { Team } from './team'
 import { User } from './user'
-import { BoardRole } from './boardRole'
 import { List } from './list'
 import { Tag } from './tag'
 
@@ -39,7 +38,6 @@ export class Board {
         },
     })
     users: User[]
-    boardRole: BoardRole
 
     @OneToMany(type => List, list => list.board) // One Board to many Lists
     lists: List[]

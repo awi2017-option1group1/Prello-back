@@ -1,9 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, OneToMany, JoinTable } from 'typeorm'
 import { Team } from './team'
-import { TeamRole } from './teamRole'
 import { Board } from './board'
 import { Notification } from './notification'
 import { Comment } from './comment'
+import { Token } from './token'
+
 @Entity()
 export class User {
 // ------------------------------------
@@ -18,7 +19,10 @@ export class User {
     @Column('text')
     firstname: string
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        unique: true
+    })
     pseudo: string
 
     @Column('text')
@@ -27,7 +31,10 @@ export class User {
     @Column('boolean')
     notificationsEnabled: boolean
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        unique: true
+    })
     email: string
 
     @Column('text')
@@ -49,14 +56,16 @@ export class User {
         },
     })
     teams: Team[]
-    teamRole: TeamRole
 
     @ManyToMany(type => Board, board => board.users)
     boards: Board[]
 
     @OneToMany(type => Notification, notification => notification.id)
     notifications: Notification[]
- 
+
     @OneToMany(type => Comment, comment => comment.user) // Many Comments to One User
     comments: Comment
+
+    @OneToMany(type => Token, token => token.user)
+    tokens: Token[]
  }

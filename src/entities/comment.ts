@@ -19,7 +19,6 @@ export class Comment {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
     @ManyToOne(type => Card, card => card.list) // Many Comments to One Card
     card: Card
 

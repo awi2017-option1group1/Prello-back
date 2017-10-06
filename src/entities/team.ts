@@ -8,7 +8,10 @@ export class Team {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        unique: true
+    })
     name: string
 
     @Column('text')
@@ -20,7 +23,6 @@ export class Team {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
     @ManyToMany(type => User, user => user.teams)
     users: User[]
  }

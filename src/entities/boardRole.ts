@@ -8,7 +8,10 @@ export class BoardRole {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        unique: true
+    })
     role: string
 
 // ------------------------------------

@@ -24,8 +24,8 @@ export class Card {
 // ------------------------------------
 
     @ManyToMany(type => Tag, tag => tag.cards, {   // ManyToMany betwen Tag and Card
-        cascadeInsert: true, 
-        cascadeUpdate: true 
+        cascadeInsert: true,
+        cascadeUpdate: true
         })
     @JoinTable({
         name: 'card_tags',
