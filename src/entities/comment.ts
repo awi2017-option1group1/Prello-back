@@ -10,20 +10,23 @@ export class Comment {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 25
+    })
     title: string
 
-    @Column('int')
+    @Column({
+        type: 'int'
+    })
     rank: number
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
     @ManyToOne(type => Card, card => card.list) // Many Comments to One Card
     card: Card
 
     @ManyToOne(type => User, user => user.comments) // Many Comments to One User
     user: User
-
  }

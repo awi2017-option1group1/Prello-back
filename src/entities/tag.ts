@@ -10,23 +10,24 @@ export class Tag {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 25
+    })
     label: string
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 25
+    })
     color: string
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
-    @ManyToMany(type => Card, card => card.tags, {  
-        cascadeInsert: true, 
-        cascadeUpdate: true 
-    })
+    @ManyToMany(type => Card, card => card.tags)
     cards: Card[]
 
     @ManyToMany(type => Board, board => board.tags)
     boards: Board[]
-
  }

@@ -10,20 +10,23 @@ export class List {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        length: 25
+    })
     title: string
 
-    @Column('int')
+    @Column({
+        type: 'int',
+    })
     rank: number
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-
     @OneToMany(type => Card, card => card.list) // OneToMany betwen List and Card
     cards: Card[]
 
     @ManyToOne(type => Board, board => board.lists) // Many Lists to one Board
     board: Board
-
  }
