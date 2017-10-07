@@ -1,8 +1,9 @@
 import * as jwt from 'jsonwebtoken'
-
 import { getEntityManager } from 'typeorm'
+
+import { UserNotFoundException } from './errors/UserNotFoundException'
 import { User } from '../entities/user'
-import { encryptionKey } from '../do_not_open_plz'
+import { encryptionKey } from '../config'
 
 class TokenContent {
     userId: Number

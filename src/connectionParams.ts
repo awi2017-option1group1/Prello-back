@@ -9,19 +9,26 @@ export const connectionOptions: MultipleConnections = {
         driver: {
             type: 'postgres',
             host: 'localhost',
-            port: 5432,
-            username: 'test_user',
-            password: 'test',
-            database: 'test'
+            port: 5434,
+            username: 'postgres',
+            password: 'root',
+            database: 'dev_prello',
         },
         autoSchemaSync: true,
-        entities: [__dirname + '/entities/*.js'],
+        entities: [
+            `${__dirname}/entities/*.js` 
+        ],
+        logging: {
+            logQueries: true
+        }
     },
     'production': {
         driver: {
             type: 'postgres',
             url: process.env.DATABASE_URL
         },
-        entities: [__dirname + '/entities/*.js'],
+        entities: [
+            `${__dirname}/entities/*.js` 
+        ],
     }
 }

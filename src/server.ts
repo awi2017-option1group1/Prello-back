@@ -1,17 +1,20 @@
 import * as express from 'express'
 import * as compression from 'compression'
 import * as bodyParser from 'body-parser'
+import * as cors from 'cors'
 
 import { createConnection } from 'typeorm'
 import  { connectionOptions } from './connectionParams'
 import { Login } from './routes/user/login'
 import { Requester } from './bl/requester'
+
 export const ENV = process.env.NODE_ENV || 'development'
 
 const app = express()
 
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 5000)
 app.use(compression())
+app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
