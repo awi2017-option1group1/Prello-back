@@ -11,15 +11,9 @@ export class Task {
 
     @Column({
         type: 'text',
-        length: 25
+        length: 200
     })
     title: string
-
-    @Column({
-        type: 'text',
-        length: 500
-    })
-    description: string
 
     @Column({
         type: 'int'
