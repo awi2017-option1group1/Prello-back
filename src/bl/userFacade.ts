@@ -2,7 +2,7 @@ import { getEntityManager } from 'typeorm'
 
 import { UserNotFoundException } from './errors/UserNotFoundException'
 import { User } from '../entities/user'
-// import { Password } from './password'
+import { Password } from './password'
 
 export class UserFacade {
     static async authenticate(email: string, password: string): Promise<User>  {
@@ -10,7 +10,7 @@ export class UserFacade {
                             .getRepository(User)
                             .findOne({
                                 email: email,
-                                password: password // Password.encrypt(password)
+                                password: Password.encrypt(password)
                             })
         if (user) {
             return user
