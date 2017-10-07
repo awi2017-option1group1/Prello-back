@@ -39,7 +39,7 @@ export class Board {
     })
     users: User[]
 
-    @OneToMany(type => List, list => list.board) // One Board to many Lists
+    @OneToMany(type => List, list => list.board)
     lists: List[]
 
     @ManyToMany(type => Tag, tag => tag.boards)

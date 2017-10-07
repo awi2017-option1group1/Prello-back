@@ -13,6 +13,9 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
+    @Column('text')
+    title: string
+
     @Column({
         type: 'text',
         length: 500
@@ -24,10 +27,13 @@ export class Card {
     })
     dueDate: Date
 
+    @Column('int')
+    rank: number
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToMany(type => Tag, tag => tag.cards)   // ManyToMany betwen Tag and Card
+    @ManyToMany(type => Tag, tag => tag.cards)
     @JoinTable({
         name: 'card_tags',
         joinColumn: {
@@ -41,15 +47,15 @@ export class Card {
     })
     tags: Tag[]
 
-    @ManyToOne(type => List, list => list.cards) // ManyToOne betwen Card and List
+    @ManyToOne(type => List, list => list.cards)
     list: List
 
-    @OneToMany(type => TaskList, taskList => taskList.card) // OneToMany betwen Card and TaskList
+    @OneToMany(type => TaskList, taskList => taskList.card)
     tasksList: TaskList[]
 
-    @OneToMany(type => Comment, comment => comment.card) // One Card to many Comments
+    @OneToMany(type => Comment, comment => comment.card)
     comments: Comment[]
 
-    @OneToMany(type => Attachment, attachment => attachment.card )// One Card to many Attchments
+    @OneToMany(type => Attachment, attachment => attachment.card )
     attachments: Attachment[]
  }

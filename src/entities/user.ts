@@ -63,7 +63,7 @@ export class User {
     @OneToMany(type => Notification, notification => notification.id)
     notifications: Notification[]
 
-    @OneToMany(type => Comment, comment => comment.user) // Many Comments to One User
+    @OneToMany(type => Comment, comment => comment.user)
     comments: Comment
 
     @OneToMany(type => Token, token => token.user)

@@ -1,5 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
+enum Role {
+    Admin = 'admin',
+    Normal = 'normal',
+}
+
 @Entity()
 export class TeamRole {
 // ------------------------------------
@@ -8,11 +13,8 @@ export class TeamRole {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: 'text',
-        unique: true
-    })
-    role: string
+    @Column()
+    role: Role
 
 // ------------------------------------
 //            EXTERNAL LINKS

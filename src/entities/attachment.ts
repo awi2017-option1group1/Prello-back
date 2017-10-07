@@ -23,6 +23,6 @@ export class Attachment {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.attachments) // Many Attachment to One Card
+    @ManyToOne(type => Card, card => card.attachments)
     card: Card
  }

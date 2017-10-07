@@ -1,5 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
+enum Role {
+    Admin = 'admin',
+    Owner = 'owner',
+    Editor = 'editor',
+    Viewer = 'Viewer'
+}
+
 @Entity()
 export class BoardRole {
 // ------------------------------------
@@ -8,11 +15,8 @@ export class BoardRole {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: 'text',
-        unique: true
-    })
-    role: string
+    @Column()
+    role: Role
 
 // ------------------------------------
 //            EXTERNAL LINKS

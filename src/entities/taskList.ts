@@ -16,23 +16,12 @@ export class TaskList {
     })
     title: string
 
-    @Column({
-        type: 'text',
-        length: 500
-    })
-    description: string
-    
-    @Column({
-        type: 'boolean'
-    })
-    isDone: boolean
-
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.tasksList) // ManyToOne betwen TaskList and Card
+    @ManyToOne(type => Card, card => card.tasksList)
     card: Card
 
-    @OneToMany(type => Task, task => task.tasksList) // OneToMany betwen Card and TaskList
+    @OneToMany(type => Task, task => task.tasksList)
     tasks: Task[]
  }

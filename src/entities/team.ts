@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, OneToMany } from 'typeorm'
+import { Board } from './board'
 import { User } from './user'
 @Entity()
 export class Team {
@@ -25,4 +26,7 @@ export class Team {
 // ------------------------------------
     @ManyToMany(type => User, user => user.teams)
     users: User[]
+
+    @OneToMany(type => Board, board => board.team)
+    boards: Board[]
  }

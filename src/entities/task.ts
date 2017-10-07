@@ -21,9 +21,19 @@ export class Task {
     })
     description: string
 
+    @Column({
+        type: 'int'
+    })
+    rank: number
+
+    @Column({
+        type: 'boolean'
+    })
+    isDone: boolean
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => TaskList, taskList => taskList.tasks) // ManyToOne betwen Task and TaskList
+    @ManyToOne(type => TaskList, taskList => taskList.tasks)
     tasksList: TaskList[]
  }

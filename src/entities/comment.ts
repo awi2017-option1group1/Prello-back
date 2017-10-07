@@ -17,16 +17,16 @@ export class Comment {
     title: string
 
     @Column({
-        type: 'int'
+        type: 'date'
     })
-    rank: number
+    date: Date
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.list) // Many Comments to One Card
+    @ManyToOne(type => Card, card => card.list)
     card: Card
 
-    @ManyToOne(type => User, user => user.comments) // Many Comments to One User
+    @ManyToOne(type => User, user => user.comments)
     user: User
  }

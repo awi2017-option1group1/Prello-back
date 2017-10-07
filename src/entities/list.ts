@@ -24,9 +24,9 @@ export class List {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @OneToMany(type => Card, card => card.list) // OneToMany betwen List and Card
+    @OneToMany(type => Card, card => card.list)
     cards: Card[]
 
-    @ManyToOne(type => Board, board => board.lists) // Many Lists to one Board
+    @ManyToOne(type => Board, board => board.lists)
     board: Board
  }
