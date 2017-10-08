@@ -87,4 +87,12 @@ export class BoardFacade {
             throw new BoardNotFoundException(e)
         }
     }
+
+    static async create(board: Board): Promise<Board> {
+        try {
+            return getEntityManager().getRepository(Board).create(Board)
+        } catch (e) {
+            throw new BoardNotFoundException(e)
+        }
+    }
 }
