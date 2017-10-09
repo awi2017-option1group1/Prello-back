@@ -6,6 +6,7 @@ import * as cors from 'cors'
 import { createConnection } from 'typeorm'
 import  { connectionOptions } from './connectionParams'
 import { Login } from './routes/user/login'
+import { List } from './routes/list/list'
 import { Requester } from './bl/requester'
 
 export const ENV = process.env.NODE_ENV || 'development'
@@ -24,6 +25,12 @@ app.get('/', (req, res) => {
 })
 
 app.post('/login', Login.authenticate)
+
+app.get('/dashboards/:board_id/lists', List.getAllFromBoardId)
+app.get('/dashboards/:board_id/lists/:list_id', List.getOneById)
+app.get('/dashboards/:board_id/lists', List.insertFromBoardId)
+app.get('/dashboards/:board_id/lists/:list_id', List.update)
+app.get('/dashboards/:board_id/lists/:list_id', List.delete)
 
 createConnection(connectionOptions[ENV]).then(connection => {
     app.listen(app.get('port'), () => {
