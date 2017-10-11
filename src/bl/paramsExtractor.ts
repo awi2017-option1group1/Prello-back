@@ -1,10 +1,31 @@
-import * as express from 'express'
-import _ from 'lodash'
+import { Board } from '../entities/board'
+import { Card } from '../entities/card'
+
 export class ParamsExtractor {
-    static extract(params: string[], req: express.Request): express.Request {
-        for (var i = 0; i < req.params.length; i++) {
-            _.includes(params, req.params[i])
+
+    static extractBoard(params: string[], objectReceived: Board, objectToUpdate: Board) {
+        var keyNames = Object.keys(objectReceived)
+        for (var i = 0; i < keyNames.length; i++) {
+            for (var j in params) {
+                if (keyNames[i] === params[j]) {
+                    objectToUpdate[keyNames[i]] = objectReceived[keyNames[i]]
+                }
+            }
         }
-        return req
+
+        return objectToUpdate
+    }
+
+    static extractCard(params: string[], objectReceived: Card, objectToUpdate: Card) {
+        var keyNames = Object.keys(objectReceived)
+        for (var i = 0; i < keyNames.length; i++) {
+            for (var j in params) {
+                if (keyNames[i] === params[j]) {
+                    objectToUpdate[keyNames[i]] = objectReceived[keyNames[i]]
+                }
+            }
+        }
+
+        return objectToUpdate
     }
 }
