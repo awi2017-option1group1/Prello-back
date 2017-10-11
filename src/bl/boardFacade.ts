@@ -3,6 +3,7 @@ import { getEntityManager } from 'typeorm'
 import { BoardNotFoundException } from './errors/BoardNotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractor'
+
 export class BoardFacade {
 
     static async getAll(): Promise<Board[]>  {

@@ -26,6 +26,7 @@ app.get('/', (req, res) => {
 })
 
 app.post('/login', Login.authenticate)
+
 // ---------    Board Routes   ---------
 app.get('/boards', Board.getAll)
 app.get('/boards/:board_id', Board.getOneById)
