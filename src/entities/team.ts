@@ -15,7 +15,10 @@ export class Team {
     })
     name: string
 
-    @Column('text')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     description: string
 
     @Column('boolean')
