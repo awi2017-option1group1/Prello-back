@@ -6,8 +6,10 @@ import * as cors from 'cors'
 import { createConnection } from 'typeorm'
 import  { connectionOptions } from './connectionParams'
 import { Login } from './routes/user/login'
+import { Board } from './routes/board/board'
+import { Card } from './routes/card/card'
+import { RequesterFactory } from './bl/requester'
 import { List } from './routes/list/list'
-import { Requester } from './bl/requester'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
@@ -19,18 +21,58 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use('*', (req, res, next) => {
+    const auth = req.get('authorization')
+    if (auth) {
+        const token = auth.substring('Bearer '.length)
+        RequesterFactory.fromJWT(token).then((requester) => {
+            req.requester = requester
+            next()
+        })
+    } else {
+        req.requester = RequesterFactory.empty
+        next()
+    }
+})
+
 app.get('/', (req, res) => {
-    const requester = Requester.fromJWT(req.headers.jwt)
-    console.log('Requester : ', requester)
+    return 'Hello World !'
+})
+
+app.get('/protected', (req, res) => {
+    if (req.requester.hasUID(1)) {
+        res.send('Secret')
+    } else {
+        res.status(401)
+    }
+    res.end()
 })
 
 app.post('/login', Login.authenticate)
 
+// ---------    List Routes   ---------
 app.get('/dashboards/:board_id/lists', List.getAllFromBoardId)
 app.get('/dashboards/:board_id/lists/:list_id', List.getOneById)
 app.get('/dashboards/:board_id/lists', List.insertFromBoardId)
 app.get('/dashboards/:board_id/lists/:list_id', List.update)
 app.get('/dashboards/:board_id/lists/:list_id', List.delete)
+
+// ---------    Board Routes   ---------
+app.get('/boards', Board.getAll)
+app.get('/boards/:board_id', Board.getOneById)
+app.get('/users/:user_id/boards', Board.getAllFromUserId)
+app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
+app.put('/boards', Board.update)
+app.delete('/boards/:board_id', Board.delete)
+app.post('/boards', Board.create)
+
+// ---------    Card Routes   ---------
+app.get('/cards', Card.getAll)
+app.get('/cards/:card_id', Card.getOneById)
+app.get('/boards/:board_id/lists/:list_id/cards', Card.getAllFromListId)
+app.put('/cards', Card.update)
+app.delete('/cards/:card_id', Card.delete)
+app.post('/boards/:board_id/lists/:list_id/cards', Card.create)
 
 createConnection(connectionOptions[ENV]).then(connection => {
     app.listen(app.get('port'), () => {

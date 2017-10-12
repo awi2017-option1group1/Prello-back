@@ -47,7 +47,7 @@ export class Card {
     })
     tags: Tag[]
 
-    @ManyToOne(type => List, list => list.cards)
+    @ManyToOne(type => List, list => list.id)
     list: List
 
     @OneToMany(type => TaskList, taskList => taskList.card)

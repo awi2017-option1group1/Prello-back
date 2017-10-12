@@ -2,7 +2,8 @@ import { getEntityManager } from 'typeorm'
 
 import { ListNotFoundException } from './errors/ListNotFoundException'
 import { List } from '../entities/list'
-import { BoardFacade } from './boardFacade'
+
+import { ParamsExtractor } from './paramsExtractor'
 
 export class ListFacade {
 
@@ -32,25 +33,21 @@ export class ListFacade {
         }
     }
 
-    static async insertFromBoardId(boardId: number, listToInsert: List): Promise<List> {
-        
-        var board = BoardFacade.getById(boardId)
-        listToInsert.board = Promise.apply(board)
+    static async insertFromBoardId(boardId: number, list: List): Promise<List> {
         try {
-            return getEntityManager()
-                    .getRepository(List)
-                    .create(listToInsert)                        
+            let listToInsert = new List()
+            listToInsert = ParamsExtractor.extractList(['title', 'rank'], list, listToInsert)
+            return getEntityManager().getRepository(List).persist(listToInsert)                 
         } catch (e) {
             throw new ListNotFoundException(e)
         }
-}
+    }   
 
-    static async update(list: List): Promise<List> {
+    static async update(listReceived: List, listToUpdate: List): Promise<List> {
         try {
+            const listToSave = ParamsExtractor.extractList(['title', 'rank'], listReceived, listToUpdate)
             const repository = getEntityManager().getRepository(List)
-            let listToUpdate = await ListFacade.getById(list.id)
-            listToUpdate = list
-            return repository.persist(listToUpdate)
+            return repository.persist(listToSave)
         } catch (e) {
             throw new ListNotFoundException(e)
         }

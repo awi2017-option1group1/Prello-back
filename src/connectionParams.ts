@@ -9,9 +9,9 @@ export const connectionOptions: MultipleConnections = {
         driver: {
             type: 'postgres',
             host: 'localhost',
-            port: 5434,
+            port: 5432,
             username: 'postgres',
-            password: 'root',
+            password: 'postgres',
             database: 'dev_prello',
         },
         autoSchemaSync: true,
