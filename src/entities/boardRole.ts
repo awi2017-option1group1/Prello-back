@@ -1,11 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
-
-enum Role {
-    Admin = 'admin',
-    Owner = 'owner',
-    Editor = 'editor',
-    Viewer = 'Viewer'
-}
+import { IsIn } from 'class-validator'
+const roles = ['Admin', 'Owner', 'Editor', 'Viewer']
 
 @Entity()
 export class BoardRole {
@@ -15,8 +10,9 @@ export class BoardRole {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
-    role: Role
+    @IsIn(roles)
+    @Column('text')
+    role: string
 
 // ------------------------------------
 //            EXTERNAL LINKS

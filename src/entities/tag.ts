@@ -1,24 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm'
+import { IsIn } from 'class-validator'
+
 import { Card } from './card'
 import { Board } from './board'
 
-enum Color {
-    SILVER = '#C0C0C0',
-    GRAY = '#808080',
-    BLACK = '#000000',
-    RED	= '#FF0000',
-    MAROON = '#800000',
-    YELLOW = '#FFFF00',
-    OLIVE = '#808000',
-    LIME = '#00FF00',
-    GREEN = '#008000',
-    AQUA = '#00FFFF',
-    TEAL = '#008080',
-    BLUE = '#0000FF',
-    NAVY = '#000080',
-    FUCHSIA = '#FF00FF',
-    PURPLE = '#800080'
-}
+const colors = ['blue', 'red', 'green', 'silver', 'yellow']
 
 @Entity()
 export class Tag {
@@ -34,8 +20,9 @@ export class Tag {
     })
     label: string
 
-    @Column()
-    color: Color
+    @IsIn(colors)
+    @Column('text')
+    color: string
 
 // ------------------------------------
 //            EXTERNAL LINKS

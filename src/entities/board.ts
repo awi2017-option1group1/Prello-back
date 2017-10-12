@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm'
 import { Team } from './team'
 import { User } from './user'
 import { List } from './list'
@@ -21,8 +21,7 @@ export class Board {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @OneToOne(type => Team)
-    @JoinColumn()
+    @ManyToOne(type => Team, team => team.id)
     team: Team
 
     @ManyToMany(type => User, user => user.boards)
