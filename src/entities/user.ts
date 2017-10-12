@@ -13,10 +13,16 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     lastname: string
 
-    @Column('string')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     firstname: string
 
     @Column({
@@ -25,7 +31,10 @@ export class User {
     })
     pseudo: string
 
-    @Column('text')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     biography: string
 
     @Column('boolean')
@@ -40,7 +49,10 @@ export class User {
     @Column('string')
     password: string
 
-    @Column('string')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     token: string
 
 // ------------------------------------
