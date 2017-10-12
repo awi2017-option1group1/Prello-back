@@ -10,7 +10,7 @@ export class CardFacade {
         const cards = await getEntityManager()
                             .getRepository(Card)
                             .find()
-        if (cards && cards.length !== 0) {
+        if (cards) {
             return cards
         } else {
             throw new CardNotFoundException('No Card was found')
@@ -23,7 +23,7 @@ export class CardFacade {
                             .find({
                                     list: listId
                             })
-        if (cards && cards.length !== 0) {
+        if (cards) {
             return cards
         } else {
             throw new CardNotFoundException('No Card was found')

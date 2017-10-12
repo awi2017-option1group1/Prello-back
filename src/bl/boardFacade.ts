@@ -10,7 +10,7 @@ export class BoardFacade {
         const boards = await getEntityManager()
                             .getRepository(Board)
                             .find()
-        if (boards && boards.length !== 0) {
+        if (boards) {
             return boards
         } else {
             throw new BoardNotFoundException('No Board was found')
@@ -23,7 +23,7 @@ export class BoardFacade {
                             .find({
                                     team: teamId
                             })
-        if (boards && boards.length !== 0) {
+        if (boards) {
             return boards
         } else {
             throw new BoardNotFoundException('No Board was found')
@@ -41,7 +41,7 @@ export class BoardFacade {
                                     }
                                 }
                             })
-        if (boards && boards.length !== 0) {
+        if (boards) {
             return boards
         } else {
             throw new BoardNotFoundException('No Board was found')
