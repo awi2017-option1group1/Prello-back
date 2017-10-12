@@ -1,25 +1,52 @@
 import * as jwt from 'jsonwebtoken'
 import { getEntityManager } from 'typeorm'
 
-import { UserNotFoundException } from './errors/UserNotFoundException'
 import { User } from '../entities/user'
 import { encryptionKey } from '../config'
 
 class TokenContent {
-    userId: Number
+    userId: number
+    token: string // User session token
 }
 
-export class Requester {
+export interface Requester {
+    
+    hasUID(userId: number): boolean
 
-    static async fromJWT(token: string): Promise<Requester> {
-        const tokenContent = <TokenContent> jwt.verify(token, encryptionKey)
-        const user = await getEntityManager().getRepository(User).findOneById(tokenContent.userId)
+}
+
+class EmptyRequester implements Requester {
+
+    hasUID(userId: number): boolean {
+        return false
+    }
+
+}
+
+class UserRequester implements Requester {
+
+    constructor(private user: User) {}
+
+    hasUID(userId: number): boolean {
+        return this.user.id === userId
+    }
+
+}
+
+export class RequesterFactory {
+
+    static empty = new EmptyRequester()
+
+    static async fromJWT(jwtToken: string): Promise<Requester> {
+        const jwtTokenContent = <TokenContent> jwt.verify(jwtToken, encryptionKey)
+        const user = await getEntityManager().getRepository(User).findOne({
+            token: jwtTokenContent.token
+        })
         if (user) {
-            return new Requester(user)
+            return new UserRequester(user)
         } else {
-            throw new UserNotFoundException('User was not found')
+            return RequesterFactory.empty
         }
     }
 
-    constructor(public user: User) {}
 }
