@@ -1,3 +1,4 @@
+/*
 import { List } from './../src/entities/list'
 import { ListFacade } from './../src/bl/listFacade'
 import { getEntityManager } from 'typeorm'
@@ -17,3 +18,4 @@ test('Get List by id : Should return the good list', done => {
     t(l)
   })
 })
+*/
