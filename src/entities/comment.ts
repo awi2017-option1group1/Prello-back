@@ -12,9 +12,8 @@ export class Comment {
 
     @Column({
         type: 'text',
-        length: 25
     })
-    title: string
+    content: string
 
     @Column({
         type: 'date'
@@ -24,7 +23,7 @@ export class Comment {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.list)
+    @ManyToOne(type => Card, card => card.comments)
     card: Card
 
     @ManyToOne(type => User, user => user.comments)

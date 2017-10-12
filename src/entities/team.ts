@@ -10,7 +10,7 @@ export class Team {
     id: number
 
     @Column({
-        type: 'text',
+        type: 'string',
         unique: true
     })
     name: string

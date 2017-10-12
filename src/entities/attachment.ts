@@ -11,7 +11,7 @@ export class Attachment {
     id: number
 
     @Column({
-        type: 'text',
+        type: 'string',
         length: 500
     })
     type: string

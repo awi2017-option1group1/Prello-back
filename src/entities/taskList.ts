@@ -11,8 +11,7 @@ export class TaskList {
     id: number
 
     @Column({
-        type: 'text',
-        length: 25
+        type: 'string',
     })
     title: string
 
