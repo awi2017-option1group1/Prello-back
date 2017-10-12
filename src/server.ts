@@ -50,7 +50,6 @@ app.get('/protected', (req, res) => {
 app.post('/login', Login.authenticate)
 
 // ---------    Board Routes   ---------
-app.get('/boards', Board.getAll)
 app.get('/boards/:board_id', Board.getOneById)
 app.get('/users/:user_id/boards', Board.getAllFromUserId)
 app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
@@ -59,7 +58,6 @@ app.delete('/boards/:board_id', Board.delete)
 app.post('/boards', Board.create)
 
 // ---------    Card Routes   ---------
-app.get('/cards', Card.getAll)
 app.get('/cards/:card_id', Card.getOneById)
 app.get('/boards/:board_id/lists/:list_id/cards', Card.getAllFromListId)
 app.put('/cards', Card.update)
