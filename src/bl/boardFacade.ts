@@ -6,17 +6,6 @@ import { ParamsExtractor } from './paramsExtractor'
 
 export class BoardFacade {
 
-    static async getAll(): Promise<Board[]>  {
-        const boards = await getEntityManager()
-                            .getRepository(Board)
-                            .find()
-        if (boards) {
-            return boards
-        } else {
-            throw new BoardNotFoundException('No Board was found')
-        }
-    }
-
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
         const boards = await getEntityManager()
                             .getRepository(Board)
