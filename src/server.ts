@@ -53,9 +53,9 @@ app.post('/login', Login.authenticate)
 // ---------    List Routes   ---------
 app.get('/dashboards/:board_id/lists', List.getAllFromBoardId)
 app.get('/dashboards/:board_id/lists/:list_id', List.getOneById)
-app.get('/dashboards/:board_id/lists', List.insertFromBoardId)
-app.get('/dashboards/:board_id/lists/:list_id', List.update)
-app.get('/dashboards/:board_id/lists/:list_id', List.delete)
+app.put('/dashboards/:board_id/lists', List.insertFromBoardId)
+app.put('/dashboards/:board_id/lists/:list_id', List.update)
+app.delete('/dashboards/:board_id/lists/:list_id', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards', Board.getAll)

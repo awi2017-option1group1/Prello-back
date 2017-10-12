@@ -11,10 +11,8 @@ export class ListFacade {
         const lists = await getEntityManager()
                             .getRepository(List)
                             .find({
-                                where: {
-                                    boardId: boardId
-                                }
-                            })
+                                board: boardId
+                        })
         if (lists) {
             return lists
         } else {
