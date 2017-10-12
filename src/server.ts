@@ -6,7 +6,7 @@ import * as cors from 'cors'
 import { createConnection } from 'typeorm'
 import  { connectionOptions } from './connectionParams'
 import { Login } from './routes/user/login'
-import { Requester } from './bl/requester'
+import { RequesterFactory } from './bl/requester'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
@@ -18,9 +18,31 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use('*', (req, res, next) => {
+    const auth = req.get('authorization')
+    if (auth) {
+        const token = auth.substring('Bearer '.length)
+        RequesterFactory.fromJWT(token).then((requester) => {
+            req.requester = requester
+            next()
+        })
+    } else {
+        req.requester = RequesterFactory.empty
+        next()
+    }
+})
+
 app.get('/', (req, res) => {
-    const requester = Requester.fromJWT(req.headers.jwt)
-    console.log('Requester : ', requester)
+    return 'Hello World !'
+})
+
+app.get('/protected', (req, res) => {
+    if (req.requester.hasUID(1)) {
+        res.send('Secret')
+    } else {
+        res.status(401)
+    }
+    res.end()
 })
 
 app.post('/login', Login.authenticate)

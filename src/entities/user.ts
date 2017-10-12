@@ -13,14 +13,14 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column('string')
     lastname: string
 
-    @Column('text')
+    @Column('string')
     firstname: string
 
     @Column({
-        type: 'text',
+        type: 'string',
         unique: true
     })
     pseudo: string
@@ -32,13 +32,16 @@ export class User {
     notificationsEnabled: boolean
 
     @Column({
-        type: 'text',
+        type: 'string',
         unique: true
     })
     email: string
 
-    @Column('text')
+    @Column('string')
     password: string
+
+    @Column('string')
+    token: string
 
 // ------------------------------------
 //            EXTERNAL LINKS
