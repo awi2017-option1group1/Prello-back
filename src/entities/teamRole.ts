@@ -12,7 +12,7 @@ export class TeamRole {
     id: number
 
     @IsIn(roles)
-    @Column('text')
+    @Column('string')
     role: string
 
 // ------------------------------------

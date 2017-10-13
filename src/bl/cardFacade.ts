@@ -6,17 +6,6 @@ import { ParamsExtractor } from './paramsExtractor'
 
 export class CardFacade {
 
-    static async getAll(): Promise<Card[]>  {
-        const cards = await getEntityManager()
-                            .getRepository(Card)
-                            .find()
-        if (cards) {
-            return cards
-        } else {
-            throw new CardNotFoundException('No Card was found')
-        }
-    }
-
     static async getAllFromListId(listId: number): Promise<Card[]> {
         const cards = await getEntityManager()
                             .getRepository(Card)

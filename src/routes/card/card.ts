@@ -3,14 +3,6 @@ import * as express from 'express'
 import { CardFacade } from '../../bl/cardFacade'
 
 export class Card {
-    static async getAll(req: express.Request, res: express.Response) {
-        try {
-            const cards = await CardFacade.getAll()
-            res.status(200).json(cards)
-        } catch (e) {
-            res.status(404).json({ message: e.message})
-        }
-    }
 
     static async getAllFromListId(req: express.Request, res: express.Response) {
         try {
