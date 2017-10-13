@@ -6,6 +6,7 @@ import * as cors from 'cors'
 import { createConnection } from 'typeorm'
 import  { connectionOptions } from './connectionParams'
 import { Login } from './routes/user/login'
+import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { RequesterFactory } from './bl/requester'
@@ -47,7 +48,14 @@ app.get('/protected', (req, res) => {
     res.end()
 })
 
+// ---------    User Routes   ---------
 app.post('/login', Login.authenticate)
+app.get('/users', User.getAll)
+app.get('/users/:user_id', User.getOneById)
+app.get('/teams/:team_id/users', User.getAllFromTeamId)
+app.put('/users/:user_id', User.update)
+app.delete('/users/:user_id', User.delete)
+app.post('/users', User.create)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:board_id', Board.getOneById)
