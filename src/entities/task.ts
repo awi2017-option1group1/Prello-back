@@ -10,8 +10,7 @@ export class Task {
     id: number
 
     @Column({
-        type: 'text',
-        length: 200
+        type: 'string'
     })
     title: string
 

@@ -32,7 +32,7 @@ export class User {
     pseudo: string
 
     @Column({
-        type: 'string',
+        type: 'text',
         nullable: true
     })
     biography: string
@@ -75,7 +75,7 @@ export class User {
     @ManyToMany(type => Board, board => board.users)
     boards: Board[]
 
-    @OneToMany(type => Notification, notification => notification.id)
+    @OneToMany(type => Notification, notification => notification.user)
     notifications: Notification[]
 
     @OneToMany(type => Comment, comment => comment.user)

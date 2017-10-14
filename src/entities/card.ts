@@ -13,12 +13,13 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column('string')
     title: string
 
     @Column({
         type: 'text',
-        length: 500
+        length: 500,
+        nullable: true
     })
     description: string
 
@@ -47,7 +48,7 @@ export class Card {
     })
     tags: Tag[]
 
-    @ManyToOne(type => List, list => list.id)
+    @ManyToOne(type => List, list => list.cards)
     list: List
 
     @OneToMany(type => TaskList, taskList => taskList.card)
