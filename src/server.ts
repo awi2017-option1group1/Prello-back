@@ -9,6 +9,7 @@ import { Login } from './routes/user/login'
 import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
+import { Task } from './routes/task/task'
 import { RequesterFactory } from './bl/requester'
 
 export const ENV = process.env.NODE_ENV || 'development'
@@ -71,6 +72,13 @@ app.get('/boards/:board_id/lists/:list_id/cards', Card.getAllFromListId)
 app.put('/cards', Card.update)
 app.delete('/cards/:card_id', Card.delete)
 app.post('/boards/:board_id/lists/:list_id/cards', Card.create)
+
+// ---------    Task Routes   ---------
+app.get('/taskList/:taskList_id/lists', Task.getAllFromTaskListId)
+app.get('task/:task_id', Task.getOneById)
+app.put('/task', Task.update)
+app.delete('/task/:task_id', Task.delete)
+app.post('/task/:task_id', Task.create)
 
 createConnection(connectionOptions[ENV]).then(connection => {
     app.listen(app.get('port'), () => {
