@@ -1,9 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, OneToMany, JoinTable } from 'typeorm'
+import { Length, IsAlphanumeric, IsEmail } from 'class-validator'
+
+import { IsUnique } from '../validators/IsUniqueValidator'
+
 import { Team } from './team'
 import { Board } from './board'
 import { Notification } from './notification'
 import { Comment } from './comment'
-import { Token } from './token'
 
 @Entity()
 export class User {
@@ -17,43 +20,81 @@ export class User {
         type: 'varchar',
         nullable: true
     })
-    lastname: string
+    fullName: string
 
     @Column({
         type: 'varchar',
         nullable: true
     })
-    firstname: string
+    initial: string
 
+    @IsUnique(
+        {
+            repository: User,
+            column: 'username'
+        },
+        {
+            message: 'Username already taken',
+            groups: ['registration']
+        }
+    )
+    @Length(3, 25, {
+        message: 'Username must be between $constraint1 and $constraint2 characters long',
+        groups: ['registration']
+    })
+    @IsAlphanumeric({
+        message: 'Username must be composed only by alphanumeric values',
+        groups: ['registration']
+    })
     @Column({
         type: 'varchar',
         unique: true
     })
-    pseudo: string
+    username: string
 
     @Column({
         type: 'text',
         nullable: true
     })
-    biography: string
+    bio: string
 
-    @Column('boolean')
+    @Column({
+        type: 'boolean',
+        default: true
+    })
     notificationsEnabled: boolean
 
+    @IsUnique(
+        {
+            repository: User,
+            column: 'email'
+        },
+        {
+            message: 'Email already taken',
+            groups: ['registration']
+        }
+    )
+    @IsEmail({}, {
+        message: 'Email must be a valid email',
+        groups: ['registration']
+    })
     @Column({
         type: 'varchar',
         unique: true
     })
     email: string
 
-    @Column('varchar')
-    password: string
-
     @Column({
         type: 'varchar',
         nullable: true
     })
-    token: string
+    password: string | null
+
+    @Column({
+        type: 'boolean',
+        default: false
+    })
+    confirmed: boolean
 
 // ------------------------------------
 //            EXTERNAL LINKS
@@ -80,7 +121,4 @@ export class User {
 
     @OneToMany(type => Comment, comment => comment.user)
     comments: Comment
-
-    @OneToMany(type => Token, token => token.user)
-    tokens: Promise<Token[]>
  }
