@@ -1,13 +1,13 @@
 import * as express from 'express'
 
-import { CardFacade } from '../../bl/cardFacade'
+import { TaskFacade } from '../../bl/taskFacade'
 
-export class Card {
+export class Task {
 
-    static async getAllFromListId(req: express.Request, res: express.Response) {
+    static async getAllFromTaskListId(req: express.Request, res: express.Response) {
         try {
-            const cards = await CardFacade.getAllFromListId(req.params.list_id)
-            res.status(200).json(cards)
+            const task = await TaskFacade.getAllFromTaskListId(req.params.taskList_id)
+            res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
@@ -15,8 +15,8 @@ export class Card {
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
-            const board = await CardFacade.getById(req.params.card_id)
-            res.status(200).json(board)
+            const task = await TaskFacade.getById(req.params.task_id)
+            res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
@@ -24,9 +24,9 @@ export class Card {
 
     static async delete(req: express.Request, res: express.Response) {
         try {
-            const card = await CardFacade.delete(req.params.card_id)
-            if (card) {
-                res.status(200).json(card)
+            const deletionSuccess = await TaskFacade.delete(req.params.task_id)
+            if (deletionSuccess) {
+                res.status(200).json(deletionSuccess)
             } else {
                 res.status(404).json({ message : 'Not found'})
             }
@@ -37,9 +37,9 @@ export class Card {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const cardToUpdate = await CardFacade.getById(req.body.id)
-            const card = await CardFacade.update(req.body, cardToUpdate)
-            res.status(200).json(card)
+            const taskToUpdate = await TaskFacade.getById(req.body.id)
+            const task = await TaskFacade.update(req.body, taskToUpdate)
+            res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
@@ -47,9 +47,10 @@ export class Card {
 
     static async create(req: express.Request, res: express.Response) {
         try {
-            const card = await CardFacade.create(req.body, req.params.list_id)
-            res.status(200).json(card)
+            const task = await TaskFacade.create(req.body, req.params.task_id)
+            res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }}
+    }
+}

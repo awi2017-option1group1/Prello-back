@@ -3,7 +3,7 @@ import { IsFQDN } from 'class-validator'
 import { Card } from './card'
 
 @Entity()
-export class Attachment {
+export class Attachement {
 // ------------------------------------
 // =        ENTITY DEFINITION
 // ------------------------------------
@@ -11,8 +11,7 @@ export class Attachment {
     id: number
 
     @Column({
-        type: 'text',
-        length: 500
+        type: 'string'
     })
     type: string
 
@@ -23,6 +22,6 @@ export class Attachment {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.attachments)
+    @ManyToOne(type => Card, card => card.attachements)
     card: Card
  }

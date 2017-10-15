@@ -13,10 +13,16 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     lastname: string
 
-    @Column('string')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     firstname: string
 
     @Column({
@@ -25,7 +31,10 @@ export class User {
     })
     pseudo: string
 
-    @Column('text')
+    @Column({
+        type: 'text',
+        nullable: true
+    })
     biography: string
 
     @Column('boolean')
@@ -40,7 +49,10 @@ export class User {
     @Column('string')
     password: string
 
-    @Column('string')
+    @Column({
+        type: 'string',
+        nullable: true
+    })
     token: string
 
 // ------------------------------------
@@ -63,7 +75,7 @@ export class User {
     @ManyToMany(type => Board, board => board.users)
     boards: Board[]
 
-    @OneToMany(type => Notification, notification => notification.id)
+    @OneToMany(type => Notification, notification => notification.user)
     notifications: Notification[]
 
     @OneToMany(type => Comment, comment => comment.user)

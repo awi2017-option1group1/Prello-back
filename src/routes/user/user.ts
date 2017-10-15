@@ -1,22 +1,21 @@
 import * as express from 'express'
 
-import { BoardFacade } from '../../bl/boardFacade'
+import { UserFacade } from '../../bl/userFacade'
 
-export class Board {
-
-    static async getAllFromTeamId(req: express.Request, res: express.Response) {
+export class User {
+    static async getAll(req: express.Request, res: express.Response) {
         try {
-            const boards = await BoardFacade.getAllFromTeamId(req.params.team_id)
-            res.status(200).json(boards)
+            const users = await UserFacade.getAll()
+            res.status(200).json(users)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
     }
 
-    static async getAllFromUserId(req: express.Request, res: express.Response) {
+    static async getAllFromTeamId(req: express.Request, res: express.Response) {
         try {
-            const boards = await BoardFacade.getAllFromUserId(req.params.user_id)
-            res.status(200).json(boards)
+            const users = await UserFacade.getAllFromTeamId(req.params.list_id)
+            res.status(200).json(users)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
@@ -24,7 +23,7 @@ export class Board {
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.getById(req.params.board_id)
+            const board = await UserFacade.getById(req.params.user_id)
             res.status(200).json(board)
         } catch (e) {
             res.status(404).json({ message: e.message})
@@ -33,9 +32,9 @@ export class Board {
 
     static async delete(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.delete(req.params.board_id)
-            if (board) {
-                res.status(200).json(board)
+            const user = await UserFacade.delete(req.params.user_id)
+            if (user) {
+                res.status(200).json(user)
             } else {
                 res.status(404).json({ message : 'Not found'})
             }
@@ -46,9 +45,9 @@ export class Board {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const boardToUpdate = await BoardFacade.getById(req.body.id)
-            const board = BoardFacade.update(req.body, boardToUpdate)
-            res.status(200).json(board)
+            const userToUpdate = await UserFacade.getById(req.body.id)
+            const user = await UserFacade.update(req.body, userToUpdate)
+            res.status(200).json(user)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
@@ -56,8 +55,8 @@ export class Board {
 
     static async create(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.create(req.body)
-            res.status(200).json(board)
+            const user = await UserFacade.create(req.body)
+            res.status(200).json(user)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }

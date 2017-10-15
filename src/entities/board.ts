@@ -12,7 +12,7 @@ export class Board {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
+    @Column('string')
     title: string
 
     @Column('boolean')
@@ -21,7 +21,7 @@ export class Board {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Team, team => team.id)
+    @ManyToOne(type => Team, team => team.users)
     team: Team
 
     @ManyToMany(type => User, user => user.boards)

@@ -6,17 +6,6 @@ import { ParamsExtractor } from './paramsExtractor'
 
 export class BoardFacade {
 
-    static async getAll(): Promise<Board[]>  {
-        const boards = await getEntityManager()
-                            .getRepository(Board)
-                            .find()
-        if (boards) {
-            return boards
-        } else {
-            throw new BoardNotFoundException('No Board was found')
-        }
-    }
-
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
         const boards = await getEntityManager()
                             .getRepository(Board)
@@ -77,7 +66,7 @@ export class BoardFacade {
 
     static async update(boardReceived: Board, boardToUpdate: Board): Promise<Board> {
         try {
-            const board = ParamsExtractor.extractBoard(['title', 'isPrivate'], boardReceived, boardToUpdate)
+            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived, boardToUpdate)
             const repository = getEntityManager().getRepository(Board)
             return repository.persist(board)
         } catch (e) {
@@ -88,7 +77,7 @@ export class BoardFacade {
     static async create(board: Board): Promise<Board> {
         try {
             let boardToCreate = new Board()
-            boardToCreate = ParamsExtractor.extractBoard(['title', 'isPrivate'], board, boardToCreate)
+            boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board, boardToCreate)
             return getEntityManager().getRepository(Board).persist(boardToCreate)
         } catch (e) {
             throw new BoardNotFoundException(e)

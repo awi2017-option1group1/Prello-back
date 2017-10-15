@@ -10,8 +10,7 @@ export class Task {
     id: number
 
     @Column({
-        type: 'text',
-        length: 200
+        type: 'string'
     })
     title: string
 
@@ -29,5 +28,5 @@ export class Task {
 //            EXTERNAL LINKS
 // ------------------------------------
     @ManyToOne(type => TaskList, taskList => taskList.tasks)
-    tasksList: TaskList[]
+    taskList: TaskList
  }
