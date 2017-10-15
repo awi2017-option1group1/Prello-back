@@ -16,7 +16,7 @@ export const connectionOptions: MultipleConnections = {
         },
         autoSchemaSync: true,
         entities: [
-            `${__dirname}/entities/*.js` 
+            `${__dirname}/entities/*.js`
         ],
         logging: {
             logQueries: true
@@ -28,7 +28,7 @@ export const connectionOptions: MultipleConnections = {
             url: process.env.DATABASE_URL
         },
         entities: [
-            `${__dirname}/entities/*.js` 
+            `${__dirname}/entities/*.js`
         ],
     }
 }

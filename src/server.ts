@@ -13,6 +13,7 @@ import { Task } from './routes/task/task'
 import { Attachement } from './routes/attachement/attachement'
 import { TaskList } from './routes/taskList/taskList'
 import { RequesterFactory } from './bl/requester'
+import { List } from './routes/list/list'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
@@ -59,6 +60,13 @@ app.get('/teams/:team_id/users', User.getAllFromTeamId)
 app.put('/users/:user_id', User.update)
 app.delete('/users/:user_id', User.delete)
 app.post('/users', User.create)
+
+// ---------    List Routes   ---------
+app.get('/dashboards/:board_id/lists', List.getAllFromBoardId)
+app.get('/dashboards/:board_id/lists/:list_id', List.getOneById)
+app.post('/dashboards/:board_id/lists', List.insertFromBoardId)
+app.put('/dashboards/:board_id/lists/:list_id', List.update)
+app.delete('/dashboards/:board_id/lists/:list_id', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:board_id', Board.getOneById)

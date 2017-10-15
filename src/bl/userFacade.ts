@@ -76,8 +76,10 @@ export class UserFacade {
 
     static async update(userReceived: User, userToUpdate: User): Promise<User> {
         try {
-            const userToSave = ParamsExtractor.extractUser(['title', 'description', 'dueDate', 'rank'],
-                                                           userReceived, userToUpdate)
+            const userToSave = ParamsExtractor.extract<User>(['firstname', 'lastname', 'biography',
+                                                             'notificationsEnabled', 'email', 'password', 'token'],
+                                                             userReceived, userToUpdate)
+
             const repository = getEntityManager().getRepository(User)
             return repository.persist(userToSave)
         } catch (e) {
@@ -88,10 +90,9 @@ export class UserFacade {
     static async create(user: User): Promise<User> {
         try {
             let userToCreate = new User()
-            userToCreate = ParamsExtractor
-                            .extractUser(['firstname', 'lastname', 'biography', 'notificationsEnabled',
-                                         'email', 'password', 'token'],
-                                         user, userToCreate)
+            userToCreate = ParamsExtractor.extract<User>(['firstname', 'lastname', 'biography',
+                                                         'notificationsEnabled', 'email', 'password', 'token'],
+                                                         user, userToCreate)
             return getEntityManager().getRepository(User).persist(userToCreate)
         } catch (e) {
             throw new UserNotFoundException(e)
