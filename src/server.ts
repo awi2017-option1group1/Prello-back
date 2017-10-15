@@ -10,6 +10,7 @@ import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
+import { Attachement } from './routes/attachement/attachement'
 import { TaskList } from './routes/taskList/taskList'
 import { RequesterFactory } from './bl/requester'
 
@@ -17,7 +18,7 @@ export const ENV = process.env.NODE_ENV || 'development'
 
 const app = express()
 
-app.set('port', process.env.PORT || 5000)
+app.set('port', process.env.PORT || 5000) 
 app.use(compression())
 app.use(cors())
 app.use(bodyParser.json())
@@ -79,6 +80,13 @@ app.get('/taskList/:taskList_id/lists', Task.getAllFromTaskListId)
 app.get('task/:task_id', Task.getOneById)
 app.put('/task', Task.update)
 app.delete('/task/:task_id', Task.delete)
+app.post('/tasks', Task.create)
+
+// ---------    Attachement Routes   ---------
+app.get('/card/:card_id/attachements', Attachement.getAllFromCardId)
+app.get('attachement/:attachement_id', Attachement.getOneById)
+app.delete('/attachement/:attachement_id', Attachement.delete)
+app.post('/attachements', Task.create)
 app.post('/task/:task_id', Task.create)
 
 // ---------    TaskList Routes   ---------

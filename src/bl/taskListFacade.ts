@@ -59,7 +59,7 @@ export class TaskListFacade {
     static async create(taskList: TaskList, cardId: number): Promise<TaskList> {
         try {
             let taskListToCreate = new TaskList()
-            taskListToCreate = ParamsExtractor.extract<TaskList>(['title'], taskList, taskListToCreate)
+            taskListToCreate = ParamsExtractor.extract<TaskList>(['title', 'card'], taskList, taskListToCreate)
             return getEntityManager().getRepository(TaskList).persist(taskListToCreate)
         } catch (e) {
             throw new TaskListNotFoundException(e)
