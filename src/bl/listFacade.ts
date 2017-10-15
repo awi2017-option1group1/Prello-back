@@ -35,11 +35,11 @@ export class ListFacade {
         try {
             let listToInsert = new List()
             listToInsert = ParamsExtractor.extractList(['title', 'rank'], list, listToInsert)
-            return getEntityManager().getRepository(List).persist(listToInsert)                 
+            return getEntityManager().getRepository(List).persist(listToInsert)
         } catch (e) {
             throw new ListNotFoundException(e)
         }
-    }   
+    }
 
     static async update(listReceived: List, listToUpdate: List): Promise<List> {
         try {
@@ -53,22 +53,18 @@ export class ListFacade {
 
     static async delete(listId: number): Promise<boolean> {
         try {
-            ListFacade.getById(listId).then(async (list: List) => {
-                await getEntityManager()
+            const list = await ListFacade.getById(listId)
+            const deletedList = await getEntityManager()
                     .getRepository(List)
                     .remove(list)
-                    .then((deletedList: List) => {
-                        if (deletedList) {
-                            return true
-                        } else {
-                            return false
-                        }
-                })
-            })
+            if (deletedList) {
+                return true
+            } else {
+                return false
+            }
         } catch (e) {
             throw new ListNotFoundException(e)
         }
-        return false
     }
 
 }
