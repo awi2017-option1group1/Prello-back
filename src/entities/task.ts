@@ -28,5 +28,5 @@ export class Task {
 //            EXTERNAL LINKS
 // ------------------------------------
     @ManyToOne(type => TaskList, taskList => taskList.tasks)
-    tasksList: TaskList[]
+    taskList: TaskList
  }

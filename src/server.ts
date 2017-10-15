@@ -11,6 +11,7 @@ import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
 import { Attachement } from './routes/attachement/attachement'
+import { TaskList } from './routes/taskList/taskList'
 import { RequesterFactory } from './bl/requester'
 
 export const ENV = process.env.NODE_ENV || 'development'
@@ -86,6 +87,14 @@ app.get('/card/:card_id/attachements', Attachement.getAllFromCardId)
 app.get('attachement/:attachement_id', Attachement.getOneById)
 app.delete('/attachement/:attachement_id', Attachement.delete)
 app.post('/attachements', Task.create)
+app.post('/task/:task_id', Task.create)
+
+// ---------    TaskList Routes   ---------
+app.get('/cards/:card_id/taskLists/:taskList_id', TaskList.getAllFromCardId)
+app.get('taskList/:taskList_id', TaskList.getOneById)
+app.put('/taskList', TaskList.update)
+app.delete('/taskList/:taskList_id', TaskList.delete)
+app.post('/taskList/:taskList_id', TaskList.create)
 
 createConnection(connectionOptions[ENV]).then(connection => {
     app.listen(app.get('port'), () => {
