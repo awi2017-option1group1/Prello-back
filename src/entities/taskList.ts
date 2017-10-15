@@ -21,6 +21,6 @@ export class TaskList {
     @ManyToOne(type => Card, card => card.tasksList)
     card: Card
 
-    @OneToMany(type => Task, task => task.tasksList)
+    @OneToMany(type => Task, task => task.taskList)
     tasks: Task[]
  }
