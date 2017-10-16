@@ -1,4 +1,4 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { TaskNotFoundException } from './errors/TaskNotFoundException'
 import { Task } from '../entities/task'
@@ -7,11 +7,9 @@ import { ParamsExtractor } from './paramsExtractor'
 export class TaskFacade {
 
     static async getAllFromTaskListId(taskListId: number): Promise<Task[]> {
-        const tasks = await getEntityManager()
+        const tasks = await getManager()
                             .getRepository(Task)
-                            .find({
-                                    taskTist: taskListId
-                            })
+                            .find()
         if (tasks) {
             return tasks
         } else {
@@ -20,7 +18,7 @@ export class TaskFacade {
     }
 
     static async getById(taskId: number): Promise<Task> {
-        const task = await getEntityManager()
+        const task = await getManager()
                             .getRepository(Task)
                             .findOneById(taskId)
         if (task) {
@@ -33,7 +31,7 @@ export class TaskFacade {
     static async delete(taskId: number): Promise<boolean> {
         try {
             const taskToDelete = await TaskFacade.getById(taskId)
-            const deletedTask = await getEntityManager()
+            const deletedTask = await getManager()
                     .getRepository(Task)
                     .remove(taskToDelete)
             if (deletedTask) {
@@ -50,8 +48,8 @@ export class TaskFacade {
         try {
             const taskToSave = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'],
                                                              taskReceived, taskToUpdate)
-            const repository = getEntityManager().getRepository(Task)
-            return repository.persist(taskToSave)
+            const repository = getManager().getRepository(Task)
+            return repository.save(taskToSave)
         } catch (e) {
             throw new TaskNotFoundException(e)
         }
@@ -60,9 +58,9 @@ export class TaskFacade {
     static async create(task: Task, taskListId: number): Promise<Task> {
         try {
             let taskToCreate = new Task()
-            taskToCreate = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'], 
+            taskToCreate = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'],
                                                          task, taskToCreate)
-            return getEntityManager().getRepository(Task).persist(taskToCreate)
+            return getManager().getRepository(Task).save(taskToCreate)
         } catch (e) {
             throw new TaskNotFoundException(e)
         }

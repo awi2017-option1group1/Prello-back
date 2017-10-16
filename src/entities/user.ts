@@ -14,19 +14,19 @@ export class User {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     lastname: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     firstname: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         unique: true
     })
     pseudo: string
@@ -41,16 +41,16 @@ export class User {
     notificationsEnabled: boolean
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         unique: true
     })
     email: string
 
-    @Column('string')
+    @Column('varchar')
     password: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     token: string

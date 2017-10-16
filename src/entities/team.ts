@@ -10,13 +10,13 @@ export class Team {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         unique: true
     })
     name: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     description: string

@@ -11,7 +11,7 @@ export class TaskList {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
     })
     title: string
 

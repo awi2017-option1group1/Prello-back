@@ -1,4 +1,4 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { ListNotFoundException } from './errors/ListNotFoundException'
 import { List } from '../entities/list'
@@ -8,11 +8,9 @@ import { ParamsExtractor } from './paramsExtractor'
 export class ListFacade {
 
     static async getAllFromBoardId(boardId: number): Promise<List[]> {
-        const lists = await getEntityManager()
+        const lists = await getManager()
                             .getRepository(List)
-                            .find({
-                                board: boardId
-                        })
+                            .find()
         if (lists) {
             return lists
         } else {
@@ -21,7 +19,7 @@ export class ListFacade {
     }
 
     static async getById(listId: number): Promise<List> {
-        const list = await getEntityManager()
+        const list = await getManager()
                             .getRepository(List)
                             .findOneById(listId)
         if (list) {
@@ -35,7 +33,7 @@ export class ListFacade {
         try {
             let listToInsert = new List()
             listToInsert = ParamsExtractor.extract<List>(['title', 'rank'], list, listToInsert)
-            return getEntityManager().getRepository(List).persist(listToInsert)
+            return getManager().getRepository(List).save(listToInsert)
         } catch (e) {
             throw new ListNotFoundException(e)
         }
@@ -44,8 +42,8 @@ export class ListFacade {
     static async update(listReceived: List, listToUpdate: List): Promise<List> {
         try {
             const listToSave = ParamsExtractor.extract<List>(['title', 'rank'], listReceived, listToUpdate)
-            const repository = getEntityManager().getRepository(List)
-            return repository.persist(listToSave)
+            const repository = getManager().getRepository(List)
+            return repository.save(listToSave)
         } catch (e) {
             throw new ListNotFoundException(e)
         }
@@ -54,7 +52,7 @@ export class ListFacade {
     static async delete(listId: number): Promise<boolean> {
         try {
             const list = await ListFacade.getById(listId)
-            const deletedList = await getEntityManager()
+            const deletedList = await getManager()
                     .getRepository(List)
                     .remove(list)
             if (deletedList) {

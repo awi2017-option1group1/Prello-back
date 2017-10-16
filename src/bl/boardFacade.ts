@@ -1,4 +1,4 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { BoardNotFoundException } from './errors/BoardNotFoundException'
 import { Board } from '../entities/board'
@@ -7,11 +7,9 @@ import { ParamsExtractor } from './paramsExtractor'
 export class BoardFacade {
 
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
-        const boards = await getEntityManager()
+        const boards = await getManager()
                             .getRepository(Board)
-                            .find({
-                                    team: teamId
-                            })
+                            .find()
         if (boards) {
             return boards
         } else {
@@ -20,7 +18,7 @@ export class BoardFacade {
     }
 
     static async getAllFromUserId(userId: number): Promise<Board[]> {
-        const boards = await getEntityManager()
+        const boards = await getManager()
                             .getRepository(Board)
                             .find({
                                 join: {
@@ -38,7 +36,7 @@ export class BoardFacade {
     }
 
     static async getById(boardId: number): Promise<Board> {
-        const board = await getEntityManager()
+        const board = await getManager()
                             .getRepository(Board)
                             .findOneById(boardId)
         if (board) {
@@ -51,7 +49,7 @@ export class BoardFacade {
     static async delete(boardId: number): Promise<boolean> {
         try {
             const boardToDelete = await BoardFacade.getById(boardId)
-            const deletedBoard = await getEntityManager()
+            const deletedBoard = await getManager()
                     .getRepository(Board)
                     .remove(boardToDelete)
             if (deletedBoard) {
@@ -67,8 +65,8 @@ export class BoardFacade {
     static async update(boardReceived: Board, boardToUpdate: Board): Promise<Board> {
         try {
             const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived, boardToUpdate)
-            const repository = getEntityManager().getRepository(Board)
-            return repository.persist(board)
+            const repository = getManager().getRepository(Board)
+            return repository.save(board)
         } catch (e) {
             throw new BoardNotFoundException(e)
         }
@@ -78,7 +76,7 @@ export class BoardFacade {
         try {
             let boardToCreate = new Board()
             boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board, boardToCreate)
-            return getEntityManager().getRepository(Board).persist(boardToCreate)
+            return getManager().getRepository(Board).save(boardToCreate)
         } catch (e) {
             throw new BoardNotFoundException(e)
         }

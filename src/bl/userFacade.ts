@@ -1,4 +1,4 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ParamsExtractor } from './paramsExtractor'
@@ -8,14 +8,14 @@ import { Password } from './password'
 
 export class UserFacade {
     static async authenticate(email: string, password: string): Promise<User>  {
-        const userRepository = await getEntityManager().getRepository(User)
+        const userRepository = await getManager().getRepository(User)
         const user = await userRepository.findOne({
             email
         })
         if (user && Password.compare(password, user.password)) {
             if (!user.token) {
                 user.token = uuidv4()
-                await userRepository.persist(user)
+                await userRepository.save(user)
             }
             return user
         } else {
@@ -24,7 +24,7 @@ export class UserFacade {
     }
 
     static async getAll(): Promise<User[]>  {
-        const users = await getEntityManager()
+        const users = await getManager()
                             .getRepository(User)
                             .find()
         if (users) {
@@ -35,11 +35,9 @@ export class UserFacade {
     }
 
     static async getAllFromTeamId(teamId: number): Promise<User[]> {
-        const users = await getEntityManager()
+        const users = await getManager()
                             .getRepository(User)
-                            .find({
-                                    team: teamId
-                            })
+                            .find()
         if (users) {
             return users
         } else {
@@ -48,7 +46,7 @@ export class UserFacade {
     }
 
     static async getById(userId: number): Promise<User> {
-        const user = await getEntityManager()
+        const user = await getManager()
                             .getRepository(User)
                             .findOneById(userId)
         if (user) {
@@ -61,7 +59,7 @@ export class UserFacade {
     static async delete(userId: number): Promise<boolean> {
         try {
             const userToDelete = await UserFacade.getById(userId)
-            const deletedUser = await getEntityManager()
+            const deletedUser = await getManager()
                     .getRepository(User)
                     .remove(userToDelete)
             if (deletedUser) {
@@ -80,8 +78,8 @@ export class UserFacade {
                                                              'notificationsEnabled', 'email', 'password', 'token'],
                                                              userReceived, userToUpdate)
 
-            const repository = getEntityManager().getRepository(User)
-            return repository.persist(userToSave)
+            const repository = getManager().getRepository(User)
+            return repository.save(userToSave)
         } catch (e) {
             throw new UserNotFoundException(e)
         }
@@ -93,7 +91,7 @@ export class UserFacade {
             userToCreate = ParamsExtractor.extract<User>(['firstname', 'lastname', 'biography',
                                                          'notificationsEnabled', 'email', 'password', 'token'],
                                                          user, userToCreate)
-            return getEntityManager().getRepository(User).persist(userToCreate)
+            return getManager().getRepository(User).save(userToCreate)
         } catch (e) {
             throw new UserNotFoundException(e)
         }

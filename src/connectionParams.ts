@@ -6,27 +6,22 @@ export interface MultipleConnections {
 
 export const connectionOptions: MultipleConnections = {
     'development': {
-        driver: {
-            type: 'postgres',
-            host: 'localhost',
-            port: 5434,
-            username: 'postgres',
-            password: 'root',
-            database: 'dev_prello',
-        },
-        autoSchemaSync: true,
+        name: 'development',
+        type: 'postgres',
+        host: 'localhost',
+        port: 5434,
+        username: 'postgres',
+        password: 'root',
+        database: 'dev_prello',
         entities: [
             `${__dirname}/entities/*.js`
         ],
-        logging: {
-            logQueries: true
-        }
+        logging: true
     },
     'production': {
-        driver: {
-            type: 'postgres',
-            url: process.env.DATABASE_URL
-        },
+        name: 'production',
+        type: 'postgres',
+        url: process.env.DATABASE_URL,
         entities: [
             `${__dirname}/entities/*.js`
         ],

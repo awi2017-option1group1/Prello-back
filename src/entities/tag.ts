@@ -15,12 +15,12 @@ export class Tag {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
     })
     label: string
 
     @IsIn(colors)
-    @Column('string')
+    @Column('varchar')
     color: string
 
 // ------------------------------------

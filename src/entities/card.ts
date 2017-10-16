@@ -13,12 +13,11 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column('varchar')
     title: string
 
     @Column({
         type: 'text',
-        length: 500,
         nullable: true
     })
     description: string

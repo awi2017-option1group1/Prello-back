@@ -1,4 +1,4 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { CardNotFoundException } from './errors/CardNotFoundException'
 import { Card } from '../entities/card'
@@ -7,11 +7,9 @@ import { ParamsExtractor } from './paramsExtractor'
 export class CardFacade {
 
     static async getAllFromListId(listId: number): Promise<Card[]> {
-        const cards = await getEntityManager()
+        const cards = await getManager()
                             .getRepository(Card)
-                            .find({
-                                    list: listId
-                            })
+                            .find()
         if (cards) {
             return cards
         } else {
@@ -20,7 +18,7 @@ export class CardFacade {
     }
 
     static async getById(cardId: number): Promise<Card> {
-        const card = await getEntityManager()
+        const card = await getManager()
                             .getRepository(Card)
                             .findOneById(cardId)
         if (card) {
@@ -33,7 +31,7 @@ export class CardFacade {
     static async delete(cardId: number): Promise<boolean> {
         try {
             const cardToDelete = await CardFacade.getById(cardId)
-            const deletedCard = await getEntityManager()
+            const deletedCard = await getManager()
                     .getRepository(Card)
                     .remove(cardToDelete)
             if (deletedCard) {
@@ -50,8 +48,8 @@ export class CardFacade {
         try {
             const cardToSave = ParamsExtractor.extract<Card>(['title', 'description', 'dueDate', 'rank'],
                                                              cardReceived, cardToUpdate)
-            const repository = getEntityManager().getRepository(Card)
-            return repository.persist(cardToSave)
+            const repository = getManager().getRepository(Card)
+            return repository.save(cardToSave)
         } catch (e) {
             throw new CardNotFoundException(e)
         }
@@ -60,9 +58,9 @@ export class CardFacade {
     static async create(card: Card, listId: number): Promise<Card> {
         try {
             let cardToCreate = new Card()
-            cardToCreate = ParamsExtractor.extract<Card>(['title', 'rank', 'description', 'dueDate'], 
+            cardToCreate = ParamsExtractor.extract<Card>(['title', 'rank', 'description', 'dueDate'],
                                                          card, cardToCreate)
-            return getEntityManager().getRepository(Card).persist(cardToCreate)
+            return getManager().getRepository(Card).save(cardToCreate)
         } catch (e) {
             throw new CardNotFoundException(e)
         }

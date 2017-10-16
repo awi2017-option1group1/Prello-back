@@ -1,4 +1,4 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { AttachementNotFoundException } from './errors/AttachementNotFoundException'
 import { Attachement } from '../entities/attachement'
@@ -7,11 +7,9 @@ import { ParamsExtractor } from './paramsExtractor'
 export class AttachementFacade {
 
     static async getAllFromCardId(cardId: number): Promise<Attachement[]> {
-        const attachements = await getEntityManager()
+        const attachements = await getManager()
                             .getRepository(Attachement)
-                            .find({
-                                    card: cardId
-                            })
+                            .find()
         if (attachements) {
             return attachements
         } else {
@@ -20,7 +18,7 @@ export class AttachementFacade {
     }
 
     static async getById(attachementId: number): Promise<Attachement> {
-        const attachement = await getEntityManager()
+        const attachement = await getManager()
                             .getRepository(Attachement)
                             .findOneById(attachementId)
         if (attachement) {
@@ -33,7 +31,7 @@ export class AttachementFacade {
     static async delete(attachementId: number): Promise<boolean> {
         try {
             const attachementToDelete = await AttachementFacade.getById(attachementId)
-            const deletedAttachement = await getEntityManager()
+            const deletedAttachement = await getManager()
                     .getRepository(Attachement)
                     .remove(attachementToDelete)
             if (deletedAttachement) {
@@ -51,7 +49,7 @@ export class AttachementFacade {
             let attachementToCreate = new Attachement()
             attachementToCreate = ParamsExtractor.extract<Attachement>(['type', 'URL', 'card'],
                                                                        attachement, attachementToCreate)
-            return getEntityManager().getRepository(Attachement).persist(attachementToCreate)
+            return getManager().getRepository(Attachement).save(attachementToCreate)
         } catch (e) {
             throw new AttachementNotFoundException(e)
         }

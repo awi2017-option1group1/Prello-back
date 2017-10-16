@@ -12,7 +12,7 @@ export class Board {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column('varchar')
     title: string
 
     @Column('boolean')
