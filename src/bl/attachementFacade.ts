@@ -7,24 +7,32 @@ import { ParamsExtractor } from './paramsExtractor'
 export class AttachementFacade {
 
     static async getAllFromCardId(cardId: number): Promise<Attachement[]> {
-        const attachements = await getManager()
-                            .getRepository(Attachement)
-                            .find()
-        if (attachements) {
-            return attachements
-        } else {
-            throw new AttachementNotFoundException('No Attachement was found')
+        try {
+            const attachements = await getManager()
+                        .getRepository(Attachement)
+                        .find()
+            if (attachements) {
+                return attachements
+            } else {
+                throw new AttachementNotFoundException('No Attachement was found')
+            }
+        } catch (e) {
+            throw new AttachementNotFoundException(e)
         }
     }
 
     static async getById(attachementId: number): Promise<Attachement> {
-        const attachement = await getManager()
+        try {
+            const attachement = await getManager()
                             .getRepository(Attachement)
                             .findOneById(attachementId)
-        if (attachement) {
-            return attachement
-        } else {
-            throw new AttachementNotFoundException('No Attachement was found')
+            if (attachement) {
+                return attachement
+            } else {
+                throw new AttachementNotFoundException('No Attachement was found')
+            }
+        } catch (e) {
+            throw new AttachementNotFoundException(e)
         }
     }
 

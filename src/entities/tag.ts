@@ -26,9 +26,13 @@ export class Tag {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToMany(type => Card, card => card.tags)
+    @ManyToMany(type => Card, card => card.tags, {
+        eager: true
+    })
     cards: Card[]
 
-    @ManyToMany(type => Board, board => board.tags)
+    @ManyToMany(type => Board, board => board.tags, {
+        eager: true
+    })
     boards: Board[]
  }

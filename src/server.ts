@@ -3,8 +3,8 @@ import * as compression from 'compression'
 import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
 
-import { createConnection } from 'typeorm'
-import  { connectionOptions } from './connectionParams'
+import { getConnectionManager, ConnectionManager } from 'typeorm'
+import { connectionOptions } from './connectionParams'
 import { Login } from './routes/user/login'
 import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
@@ -19,7 +19,7 @@ export const ENV = process.env.NODE_ENV || 'development'
 
 const app = express()
 
-app.set('port', process.env.PORT || 5000) 
+app.set('port', process.env.PORT || 5000)
 app.use(compression())
 app.use(cors())
 app.use(bodyParser.json())
@@ -62,11 +62,11 @@ app.delete('/users/:user_id', User.delete)
 app.post('/users', User.create)
 
 // ---------    List Routes   ---------
-app.get('/dashboards/:board_id/lists', List.getAllFromBoardId)
-app.get('/dashboards/:board_id/lists/:list_id', List.getOneById)
-app.post('/dashboards/:board_id/lists', List.insertFromBoardId)
-app.put('/dashboards/:board_id/lists/:list_id', List.update)
-app.delete('/dashboards/:board_id/lists/:list_id', List.delete)
+app.get('/boards/:board_id/lists', List.getAllFromBoardId)
+app.get('/boards/:board_id/lists/:list_id', List.getOneById)
+app.post('/boards/:board_id/lists', List.insertFromBoardId)
+app.put('/boards/:board_id/lists/:list_id', List.update)
+app.delete('/boards/:board_id/lists/:list_id', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:board_id', Board.getOneById)
@@ -104,7 +104,8 @@ app.put('/taskList', TaskList.update)
 app.delete('/taskList/:taskList_id', TaskList.delete)
 app.post('/taskList/:taskList_id', TaskList.create)
 
-createConnection(connectionOptions[ENV]).then(connection => {
+const connectionManager: ConnectionManager = getConnectionManager()
+connectionManager.create(connectionOptions[(ENV === 'development') ? 0 : 1]).connect().then(connection => {
     app.listen(app.get('port'), () => {
       console.log(('App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'))
       console.log('Press CTRL-C to stop\n')

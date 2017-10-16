@@ -58,7 +58,9 @@ export class User {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToMany(type => Team, team => team.users)
+    @ManyToMany(type => Team, team => team.users, {
+        eager: true
+    })
     @JoinTable({
         name: 'user_team',
         joinColumn: {
@@ -72,15 +74,21 @@ export class User {
     })
     teams: Team[]
 
-    @ManyToMany(type => Board, board => board.users)
+    @ManyToMany(type => Board, board => board.users, {
+        eager: true
+    })
     boards: Board[]
 
-    @OneToMany(type => Notification, notification => notification.user)
+    @OneToMany(type => Notification, notification => notification.user, {
+        eager: true
+    })
     notifications: Notification[]
 
     @OneToMany(type => Comment, comment => comment.user)
     comments: Comment
 
-    @OneToMany(type => Token, token => token.user)
+    @OneToMany(type => Token, token => token.user, {
+        eager: true
+    })
     tokens: Token[]
  }

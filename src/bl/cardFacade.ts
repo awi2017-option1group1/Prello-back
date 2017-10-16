@@ -3,13 +3,13 @@ import { getManager } from 'typeorm'
 import { CardNotFoundException } from './errors/CardNotFoundException'
 import { Card } from '../entities/card'
 import { ParamsExtractor } from './paramsExtractor'
+import { ListFacade } from './listFacade'
 
 export class CardFacade {
 
     static async getAllFromListId(listId: number): Promise<Card[]> {
-        const cards = await getManager()
-                            .getRepository(Card)
-                            .find()
+        const list = await ListFacade.getById(listId)
+        const cards = list.cards
         if (cards) {
             return cards
         } else {

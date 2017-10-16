@@ -33,7 +33,9 @@ export class Card {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToMany(type => Tag, tag => tag.cards)
+    @ManyToMany(type => Tag, tag => tag.cards, {
+        eager: true
+    })
     @JoinTable({
         name: 'card_tags',
         joinColumn: {
@@ -50,12 +52,18 @@ export class Card {
     @ManyToOne(type => List, list => list.cards)
     list: List
 
-    @OneToMany(type => TaskList, taskList => taskList.card)
+    @OneToMany(type => TaskList, taskList => taskList.card, {
+        eager: true
+    })
     tasksList: TaskList[]
 
-    @OneToMany(type => Comment, comment => comment.card)
+    @OneToMany(type => Comment, comment => comment.card, {
+        eager: true
+    })
     comments: Comment[]
 
-    @OneToMany(type => Attachement, attachement => attachement.card )
+    @OneToMany(type => Attachement, attachement => attachement.card, {
+        eager: true
+    })
     attachements: Attachement[]
  }

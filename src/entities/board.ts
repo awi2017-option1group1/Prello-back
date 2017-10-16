@@ -24,7 +24,9 @@ export class Board {
     @ManyToOne(type => Team, team => team.users)
     team: Team
 
-    @ManyToMany(type => User, user => user.boards)
+    @ManyToMany(type => User, user => user.boards, {
+        eager: true
+    })
     @JoinTable({
         name: 'user_board',
         joinColumn: {
@@ -38,10 +40,14 @@ export class Board {
     })
     users: User[]
 
-    @OneToMany(type => List, list => list.board)
+    @OneToMany(type => List, list => list.board, {
+        eager: true
+    })
     lists: List[]
 
-    @ManyToMany(type => Tag, tag => tag.boards)
+    @ManyToMany(type => Tag, tag => tag.boards, {
+        eager: true
+    })
     @JoinTable({
         name: 'board_tag',
         joinColumn: {

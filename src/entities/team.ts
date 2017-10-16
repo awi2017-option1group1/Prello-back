@@ -27,9 +27,13 @@ export class Team {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToMany(type => User, user => user.teams)
+    @ManyToMany(type => User, user => user.teams, {
+        eager: true
+    })
     users: User[]
 
-    @OneToMany(type => Board, board => board.team)
+    @OneToMany(type => Board, board => board.team, {
+        eager: true
+    })
     boards: Board[]
  }

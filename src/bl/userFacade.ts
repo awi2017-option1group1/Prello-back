@@ -1,4 +1,4 @@
-import { getManager } from 'typeorm'
+import { getManager, getRepository } from 'typeorm'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ParamsExtractor } from './paramsExtractor'
@@ -24,8 +24,7 @@ export class UserFacade {
     }
 
     static async getAll(): Promise<User[]>  {
-        const users = await getManager()
-                            .getRepository(User)
+        const users = await getRepository(User)
                             .find()
         if (users) {
             return users
