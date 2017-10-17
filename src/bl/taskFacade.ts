@@ -30,10 +30,9 @@ export class TaskFacade {
 
     static async delete(taskId: number): Promise<boolean> {
         try {
-            const taskToDelete = await TaskFacade.getById(taskId)
             const deletionSuccess = await getManager()
                     .getRepository(Task)
-                    .remove(taskToDelete)
+                    .removeById(taskId)
             if (deletionSuccess) {
                 return true
             } else {

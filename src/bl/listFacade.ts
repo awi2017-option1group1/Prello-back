@@ -51,10 +51,9 @@ export class ListFacade {
 
     static async delete(listId: number): Promise<boolean> {
         try {
-            const list = await ListFacade.getById(listId)
             const deletionSuccess = await getManager()
                     .getRepository(List)
-                    .remove(list)
+                    .removeById(listId)
             if (deletionSuccess) {
                 return true
             } else {

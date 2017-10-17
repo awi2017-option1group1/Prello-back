@@ -48,10 +48,9 @@ export class BoardFacade {
 
     static async delete(boardId: number): Promise<boolean> {
         try {
-            const boardToDelete = await BoardFacade.getById(boardId)
             const deletionSuccess = await getManager()
                     .getRepository(Board)
-                    .remove(boardToDelete)
+                    .removeById(boardId)
             if (deletionSuccess) {
                 return true
             } else {

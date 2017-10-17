@@ -57,10 +57,9 @@ export class UserFacade {
 
     static async delete(userId: number): Promise<boolean> {
         try {
-            const userToDelete = await UserFacade.getById(userId)
             const deletionSuccess = await getManager()
                     .getRepository(User)
-                    .remove(userToDelete)
+                    .removeById(userId)
             if (deletionSuccess) {
                 return true
             } else {
