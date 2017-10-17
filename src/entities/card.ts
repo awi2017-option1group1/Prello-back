@@ -55,7 +55,7 @@ export class Card {
     @OneToMany(type => TaskList, taskList => taskList.card, {
         eager: true
     })
-    tasksList: TaskList[]
+    tasksLists: TaskList[]
 
     @OneToMany(type => Comment, comment => comment.card, {
         eager: true

@@ -3,14 +3,13 @@ import { getManager } from 'typeorm'
 import { AttachementNotFoundException } from './errors/AttachementNotFoundException'
 import { Attachement } from '../entities/attachement'
 import { ParamsExtractor } from './paramsExtractor'
-
+import { CardFacade } from './cardFacade'
 export class AttachementFacade {
 
     static async getAllFromCardId(cardId: number): Promise<Attachement[]> {
         try {
-            const attachements = await getManager()
-                        .getRepository(Attachement)
-                        .find()
+            const card = await CardFacade.getById(cardId)
+            const attachements = card.attachements
             if (attachements) {
                 return attachements
             } else {
@@ -56,6 +55,7 @@ export class AttachementFacade {
             let attachementToCreate = new Attachement()
             attachementToCreate = ParamsExtractor.extract<Attachement>(['type', 'URL', 'card'],
                                                                        attachement, attachementToCreate)
+            attachementToCreate.card = await CardFacade.getById(cardId)
             return getManager().getRepository(Attachement).save(attachementToCreate)
         } catch (e) {
             throw new AttachementNotFoundException(e)

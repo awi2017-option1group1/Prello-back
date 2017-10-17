@@ -2,15 +2,14 @@ import { getManager } from 'typeorm'
 
 import { ListNotFoundException } from './errors/ListNotFoundException'
 import { List } from '../entities/list'
-
+import { BoardFacade } from './boardFacade'
 import { ParamsExtractor } from './paramsExtractor'
 
 export class ListFacade {
 
     static async getAllFromBoardId(boardId: number): Promise<List[]> {
-        const lists = await getManager()
-                            .getRepository(List)
-                            .find()
+        const board = await BoardFacade.getById(boardId)
+        const lists = board.lists
         if (lists) {
             return lists
         } else {
@@ -33,6 +32,7 @@ export class ListFacade {
         try {
             let listToInsert = new List()
             listToInsert = ParamsExtractor.extract<List>(['title', 'rank'], list, listToInsert)
+            listToInsert.board = await BoardFacade.getById(boardId)
             return getManager().getRepository(List).save(listToInsert)
         } catch (e) {
             throw new ListNotFoundException(e)

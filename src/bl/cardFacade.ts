@@ -59,6 +59,7 @@ export class CardFacade {
             let cardToCreate = new Card()
             cardToCreate = ParamsExtractor.extract<Card>(['title', 'rank', 'description', 'dueDate'],
                                                          card, cardToCreate)
+            cardToCreate.list = await ListFacade.getById(listId)
             return getManager().getRepository(Card).save(cardToCreate)
         } catch (e) {
             throw new CardNotFoundException(e)

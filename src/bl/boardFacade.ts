@@ -3,13 +3,18 @@ import { getManager } from 'typeorm'
 import { BoardNotFoundException } from './errors/BoardNotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractor'
+import { UserFacade } from './userFacade'
 
 export class BoardFacade {
 
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
         const boards = await getManager()
                             .getRepository(Board)
-                            .find()
+                            .find({
+                                where: {
+                                    'teamId': teamId
+                                }
+                            })
         if (boards) {
             return boards
         } else {
@@ -18,16 +23,8 @@ export class BoardFacade {
     }
 
     static async getAllFromUserId(userId: number): Promise<Board[]> {
-        const boards = await getManager()
-                            .getRepository(Board)
-                            .find({
-                                join: {
-                                    alias: 'user',
-                                    leftJoinAndSelect: {
-                                        'user_id': 'user.id'
-                                    }
-                                }
-                            })
+        const user = await UserFacade.getById(userId)
+        const boards = user.boards
         if (boards) {
             return boards
         } else {
