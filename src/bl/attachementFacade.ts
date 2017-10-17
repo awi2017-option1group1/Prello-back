@@ -39,10 +39,10 @@ export class AttachementFacade {
     static async delete(attachementId: number): Promise<boolean> {
         try {
             const attachementToDelete = await AttachementFacade.getById(attachementId)
-            const deletedAttachement = await getManager()
+            const deletionSuccess = await getManager()
                     .getRepository(Attachement)
                     .remove(attachementToDelete)
-            if (deletedAttachement) {
+            if (deletionSuccess) {
                 return true
             } else {
                 return false

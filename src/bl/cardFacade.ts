@@ -31,10 +31,10 @@ export class CardFacade {
     static async delete(cardId: number): Promise<boolean> {
         try {
             const cardToDelete = await CardFacade.getById(cardId)
-            const deletedCard = await getManager()
+            const deletionSuccess = await getManager()
                     .getRepository(Card)
                     .remove(cardToDelete)
-            if (deletedCard) {
+            if (deletionSuccess) {
                 return true
             } else {
                 return false
