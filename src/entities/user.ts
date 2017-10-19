@@ -79,7 +79,7 @@ export class User {
     notifications: Notification[]
 
     @OneToMany(type => Comment, comment => comment.user)
-    comments: Comment
+    comments: Comment[]
 
     @OneToMany(type => Token, token => token.user)
     tokens: Token[]
