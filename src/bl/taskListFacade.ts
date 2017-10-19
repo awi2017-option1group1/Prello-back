@@ -1,6 +1,6 @@
 import { getEntityManager } from 'typeorm'
 
-import { TaskListNotFoundException } from './errors/TaskListNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { TaskList } from '../entities/taskList'
 import { ParamsExtractor } from './paramsExtractor'
 
@@ -15,7 +15,7 @@ export class TaskListFacade {
         if (taskLists) {
             return taskLists
         } else {
-            throw new TaskListNotFoundException('No Task List was found')
+            throw new NotFoundException('No Task List was found')
         }
     }
 
@@ -26,7 +26,7 @@ export class TaskListFacade {
         if (taskList) {
             return taskList
         } else {
-            throw new TaskListNotFoundException('No Task List was found')
+            throw new NotFoundException('No Task List was found')
         }
     }
 
@@ -42,7 +42,7 @@ export class TaskListFacade {
                 return false
             }
         } catch (e) {
-            throw new TaskListNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -52,7 +52,7 @@ export class TaskListFacade {
             const repository = getEntityManager().getRepository(TaskList)
             return repository.persist(taskListToSave)
         } catch (e) {
-            throw new TaskListNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -62,7 +62,7 @@ export class TaskListFacade {
             taskListToCreate = ParamsExtractor.extract<TaskList>(['title', 'card'], taskList, taskListToCreate)
             return getEntityManager().getRepository(TaskList).persist(taskListToCreate)
         } catch (e) {
-            throw new TaskListNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 }

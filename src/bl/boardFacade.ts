@@ -1,6 +1,6 @@
 import { getEntityManager } from 'typeorm'
 
-import { BoardNotFoundException } from './errors/BoardNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractor'
 
@@ -15,7 +15,7 @@ export class BoardFacade {
         if (boards) {
             return boards
         } else {
-            throw new BoardNotFoundException('No Board was found')
+            throw new NotFoundException('No Board was found')
         }
     }
 
@@ -33,7 +33,7 @@ export class BoardFacade {
         if (boards) {
             return boards
         } else {
-            throw new BoardNotFoundException('No Board was found')
+            throw new NotFoundException('No Board was found')
         }
     }
 
@@ -44,7 +44,7 @@ export class BoardFacade {
         if (board) {
             return board
         } else {
-            throw new BoardNotFoundException('No Board was found')
+            throw new NotFoundException('No Board was found')
         }
     }
 
@@ -60,7 +60,7 @@ export class BoardFacade {
                 return false
             }
         } catch (e) {
-            throw new BoardNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -70,7 +70,7 @@ export class BoardFacade {
             const repository = getEntityManager().getRepository(Board)
             return repository.persist(board)
         } catch (e) {
-            throw new BoardNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -80,7 +80,7 @@ export class BoardFacade {
             boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board, boardToCreate)
             return getEntityManager().getRepository(Board).persist(boardToCreate)
         } catch (e) {
-            throw new BoardNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 }
