@@ -52,11 +52,9 @@ export class AttachementFacade {
 
     static async create(attachement: Attachement, cardId: number): Promise<Attachement> {
         try {
-            let attachementToCreate = new Attachement()
-            attachementToCreate = ParamsExtractor.extract<Attachement>(['type', 'URL', 'card'],
-                                                                       attachement, attachementToCreate)
+            let attachementToCreate = ParamsExtractor.extract<Attachement>(['type', 'URL', 'card'], attachement)
             attachementToCreate.card = await CardFacade.getById(cardId)
-            return getManager().getRepository(Attachement).save(attachementToCreate)
+            return getManager().getRepository(Attachement).create(attachementToCreate)
         } catch (e) {
             throw new AttachementNotFoundException(e)
         }

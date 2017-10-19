@@ -30,20 +30,19 @@ export class ListFacade {
 
     static async insertFromBoardId(boardId: number, list: List): Promise<List> {
         try {
-            let listToInsert = new List()
-            listToInsert = ParamsExtractor.extract<List>(['title', 'rank'], list, listToInsert)
+            let listToInsert = ParamsExtractor.extract<List>(['title', 'rank'], list)
             listToInsert.board = await BoardFacade.getById(boardId)
-            return getManager().getRepository(List).save(listToInsert)
+            return getManager().getRepository(List).create(listToInsert)
         } catch (e) {
             throw new ListNotFoundException(e)
         }
     }
 
-    static async update(listReceived: List, listToUpdate: List): Promise<List> {
+    static async update(listReceived: List): Promise<void> {
         try {
-            const listToSave = ParamsExtractor.extract<List>(['title', 'rank'], listReceived, listToUpdate)
+            const listToSave = ParamsExtractor.extract<List>(['title', 'rank'], listReceived)
             const repository = getManager().getRepository(List)
-            return repository.save(listToSave)
+            return repository.updateById(listReceived.id, listToSave)
         } catch (e) {
             throw new ListNotFoundException(e)
         }

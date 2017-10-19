@@ -32,8 +32,6 @@ export class Team {
     })
     users: User[]
 
-    @OneToMany(type => Board, board => board.team, {
-        eager: true
-    })
-    boards: Board[]
+    @OneToMany(type => Board, board => board.team)
+    boards: Promise<Board[]>
  }

@@ -25,7 +25,7 @@ export class Board {
     team: Team
 
     @ManyToMany(type => User, user => user.boards, {
-        eager: true
+        eager : true
     })
     @JoinTable({
         name: 'user_board',
@@ -45,9 +45,7 @@ export class Board {
     })
     lists: List[]
 
-    @ManyToMany(type => Tag, tag => tag.boards, {
-        eager: true
-    })
+    @ManyToMany(type => Tag, tag => tag.board)
     @JoinTable({
         name: 'board_tag',
         joinColumn: {
@@ -59,5 +57,5 @@ export class Board {
             referencedColumnName: 'id'
         },
     })
-    tags: Tag[]
+    tags: Promise<Tag[]>
  }

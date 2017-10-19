@@ -18,7 +18,7 @@ export class TaskList {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.tasksList)
+    @ManyToOne(type => Card, card => card.tasksLists)
     card: Card
 
     @OneToMany(type => Task, task => task.taskList, {

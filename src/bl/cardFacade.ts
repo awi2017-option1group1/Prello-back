@@ -43,12 +43,11 @@ export class CardFacade {
         }
     }
 
-    static async update(cardReceived: Card, cardToUpdate: Card): Promise<Card> {
+    static async update(cardReceived: Card): Promise<void> {
         try {
-            const cardToSave = ParamsExtractor.extract<Card>(['title', 'description', 'dueDate', 'rank'],
-                                                             cardReceived, cardToUpdate)
+            const cardToSave = ParamsExtractor.extract<Card>(['title', 'description', 'dueDate', 'rank'], cardReceived)
             const repository = getManager().getRepository(Card)
-            return repository.save(cardToSave)
+            return repository.updateById(cardReceived.id, cardToSave)
         } catch (e) {
             throw new CardNotFoundException(e)
         }
@@ -56,9 +55,7 @@ export class CardFacade {
 
     static async create(card: Card, listId: number): Promise<Card> {
         try {
-            let cardToCreate = new Card()
-            cardToCreate = ParamsExtractor.extract<Card>(['title', 'rank', 'description', 'dueDate'],
-                                                         card, cardToCreate)
+            let cardToCreate = ParamsExtractor.extract<Card>(['title', 'rank', 'description', 'dueDate'], card)
             cardToCreate.list = await ListFacade.getById(listId)
             return getManager().getRepository(Card).save(cardToCreate)
         } catch (e) {

@@ -43,11 +43,11 @@ export class TaskListFacade {
         }
     }
 
-    static async update(taskListReceived: TaskList, taskListToUpdate: TaskList): Promise<TaskList> {
+    static async update(taskListReceived: TaskList, taskListToUpdate: TaskList): Promise<void> {
         try {
-            const taskListToSave = ParamsExtractor.extract<TaskList>(['title'], taskListReceived, taskListToUpdate)
+            const taskListToSave = ParamsExtractor.extract<TaskList>(['title'], taskListReceived)
             const repository = getManager().getRepository(TaskList)
-            return repository.save(taskListToSave)
+            return repository.updateById(taskListReceived.id, taskListToSave)
         } catch (e) {
             throw new TaskListNotFoundException(e)
         }
@@ -55,10 +55,9 @@ export class TaskListFacade {
 
     static async create(taskList: TaskList, cardId: number): Promise<TaskList> {
         try {
-            let taskListToCreate = new TaskList()
-            taskListToCreate = ParamsExtractor.extract<TaskList>(['title', 'card'], taskList, taskListToCreate)
+            let taskListToCreate = ParamsExtractor.extract<TaskList>(['title', 'card'], taskList)
             taskListToCreate.card = await CardFacade.getById(cardId)
-            return getManager().getRepository(TaskList).save(taskListToCreate)
+            return getManager().getRepository(TaskList).create(taskListToCreate)
         } catch (e) {
             throw new TaskListNotFoundException(e)
         }

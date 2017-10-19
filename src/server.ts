@@ -12,7 +12,7 @@ import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
 import { Attachement } from './routes/attachement/attachement'
 import { TaskList } from './routes/taskList/taskList'
-import { RequesterFactory } from './bl/requester'
+// import { RequesterFactory } from './bl/requester'
 import { List } from './routes/list/list'
 
 export const ENV = process.env.NODE_ENV || 'development'
@@ -24,7 +24,7 @@ app.use(compression())
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
+/*
 app.use('*', (req, res, next) => {
     const auth = req.get('authorization')
     if (auth) {
@@ -37,10 +37,10 @@ app.use('*', (req, res, next) => {
         req.requester = RequesterFactory.empty
         next()
     }
-})
+})*/
 
 app.get('/', (req, res) => {
-    return 'Hello World !'
+    res.send('Hello world')
 })
 
 app.get('/protected', (req, res) => {

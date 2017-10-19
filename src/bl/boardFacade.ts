@@ -58,11 +58,11 @@ export class BoardFacade {
         }
     }
 
-    static async update(boardReceived: Board, boardToUpdate: Board): Promise<Board> {
+    static async update(boardReceived: Board): Promise<void> {
         try {
-            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived, boardToUpdate)
+            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
             const repository = getManager().getRepository(Board)
-            return repository.save(board)
+            return repository.updateById(boardReceived.id, board)
         } catch (e) {
             throw new BoardNotFoundException(e)
         }
@@ -70,9 +70,8 @@ export class BoardFacade {
 
     static async create(board: Board): Promise<Board> {
         try {
-            let boardToCreate = new Board()
-            boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board, boardToCreate)
-            return getManager().getRepository(Board).save(boardToCreate)
+            let boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board)
+            return getManager().getRepository(Board).create(boardToCreate)
         } catch (e) {
             throw new BoardNotFoundException(e)
         }

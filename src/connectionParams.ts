@@ -1,12 +1,7 @@
 import { ConnectionOptions } from 'typeorm'
 
-export interface MultipleConnections {
-    [key: string]: ConnectionOptions
-}
-
-export const connectionOptions: MultipleConnections = {
-    'development': {
-        name: 'development',
+export const connectionOptions: ConnectionOptions[] = [
+    {
         type: 'postgres',
         host: 'localhost',
         port: 5434,
@@ -16,14 +11,14 @@ export const connectionOptions: MultipleConnections = {
         entities: [
             `${__dirname}/entities/*.js`
         ],
+        synchronize: true,
         logging: true
     },
-    'production': {
-        name: 'production',
+    {
         type: 'postgres',
         url: process.env.DATABASE_URL,
         entities: [
             `${__dirname}/entities/*.js`
         ],
     }
-}
+]
