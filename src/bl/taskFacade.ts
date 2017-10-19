@@ -1,6 +1,6 @@
 import { getEntityManager } from 'typeorm'
 
-import { TaskNotFoundException } from './errors/TaskNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { Task } from '../entities/task'
 import { ParamsExtractor } from './paramsExtractor'
 
@@ -15,7 +15,7 @@ export class TaskFacade {
         if (tasks) {
             return tasks
         } else {
-            throw new TaskNotFoundException('No Task was found')
+            throw new NotFoundException('No Task was found')
         }
     }
 
@@ -26,7 +26,7 @@ export class TaskFacade {
         if (task) {
             return task
         } else {
-            throw new TaskNotFoundException('No Task was found')
+            throw new NotFoundException('No Task was found')
         }
     }
 
@@ -42,7 +42,7 @@ export class TaskFacade {
                 return false
             }
         } catch (e) {
-            throw new TaskNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -53,7 +53,7 @@ export class TaskFacade {
             const repository = getEntityManager().getRepository(Task)
             return repository.persist(taskToSave)
         } catch (e) {
-            throw new TaskNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -64,7 +64,7 @@ export class TaskFacade {
                                                          task, taskToCreate)
             return getEntityManager().getRepository(Task).persist(taskToCreate)
         } catch (e) {
-            throw new TaskNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 }

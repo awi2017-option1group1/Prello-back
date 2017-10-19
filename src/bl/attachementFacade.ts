@@ -1,6 +1,6 @@
 import { getEntityManager } from 'typeorm'
 
-import { AttachementNotFoundException } from './errors/AttachementNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { Attachement } from '../entities/attachement'
 import { ParamsExtractor } from './paramsExtractor'
 
@@ -15,7 +15,7 @@ export class AttachementFacade {
         if (attachements) {
             return attachements
         } else {
-            throw new AttachementNotFoundException('No Attachement was found')
+            throw new NotFoundException('No Attachement was found')
         }
     }
 
@@ -26,7 +26,7 @@ export class AttachementFacade {
         if (attachement) {
             return attachement
         } else {
-            throw new AttachementNotFoundException('No Attachement was found')
+            throw new NotFoundException('No Attachement was found')
         }
     }
 
@@ -42,7 +42,7 @@ export class AttachementFacade {
                 return false
             }
         } catch (e) {
-            throw new AttachementNotFoundException(e)
+            throw new NotFoundException('No Attachement was found')
         }
     }
 
@@ -53,7 +53,7 @@ export class AttachementFacade {
                                                                        attachement, attachementToCreate)
             return getEntityManager().getRepository(Attachement).persist(attachementToCreate)
         } catch (e) {
-            throw new AttachementNotFoundException(e)
+            throw new NotFoundException('No Attachement was found')
         }
     }
 }
