@@ -2,7 +2,7 @@ import { getManager, getRepository } from 'typeorm'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ParamsExtractor } from './paramsExtractor'
-import { UserNotFoundException } from './errors/UserNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { User } from '../entities/user'
 import { Password } from './password'
 
@@ -19,7 +19,7 @@ export class UserFacade {
             }
             return user
         } else {
-            throw new UserNotFoundException('Password and email did not match')
+            throw new NotFoundException('Password and email did not match')
         }
     }
 
@@ -29,7 +29,7 @@ export class UserFacade {
         if (users) {
             return users
         } else {
-            throw new UserNotFoundException('No User was found')
+            throw new NotFoundException('No User was found')
         }
     }
 
@@ -40,7 +40,7 @@ export class UserFacade {
         if (users) {
             return users
         } else {
-            throw new UserNotFoundException('No User was found')
+            throw new NotFoundException('No User was found')
         }
     }
 
@@ -51,7 +51,7 @@ export class UserFacade {
         if (user) {
             return user
         } else {
-            throw new UserNotFoundException('No User was found')
+            throw new NotFoundException('No User was found')
         }
     }
 
@@ -66,7 +66,7 @@ export class UserFacade {
                 return false
             }
         } catch (e) {
-            throw new UserNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -78,7 +78,7 @@ export class UserFacade {
             const repository = getManager().getRepository(User)
             return repository.updateById(userReceived.id, userToSave)
         } catch (e) {
-            throw new UserNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -89,7 +89,7 @@ export class UserFacade {
                                                              user)
             return getManager().getRepository(User).create(userToCreate)
         } catch (e) {
-            throw new UserNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 

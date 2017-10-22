@@ -1,6 +1,6 @@
 import { getManager } from 'typeorm'
 
-import { CardNotFoundException } from './errors/CardNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { Card } from '../entities/card'
 import { ParamsExtractor } from './paramsExtractor'
 import { ListFacade } from './listFacade'
@@ -13,7 +13,7 @@ export class CardFacade {
         if (cards) {
             return cards
         } else {
-            throw new CardNotFoundException('No Card was found')
+            throw new NotFoundException('No Card was found')
         }
     }
 
@@ -24,7 +24,7 @@ export class CardFacade {
         if (card) {
             return card
         } else {
-            throw new CardNotFoundException('No Card was found')
+            throw new NotFoundException('No Card was found')
         }
     }
 
@@ -39,7 +39,7 @@ export class CardFacade {
                 return false
             }
         } catch (e) {
-            throw new CardNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -49,7 +49,7 @@ export class CardFacade {
             const repository = getManager().getRepository(Card)
             return repository.updateById(cardReceived.id, cardToSave)
         } catch (e) {
-            throw new CardNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -59,7 +59,7 @@ export class CardFacade {
             cardToCreate.list = await ListFacade.getById(listId)
             return getManager().getRepository(Card).save(cardToCreate)
         } catch (e) {
-            throw new CardNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 }
