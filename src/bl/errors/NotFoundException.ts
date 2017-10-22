@@ -1,6 +1,6 @@
 import { BaseError } from './BaseError'
 
-export class TaskNotFoundException extends BaseError {
+export class NotFoundException extends BaseError {
     constructor(message: string) {
         super(message)
     }

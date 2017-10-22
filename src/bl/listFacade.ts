@@ -1,6 +1,6 @@
 import { getManager } from 'typeorm'
 
-import { ListNotFoundException } from './errors/ListNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { List } from '../entities/list'
 import { BoardFacade } from './boardFacade'
 import { ParamsExtractor } from './paramsExtractor'
@@ -13,7 +13,7 @@ export class ListFacade {
         if (lists) {
             return lists
         } else {
-            throw new ListNotFoundException('No Board was found')
+            throw new NotFoundException('No Board was found')
         }
     }
 
@@ -24,7 +24,7 @@ export class ListFacade {
         if (list) {
             return list
         } else {
-            throw new ListNotFoundException('No Board was found')
+            throw new NotFoundException('No Board was found')
         }
     }
 
@@ -34,7 +34,7 @@ export class ListFacade {
             listToInsert.board = await BoardFacade.getById(boardId)
             return getManager().getRepository(List).create(listToInsert)
         } catch (e) {
-            throw new ListNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -44,7 +44,7 @@ export class ListFacade {
             const repository = getManager().getRepository(List)
             return repository.updateById(listReceived.id, listToSave)
         } catch (e) {
-            throw new ListNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -59,7 +59,7 @@ export class ListFacade {
                 return false
             }
         } catch (e) {
-            throw new ListNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 

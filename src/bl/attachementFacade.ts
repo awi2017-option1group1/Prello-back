@@ -1,6 +1,6 @@
 import { getManager } from 'typeorm'
 
-import { AttachementNotFoundException } from './errors/AttachementNotFoundException'
+import { NotFoundException } from './errors/NotFoundException'
 import { Attachement } from '../entities/attachement'
 import { ParamsExtractor } from './paramsExtractor'
 import { CardFacade } from './cardFacade'
@@ -46,7 +46,7 @@ export class AttachementFacade {
                 return false
             }
         } catch (e) {
-            throw new AttachementNotFoundException(e)
+            throw new NotFoundException('No Attachement was found')
         }
     }
 
@@ -56,7 +56,7 @@ export class AttachementFacade {
             attachementToCreate.card = await CardFacade.getById(cardId)
             return getManager().getRepository(Attachement).create(attachementToCreate)
         } catch (e) {
-            throw new AttachementNotFoundException(e)
+            throw new NotFoundException('No Attachement was found')
         }
     }
 }
