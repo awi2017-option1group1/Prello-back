@@ -105,7 +105,7 @@ app.delete('/taskList/:taskList_id', TaskList.delete)
 app.post('/taskList/:taskList_id', TaskList.create)
 
 const connectionManager: ConnectionManager = getConnectionManager()
-connectionManager.create(connectionOptions[(ENV === 'development') ? 0 : 1]).connect().then(connection => {
+connectionManager.create(connectionOptions[ENV]).connect().then(connection => {
     app.listen(app.get('port'), () => {
       console.log(('App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'))
       console.log('Press CTRL-C to stop\n')
