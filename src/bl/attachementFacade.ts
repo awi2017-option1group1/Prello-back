@@ -13,10 +13,10 @@ export class AttachementFacade {
             if (attachements) {
                 return attachements
             } else {
-                throw new AttachementNotFoundException('No Attachement was found')
+                throw new NotFoundException('No Attachement was found')
             }
         } catch (e) {
-            throw new AttachementNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
@@ -28,10 +28,10 @@ export class AttachementFacade {
             if (attachement) {
                 return attachement
             } else {
-                throw new AttachementNotFoundException('No Attachement was found')
+                throw new NotFoundException('No Attachement was found')
             }
         } catch (e) {
-            throw new AttachementNotFoundException(e)
+            throw new NotFoundException(e)
         }
     }
 
