@@ -30,5 +30,5 @@ export class Tag {
     cards: Promise<Card[]>
 
     @ManyToMany(type => Board, board => board.tags, )
-    board: Board[]
+    board: Promise<Board[]>
  }

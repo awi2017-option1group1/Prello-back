@@ -21,8 +21,6 @@ export class TaskList {
     @ManyToOne(type => Card, card => card.tasksLists)
     card: Card
 
-    @OneToMany(type => Task, task => task.taskList, {
-        eager: true
-    })
-    tasks: Task[]
+    @OneToMany(type => Task, task => task.taskList)
+    tasks: Promise<Task[]>
  }

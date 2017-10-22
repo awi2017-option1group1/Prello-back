@@ -23,10 +23,8 @@ export class List {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @OneToMany(type => Card, card => card.list, {
-        eager: true
-    })
-    cards: Card[]
+    @OneToMany(type => Card, card => card.list)
+    cards: Promise<Card[]>
 
     @ManyToOne(type => Board, board => board.lists)
     board: Board

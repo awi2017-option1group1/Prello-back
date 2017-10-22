@@ -75,14 +75,12 @@ export class User {
     @ManyToMany(type => Board, board => board.users)
     boards: Promise<Board[]>
 
-    @OneToMany(type => Notification, notification => notification.user, {
-        eager: false
-    })
-    notifications: Notification[]
+    @OneToMany(type => Notification, notification => notification.user)
+    notifications: Promise<Notification[]>
 
     @OneToMany(type => Comment, comment => comment.user)
     comments: Comment
 
     @OneToMany(type => Token, token => token.user)
-    tokens: Token[]
+    tokens: Promise<Token[]>
  }
