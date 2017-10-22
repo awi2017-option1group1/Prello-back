@@ -11,7 +11,7 @@ export class List {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
     })
     title: string
 
@@ -24,7 +24,7 @@ export class List {
 //            EXTERNAL LINKS
 // ------------------------------------
     @OneToMany(type => Card, card => card.list)
-    cards: Card[]
+    cards: Promise<Card[]>
 
     @ManyToOne(type => Board, board => board.lists)
     board: Board

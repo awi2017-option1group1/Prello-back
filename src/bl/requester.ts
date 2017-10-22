@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken'
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { User } from '../entities/user'
 import { encryptionKey } from '../config'
@@ -10,7 +10,7 @@ class TokenContent {
 }
 
 export interface Requester {
-    
+
     hasUID(userId: number): boolean
 
 }
@@ -39,7 +39,7 @@ export class RequesterFactory {
 
     static async fromJWT(jwtToken: string): Promise<Requester> {
         const jwtTokenContent = <TokenContent> jwt.verify(jwtToken, encryptionKey)
-        const user = await getEntityManager().getRepository(User).findOne({
+        const user = await getManager().getRepository(User).findOne({
             token: jwtTokenContent.token
         })
         if (user) {

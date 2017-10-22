@@ -1,33 +1,18 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractor'
+import { UserFacade } from './userFacade'
 
 export class BoardFacade {
 
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
-        const boards = await getEntityManager()
+        const boards = await getManager()
                             .getRepository(Board)
                             .find({
-                                    team: teamId
-                            })
-        if (boards) {
-            return boards
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
-    }
-
-    static async getAllFromUserId(userId: number): Promise<Board[]> {
-        const boards = await getEntityManager()
-                            .getRepository(Board)
-                            .find({
-                                join: {
-                                    alias: 'user',
-                                    leftJoinAndSelect: {
-                                        'user_id': 'user.id'
-                                    }
+                                where: {
+                                    'teamId': teamId
                                 }
                             })
         if (boards) {
@@ -37,8 +22,18 @@ export class BoardFacade {
         }
     }
 
+    static async getAllFromUserId(userId: number): Promise<Board[]> {
+        const user = await UserFacade.getById(userId)
+        const boards = user.boards
+        if (boards) {
+            return boards
+        } else {
+            throw new NotFoundException('No Board was found')
+        }
+    }
+
     static async getById(boardId: number): Promise<Board> {
-        const board = await getEntityManager()
+        const board = await getManager()
                             .getRepository(Board)
                             .findOneById(boardId)
         if (board) {
@@ -50,11 +45,10 @@ export class BoardFacade {
 
     static async delete(boardId: number): Promise<boolean> {
         try {
-            const boardToDelete = await BoardFacade.getById(boardId)
-            const deletedBoard = await getEntityManager()
+            const deletionSuccess = await getManager()
                     .getRepository(Board)
-                    .remove(boardToDelete)
-            if (deletedBoard) {
+                    .removeById(boardId)
+            if (deletionSuccess) {
                 return true
             } else {
                 return false
@@ -64,11 +58,11 @@ export class BoardFacade {
         }
     }
 
-    static async update(boardReceived: Board, boardToUpdate: Board): Promise<Board> {
+    static async update(boardReceived: Board): Promise<void> {
         try {
-            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived, boardToUpdate)
-            const repository = getEntityManager().getRepository(Board)
-            return repository.persist(board)
+            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
+            const repository = getManager().getRepository(Board)
+            return repository.updateById(boardReceived.id, board)
         } catch (e) {
             throw new NotFoundException(e)
         }
@@ -76,9 +70,8 @@ export class BoardFacade {
 
     static async create(board: Board): Promise<Board> {
         try {
-            let boardToCreate = new Board()
-            boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board, boardToCreate)
-            return getEntityManager().getRepository(Board).persist(boardToCreate)
+            let boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board)
+            return getManager().getRepository(Board).create(boardToCreate)
         } catch (e) {
             throw new NotFoundException(e)
         }

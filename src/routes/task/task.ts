@@ -37,8 +37,7 @@ export class Task {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const taskToUpdate = await TaskFacade.getById(req.body.id)
-            const task = await TaskFacade.update(req.body, taskToUpdate)
+            const task = await TaskFacade.update(req.body)
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})

@@ -9,7 +9,7 @@ export class Token {
     @PrimaryColumn('int')
     userid: number
 
-    @PrimaryColumn('string')
+    @PrimaryColumn('varchar')
     clientType: string
 
     @Column('text')

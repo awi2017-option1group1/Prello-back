@@ -58,8 +58,7 @@ export class List {
             } else {
             // else if (forbidden : if the user appratient à la team alors c'est bon) res.status(403)
             // else if (Method Not Allowed) res.status(405)
-                const listToUpdate = await ListFacade.getById(req.body.id)
-                const updatedList = await ListFacade.update(req.body, listToUpdate)
+                const updatedList = await ListFacade.update(req.body)
                 if (updatedList == null) {
                     res.status(200).json(updatedList)
                 } else {

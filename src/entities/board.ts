@@ -12,7 +12,7 @@ export class Board {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column('varchar')
     title: string
 
     @Column('boolean')
@@ -36,12 +36,12 @@ export class Board {
             referencedColumnName: 'id'
         },
     })
-    users: User[]
+    users: Promise<User[]>
 
     @OneToMany(type => List, list => list.board)
-    lists: List[]
+    lists: Promise<List[]>
 
-    @ManyToMany(type => Tag, tag => tag.boards)
+    @ManyToMany(type => Tag, tag => tag.board)
     @JoinTable({
         name: 'board_tag',
         joinColumn: {
@@ -53,5 +53,5 @@ export class Board {
             referencedColumnName: 'id'
         },
     })
-    tags: Tag[]
+    tags: Promise<Tag[]>
  }

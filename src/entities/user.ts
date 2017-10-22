@@ -14,19 +14,19 @@ export class User {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     lastname: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     firstname: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         unique: true
     })
     pseudo: string
@@ -41,16 +41,16 @@ export class User {
     notificationsEnabled: boolean
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         unique: true
     })
     email: string
 
-    @Column('string')
+    @Column('varchar')
     password: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     token: string
@@ -70,17 +70,17 @@ export class User {
             referencedColumnName: 'id'
         },
     })
-    teams: Team[]
+    teams: Promise<Team[]>
 
     @ManyToMany(type => Board, board => board.users)
-    boards: Board[]
+    boards: Promise<Board[]>
 
     @OneToMany(type => Notification, notification => notification.user)
-    notifications: Notification[]
+    notifications: Promise<Notification[]>
 
     @OneToMany(type => Comment, comment => comment.user)
     comments: Comment
 
     @OneToMany(type => Token, token => token.user)
-    tokens: Token[]
+    tokens: Promise<Token[]>
  }
