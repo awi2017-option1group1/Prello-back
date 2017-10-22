@@ -13,7 +13,7 @@ export const connectionOptions: MultipleConnections = {
         password: 'root',
         database: 'dev_prello',
         logging: ['query', 'error'],
-        synchronize: false,
+        synchronize: true,
         entities: [
             `${__dirname}/entities/*.js`
         ],
