@@ -10,9 +10,7 @@ export class Attachement {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: 'string'
-    })
+    @Column('varchar')
     type: string
 
     @Column('text')

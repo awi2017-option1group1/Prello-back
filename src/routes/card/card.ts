@@ -37,8 +37,7 @@ export class Card {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const cardToUpdate = await CardFacade.getById(req.body.id)
-            const card = await CardFacade.update(req.body, cardToUpdate)
+            const card = await CardFacade.update(req.body)
             res.status(200).json(card)
         } catch (e) {
             res.status(404).json({ message: e.message})

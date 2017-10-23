@@ -11,16 +11,16 @@ export class TaskList {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
     })
     title: string
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.tasksList)
+    @ManyToOne(type => Card, card => card.tasksLists)
     card: Card
 
     @OneToMany(type => Task, task => task.taskList)
-    tasks: Task[]
+    tasks: Promise<Task[]>
  }

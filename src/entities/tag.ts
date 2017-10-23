@@ -15,20 +15,20 @@ export class Tag {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
     })
     label: string
 
     @IsIn(colors)
-    @Column('string')
+    @Column('varchar')
     color: string
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
     @ManyToMany(type => Card, card => card.tags)
-    cards: Card[]
+    cards: Promise<Card[]>
 
-    @ManyToMany(type => Board, board => board.tags)
-    boards: Board[]
+    @ManyToMany(type => Board, board => board.tags, )
+    board: Promise<Board[]>
  }

@@ -9,7 +9,7 @@ export class Notification {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column('varchar')
     type: string
 
     @Column('int')

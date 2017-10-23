@@ -13,12 +13,11 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
+    @Column('varchar')
     title: string
 
     @Column({
         type: 'text',
-        length: 500,
         nullable: true
     })
     description: string
@@ -46,17 +45,17 @@ export class Card {
             referencedColumnName: 'id'
         },
     })
-    tags: Tag[]
+    tags: Promise<Tag[]>
 
     @ManyToOne(type => List, list => list.cards)
     list: List
 
     @OneToMany(type => TaskList, taskList => taskList.card)
-    tasksList: TaskList[]
+    tasksLists: Promise<TaskList[]>
 
     @OneToMany(type => Comment, comment => comment.card)
-    comments: Comment[]
+    comments: Promise<Comment[]>
 
-    @OneToMany(type => Attachement, attachement => attachement.card )
-    attachements: Attachement[]
+    @OneToMany(type => Attachement, attachement => attachement.card)
+    attachements: Promise<Attachement[]>
  }
