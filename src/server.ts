@@ -12,7 +12,7 @@ import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
-import { Attachement } from './routes/attachement/attachement'
+// import { Attachement } from './routes/attachement/attachement'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
@@ -86,33 +86,44 @@ app.delete('/boards/:board_id', Board.delete)
 app.delete('/boards/:board_id/members/:id_member', Board.delete)
 
 // ---------    Card Routes   ---------
-app.get('/cards/:card_id', Card.getOneById)
-app.get('/boards/:board_id/lists/:list_id/cards', Card.getAllFromListId)
-app.put('/cards', Card.update)
-app.delete('/cards/:card_id', Card.delete)
-app.post('/boards/:board_id/lists/:list_id/cards', Card.create)
+app.get('/cards/:id', Card.getOneById)
+app.get('/cards/:id/attachments', Card.getAllAttachments)
+app.get('/cards/:id/checklists', Card.getAllChecklists)
+app.get('/cards/:id/labels', Card.getAllLabels)
+app.get('/cards/:id/members', Card.getAllMembers)
+
+app.put('/cards/:id', Card.update)
+
+app.post('/cards/:id/attachments', Card.createAttachment)
+app.post('/cards/:id/checklists', Card.createChecklist)
+app.post('/cards/:id/labels', Card.createLabel)
+app.post('/cards/:id/members', Card.createMember)
+
+app.delete('/cards/:id', Card.delete)
+app.delete('/cards/:id/labels/:idLabel', Card.deleteLabelById)
+app.delete('/cards/:id/members/:idMember', Card.deleteMemberById)
 
 // ---------    Task Routes   ---------
-app.get('/taskList/:taskList_id/lists', Task.getAllFromTaskListId)
-app.get('task/:task_id', Task.getOneById)
-app.put('/task', Task.update)
-app.delete('/task/:task_id', Task.delete)
-app.post('/tasks', Task.create)
+app.get('checkitems/:id', Task.getOneById)
+app.put('/checkitems/:id', Task.update)
+app.delete('/checkitems/:id', Task.delete)
 
-// ---------    Attachement Routes   ---------
-app.get('/card/:card_id/attachements', Attachement.getAllFromCardId)
+// ---------    Attachement Routes   --------- 
+/* app.get('/card/:card_id/attachements', Attachement.getAllFromCardId)
 app.get('attachement/:attachement_id', Attachement.getOneById)
 app.delete('/attachement/:attachement_id', Attachement.delete)
 app.post('/attachements', Task.create)
-app.post('/task/:task_id', Task.create)
+app.post('/task/:task_id', Task.create) */
 
 // ---------    TaskList Routes   ---------
-app.get('/cards/:card_id/taskLists/:taskList_id', TaskList.getAllFromCardId)
-app.get('taskList/:taskList_id', TaskList.getOneById)
-app.put('/taskList', TaskList.update)
-app.delete('/taskList/:taskList_id', TaskList.delete)
-app.post('/taskList/:taskList_id', TaskList.create)
+app.get('/checklists/:id', TaskList.getOneById)
+app.get('/checklists/:id/checkItems', TaskList.getAllCheckItems)
 
+app.put('/checklists/:id', TaskList.update)
+app.post('/checklists/:id/checkItems', TaskList.createCheckItem)
+app.delete('/checklists/:id', TaskList.delete)
+
+// ---------    Connection   ---------
 const connectionManager: ConnectionManager = getConnectionManager()
 connectionManager.create(fromConfig()).connect().then(connection => {
     app.listen(app.get('port'), () => {
