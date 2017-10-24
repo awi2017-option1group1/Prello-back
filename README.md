@@ -17,6 +17,9 @@ Prello's back-end application.
 
 ## Execution
 
+- Source the `.env.dev` file
+
+    `source .env.dev`
 - To run the application in development mode (need the back-end up and running) 
 
     `npm run start:dev`
