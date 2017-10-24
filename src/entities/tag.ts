@@ -29,6 +29,6 @@ export class Tag {
     @ManyToMany(type => Card, card => card.tags)
     cards: Promise<Card[]>
 
-    @ManyToOne(type => Board, board => board.tags, )
-    board: Promise<Board[]>
+    @ManyToOne(type => Board, board => board.tags)
+    board: Promise<Board>
  }
