@@ -4,6 +4,7 @@ import { Board } from './board'
 import { Notification } from './notification'
 import { Comment } from './comment'
 import { Token } from './token'
+import { Card } from './card'
 
 @Entity()
 export class User {
@@ -83,4 +84,7 @@ export class User {
 
     @OneToMany(type => Token, token => token.user)
     tokens: Promise<Token[]>
+
+    @ManyToMany(type => Card, card => card.tags)
+    cards: Promise<Card[]>
  }
