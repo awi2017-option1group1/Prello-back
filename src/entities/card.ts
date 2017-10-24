@@ -3,7 +3,8 @@ import { Tag } from './tag'
 import { List } from './list'
 import { TaskList } from './taskList'
 import { Comment } from './comment'
-import { Attachement } from './attachement'
+import { Attachment } from './attachment'
+import { User } from './user'
 
 @Entity()
 export class Card {
@@ -14,21 +15,29 @@ export class Card {
     id: number
 
     @Column('varchar')
-    title: string
+    name: string
+
+    @Column('boolean')
+    closed: boolean
 
     @Column({
         type: 'text',
         nullable: true
     })
-    description: string
+    desc: string
 
     @Column({
         type: 'date'
     })
-    dueDate: Date
+    due: Date
+    
+    @Column({
+        type: 'date'
+    })
+    dueComplete: Date
 
     @Column('int')
-    rank: number
+    pos: number
 
 // ------------------------------------
 //            EXTERNAL LINKS
@@ -47,6 +56,20 @@ export class Card {
     })
     tags: Promise<Tag[]>
 
+    @ManyToMany(type => User, user => user.cards)
+    @JoinTable({
+        name: 'card_users',
+        joinColumn: {
+            name: 'card',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'user',
+            referencedColumnName: 'id'
+        },
+    })
+    members: Promise<User[]>
+
     @ManyToOne(type => List, list => list.cards)
     list: List
 
@@ -56,6 +79,6 @@ export class Card {
     @OneToMany(type => Comment, comment => comment.card)
     comments: Promise<Comment[]>
 
-    @OneToMany(type => Attachement, attachement => attachement.card)
-    attachements: Promise<Attachement[]>
+    @OneToMany(type => Attachment, attachment => attachment.card)
+    attachments: Promise<Attachment[]>
  }
