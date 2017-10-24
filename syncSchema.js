@@ -1,13 +1,13 @@
 const typeorm = require("typeorm");
-const config = require("./dist/connectionParams").connectionOptions;
+const config = require("./dist/database").fromConfig;
 
 const env = process.env.NODE_ENV || 'development';
 
 typeorm.createConnection(
     Object.assign(
         {}, 
-        config[env],
-        { autoSchemaSync: true }
+        config(),
+        { synchronize: true }
     )
 ).then(function(connection) {
     console.log("Schema synchronized!");
