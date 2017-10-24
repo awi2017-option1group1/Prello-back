@@ -1,6 +1,7 @@
 import * as express from 'express'
 
 import { BoardFacade } from '../../bl/boardFacade'
+import { ListFacade } from '../../bl/listFacade'
 
 export class Board {
 
@@ -31,6 +32,34 @@ export class Board {
         }
     }
 
+    static async getBoardLabels(req: express.Request, res: express.Response) {
+        try {
+            // TODO WHEN labelFacade IS DONE
+            res.status(200).json('A lot of labels')
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+
+    static async getBoardLists(req: express.Request, res: express.Response) {
+        try {
+            const lists = await ListFacade.getAllFromBoardId(req.params.board_id)
+            res.status(200).json(lists)
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+
+    static async getBoardMembers(req: express.Request, res: express.Response) {
+        try {
+            const board = await BoardFacade.getById(req.params.board_id)
+            const lists = await board.users
+            res.status(200).json(lists)
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+
     static async delete(req: express.Request, res: express.Response) {
         try {
             const board = await BoardFacade.delete(req.params.board_id)
@@ -46,12 +75,30 @@ export class Board {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const board = BoardFacade.update(req.body)
+            const board = BoardFacade.update(req.body, req.params.board_id)
             res.status(200).json(board)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
     }
+
+    /*static async updateBoardMembers(req: express.Request, res: express.Response) {
+        try {
+            const board = BoardFacade.updateBoardMembers(req.body, req.params.board_id)
+            res.status(200).json(board)
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+
+    static async updateBoardMember(req: express.Request, res: express.Response) {
+        try {
+            const board = BoardFacade.updateBoardMember(req.body, req.params.board_id, req.params.member_id)
+            res.status(200).json(board)
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }*/
 
     static async create(req: express.Request, res: express.Response) {
         try {
@@ -60,4 +107,29 @@ export class Board {
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }}
+    }
+
+    static async addLabel(req: express.Request, res: express.Response) {
+        try {
+            const success = await BoardFacade.addLabel(req.body, req.params.board_id)
+            if (success) {
+                res.status(200)
+            } else {
+                res.status(404).json({ message : 'Not found'})
+            }        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+
+    static async addList(req: express.Request, res: express.Response) {
+        try {
+            const success = await BoardFacade.addList(req.body, req.params.board_id)
+            if (success) {
+                res.status(200)
+            } else {
+                res.status(404).json({ message : 'Not found'})
+            }        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+}

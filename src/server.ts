@@ -70,11 +70,22 @@ app.delete('/boards/:board_id/lists/:list_id', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:board_id', Board.getOneById)
-app.get('/users/:user_id/boards', Board.getAllFromUserId)
-app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
-app.put('/boards', Board.update)
-app.delete('/boards/:board_id', Board.delete)
+app.get('/boards/:board_id/labels', Board.getBoardLabels)
+app.get('/boards/:board_id/ists', Board.getBoardLists)
+app.get('/boards/:board_id/members', Board.getBoardMembers)
+// app.get('/boards/:board_id/cards/:filter', Board.filterCards)
+// app.get('/boards/:board_id/lists/:filter', Board.filterLists)
+
+app.put('/boards/:board_id', Board.update)
+// app.put('/boards/:board_id/members', Board.updateBoardMembers)
+// app.put('/boards/:board_id/member/:member_id', Board.updateBoardMember)
+
 app.post('/boards', Board.create)
+app.post('/boards/:board_id/labels', Board.addLabel)
+app.post('/boards/:board_id/lists', Board.addList)
+
+app.delete('/boards/:board_id', Board.delete)
+app.delete('/boards/:board_id/members/:id_member', Board.delete)
 
 // ---------    Card Routes   ---------
 app.get('/cards/:card_id', Card.getOneById)
