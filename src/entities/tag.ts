@@ -15,7 +15,7 @@ export class Tag {
     id: number
 
     @Column('varchar')
-    label: string
+    name: string
 
     @IsIn(colors)
     @Column('varchar')
