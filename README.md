@@ -13,13 +13,15 @@ Prello's back-end application.
 - Install the dependencies for development mode 
 
 	`npm install`
-- Setup PostgreSQL connexion variables in `src/connectionParams.ts`.   
 
 ## Execution
 
-- Source the `.env.dev` file
+- Configure then source the `.env.dev` file
 
     `source .env.dev`
+- Run the database migrations
+
+    `npm run build && npm run migrations`
 - To run the application in development mode (need the back-end up and running) 
 
     `npm run start:dev`
