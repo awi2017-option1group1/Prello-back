@@ -25,23 +25,13 @@ export class Board {
     team: Team
 
     @ManyToMany(type => User, user => user.boards)
-    @JoinTable({
-        name: 'user_board',
-        joinColumn: {
-            name: 'board',
-            referencedColumnName: 'id'
-        },
-        inverseJoinColumn: {
-            name: 'user',
-            referencedColumnName: 'id'
-        },
-    })
+    @JoinTable()
     users: Promise<User[]>
 
     @OneToMany(type => List, list => list.board)
     lists: Promise<List[]>
 
-    @ManyToMany(type => Tag, tag => tag.board)
+    @OneToMany(type => Tag, tag => tag.board)
     @JoinTable({
         name: 'board_tag',
         joinColumn: {
