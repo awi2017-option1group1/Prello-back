@@ -14,9 +14,7 @@ export class Tag {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: 'varchar',
-    })
+    @Column('varchar')
     label: string
 
     @IsIn(colors)
@@ -30,5 +28,5 @@ export class Tag {
     cards: Promise<Card[]>
 
     @ManyToOne(type => Board, board => board.tags)
-    board: Promise<Board>
+    idBoard: Board
  }
