@@ -3,7 +3,7 @@ import { getManager } from 'typeorm'
 import { NotFoundException } from './errors/NotFoundException'
 import { ParamsExtractor } from './paramsExtractor'
 import { CardFacade } from './cardFacade'
-import { Attachment } from './../entities/Attachment'
+import { Attachment } from './../entities/attachment'
 
 export class AttachmentFacade {
 
