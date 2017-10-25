@@ -4,15 +4,14 @@ import { TaskFacade } from '../../bl/taskFacade'
 
 export class Task {
 
-    /*
     static async getAllFromTaskListId(req: express.Request, res: express.Response) {
         try {
-            const task = await TaskFacade.getAllFromTaskListId(req.params.taskList_id)
+            const task = await TaskFacade.getAllFromTaskListId(req.params.id)
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    } */
+    }
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
@@ -41,20 +40,19 @@ export class Task {
     static async update(req: express.Request, res: express.Response) {
         try {
             const task = await TaskFacade.update(req.body, req.params.id)
-            // req.params.id is the id of the Task
+            // req.params.id is the id of the Task, req.body contains the new task
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
     }
 
-    /*
     static async create(req: express.Request, res: express.Response) {
         try {
-            const task = await TaskFacade.create(req.body, req.params.task_id)
+            const task = await TaskFacade.create(req.body, req.params.id)
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    } */
+    }
 }

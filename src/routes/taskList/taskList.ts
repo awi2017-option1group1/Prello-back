@@ -5,14 +5,14 @@ import { TaskFacade } from '../../bl/taskFacade'
 
 export class TaskList {
 
-    /* static async getAllFromCardId(req: express.Request, res: express.Response) {
+    static async getAllFromCardId(req: express.Request, res: express.Response) {
         try {
-            const taskList = await TaskListFacade.getAllFromCardId(req.params.card_id)
+            const taskList = await TaskListFacade.getAllFromCardId(req.params.id)
             res.status(200).json(taskList)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    } */
+    }
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
@@ -53,6 +53,7 @@ export class TaskList {
             const taskListToUpdate = await TaskListFacade.getById(req.params.id)
             // req.params.id is the id of the TaskList
             const taskList = await TaskListFacade.update(req.body, taskListToUpdate)
+            // req.body contains the new list
             res.status(200).json(taskList)
         } catch (e) {
             res.status(404).json({ message: e.message})
@@ -62,7 +63,8 @@ export class TaskList {
     static async createCheckItem(req: express.Request, res: express.Response) {
         try {
             const task = await TaskFacade.create(req.body, req.params.id)
-            // req.params.id is the id of the TaskList
+            // req.params.id is the id of the TaskList, 
+            // req.body contains the new task to insert on the taskList
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})

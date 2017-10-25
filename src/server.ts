@@ -95,20 +95,20 @@ app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById)
 app.delete('/cards/:id/members/:idMember', Card.unassignMemberById) 
 
 // ---------    Task Routes   ---------
-app.get('checkitems/:id', Task.getOneById) // ToDo
-app.put('/checkitems/:id', Task.update) // ToDo
-app.delete('/checkitems/:id', Task.delete) // ToDo
+app.get('checkitems/:id', Task.getOneById)
+app.put('/checkitems/:id', Task.update)
+app.delete('/checkitems/:id', Task.delete)
 
 // ---------    Attachment Routes   --------- 
 app.delete('/attachment/:id', Attachment.delete) 
 
 // ---------    TaskList Routes   ---------
-app.get('/checklists/:id', TaskList.getOneById) // ToDo
-app.get('/checklists/:id/checkItems', TaskList.getAllCheckItems) // ToDo
+app.get('/checklists/:id', TaskList.getOneById) 
+app.get('/checklists/:id/checkItems', TaskList.getAllCheckItems)
 
-app.put('/checklists/:id', TaskList.update) // ToDo
-app.post('/checklists/:id/checkItems', TaskList.createCheckItem) // ToDo
-app.delete('/checklists/:id', TaskList.delete) // ToDo
+app.put('/checklists/:id', TaskList.update)
+app.post('/checklists/:id/checkItems', TaskList.createCheckItem)
+app.delete('/checklists/:id', TaskList.delete)
 
 // ---------    Connection   ---------
 const connectionManager: ConnectionManager = getConnectionManager()
