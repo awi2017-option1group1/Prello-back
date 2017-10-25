@@ -8,6 +8,7 @@ export class User {
             const users = await UserFacade.getAll()
             res.status(200).json(users)
         } catch (e) {
+            console.error(e)
             res.status(404).json({ message: e.message})
         }
     }

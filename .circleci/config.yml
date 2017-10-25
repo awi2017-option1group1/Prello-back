@@ -4,6 +4,10 @@ references:
   container_config: &container_config
     docker:
       - image: circleci/node:8.3
+      - image: postgres:9.5
+        environment:
+        - POSTGRES_USER=root
+        - POSTGRES_DB=test_prello
     working_directory: ~/app
 
   restore_repo: &restore_repo
@@ -50,6 +54,10 @@ jobs:
       - run:
           name: Unit tests
           command: npm test
+          environment:
+            NODE_ENV: test
+            DATABASE_TYPE: postgres
+            TEST_DATABASE_URL: "postgres://root@localhost:5432/test_prello"
 
   tests_linting:
     <<: *container_config

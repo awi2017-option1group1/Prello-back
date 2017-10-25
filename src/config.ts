@@ -12,6 +12,7 @@ export interface Config {
 
     server: ServerConfig
     database: ConnectionOptions
+    databaseTest: ConnectionOptions
 }
 
 export const config: Config = {
@@ -27,5 +28,10 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE,
         url: process.env.DATABASE_URL
+    },
+
+    databaseTest: {
+        type: process.env.DATABASE_TYPE,
+        url: process.env.TEST_DATABASE_URL
     }
 }

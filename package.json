@@ -38,7 +38,8 @@
     "testMatch": [
       "**/test/**/*.test.(ts|js)"
     ],
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFiles": ["./test/setupTests.ts"]
   },
   "dependencies": {
     "bcrypt-nodejs": "^0.0.3",
