@@ -114,12 +114,16 @@ export class CardFacade {
         if (card) {
             const members = await card.members  // members is the list of all members assigned to the card
             if (members) {
+                // const membersSize = members.length
                 const member = await UserFacade.getById(memberId)  // member get by memberId
                 if (member) {
                     card.members = Promise.resolve(members.slice(
                                                         members.indexOf(member), 
                                                         members.indexOf(member) + 1))
-                    return repository.updateById(cardId, card)
+
+                    const deletionSuccess =  repository.save(card)
+                    if (deletionSuccess )return true
+                    else return false
                 } else {
                     throw new NotFoundException('No Member was found for this card')
                 }
@@ -180,7 +184,9 @@ export class CardFacade {
                     card.tags = Promise.resolve(labels.slice(
                                                         labels.indexOf(label), 
                                                         labels.indexOf(label) + 1))
-                    return repository.updateById(cardId, card)
+                    const deletionSuccess =  repository.save(card)
+                    if (deletionSuccess )return true
+                    else return false
                 } else {
                     throw new NotFoundException('No label was found with this id')
                 }
