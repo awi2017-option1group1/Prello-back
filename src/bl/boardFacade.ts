@@ -4,6 +4,8 @@ import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractor'
 import { UserFacade } from './userFacade'
+import { List } from '../entities/list'
+import { Tag } from '../entities/tag'
 
 export class BoardFacade {
 
@@ -24,7 +26,7 @@ export class BoardFacade {
 
     static async getAllFromUserId(userId: number): Promise<Board[]> {
         const user = await UserFacade.getById(userId)
-        const boards = user.boards
+        const boards = await user.boards
         if (boards) {
             return boards
         } else {
@@ -58,15 +60,41 @@ export class BoardFacade {
         }
     }
 
-    static async update(boardReceived: Board): Promise<void> {
+    static async update(boardReceived: Board, boardId: number): Promise<void> {
         try {
             const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
             const repository = getManager().getRepository(Board)
-            return repository.updateById(boardReceived.id, board)
+            return repository.updateById(boardId, board)
         } catch (e) {
             throw new NotFoundException(e)
         }
     }
+
+    /*
+    static async updateMember(boardReceived: Board, boardId: number, memberId: number): Promise<void> {
+        try {
+            const repository = getManager().getRepository(BoardRole)
+            const boardRole = repository.find({
+                where: {
+                    user.id=
+                }
+            })
+
+            return repository.updateById(boardId, board)
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
+
+    static async updateMembers(boardReceived: Board, boardId: number, memberId: number): Promise<void> {
+        try {
+            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
+            const repository = getManager().getRepository(Board)
+            return repository.updateById(boardId, board)
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }*/
 
     static async create(board: Board): Promise<Board> {
         try {
@@ -74,6 +102,42 @@ export class BoardFacade {
             return getManager().getRepository(Board).create(boardToCreate)
         } catch (e) {
             throw new NotFoundException(e)
+        }
+    }
+
+    static async addLabel(label: Tag, boardId: number): Promise<void> {
+        const repository = await getManager()
+                            .getRepository(Board)
+
+        var board = await repository.findOneById(boardId)
+        if (board) {
+            const tags = await board.tags
+            if (tags) {
+                board.tags = Promise.resolve(tags.concat(label))
+                return repository.updateById(boardId, board)
+            } else {
+                throw new NotFoundException('No Board was found')
+            }
+        } else {
+            throw new NotFoundException('No Board was found')
+        }
+    }
+
+    static async addList(list: List, boardId: number): Promise<void> {
+        const repository = await getManager()
+                            .getRepository(Board)
+
+        var board = await repository.findOneById(boardId)
+        if (board) {
+            const lists = await board.lists
+            if (lists) {
+                board.lists = Promise.resolve(lists.concat(list))
+                return repository.updateById(boardId, board)
+            } else {
+                throw new NotFoundException('No Board was found')
+            }
+        } else {
+            throw new NotFoundException('No Board was found')
         }
     }
 }
