@@ -2,24 +2,23 @@ import * as express from 'express'
 import * as compression from 'compression'
 import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
-
 import { getConnectionManager, ConnectionManager } from 'typeorm'
-import { connectionOptions } from './connectionParams'
-import { Login } from './routes/user/login'
+
+import { config } from './config'
+import { fromConfig } from './database'
+// import { RequesterFactory } from './bl/requester'
+
 import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
 import { Attachement } from './routes/attachement/attachement'
 import { TaskList } from './routes/taskList/taskList'
-// import { RequesterFactory } from './bl/requester'
 import { List } from './routes/list/list'
-
-export const ENV = process.env.NODE_ENV || 'development'
 
 const app = express()
 
-app.set('port', process.env.PORT || 5000)
+app.set('port', config.server.port)
 app.use(compression())
 app.use(cors())
 app.use(bodyParser.json())
@@ -40,7 +39,7 @@ app.use('*', (req, res, next) => {
 })*/
 
 app.get('/', (req, res) => {
-    res.send('Hello world')
+    res.json({ healthcheck: 'ok' })
 })
 
 app.get('/protected', (req, res) => {
@@ -53,7 +52,6 @@ app.get('/protected', (req, res) => {
 })
 
 // ---------    User Routes   ---------
-app.post('/login', Login.authenticate)
 app.get('/users', User.getAll)
 app.get('/users/:user_id', User.getOneById)
 app.get('/teams/:team_id/users', User.getAllFromTeamId)
@@ -116,7 +114,7 @@ app.delete('/taskList/:taskList_id', TaskList.delete)
 app.post('/taskList/:taskList_id', TaskList.create)
 
 const connectionManager: ConnectionManager = getConnectionManager()
-connectionManager.create(connectionOptions[ENV]).connect().then(connection => {
+connectionManager.create(fromConfig()).connect().then(connection => {
     app.listen(app.get('port'), () => {
       console.log(('App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'))
       console.log('Press CTRL-C to stop\n')

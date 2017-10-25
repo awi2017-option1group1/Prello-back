@@ -1,28 +1,10 @@
 import { getManager, getRepository } from 'typeorm'
-import { v4 as uuidv4 } from 'uuid'
 
 import { ParamsExtractor } from './paramsExtractor'
 import { NotFoundException } from './errors/NotFoundException'
 import { User } from '../entities/user'
-import { Password } from './password'
 
 export class UserFacade {
-    static async authenticate(email: string, password: string): Promise<User>  {
-        const userRepository = await getManager().getRepository(User)
-        const user = await userRepository.findOne({
-            email
-        })
-        if (user && Password.compare(password, user.password)) {
-            if (!user.token) {
-                user.token = uuidv4()
-                await userRepository.save(user)
-            }
-            return user
-        } else {
-            throw new NotFoundException('Password and email did not match')
-        }
-    }
-
     static async getAll(): Promise<User[]>  {
         const users = await getRepository(User)
                             .find()
