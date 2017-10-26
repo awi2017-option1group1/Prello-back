@@ -5,7 +5,7 @@ import { ParamsExtractor } from './paramsExtractor'
 
 import { ListFacade } from './listFacade'
 import { UserFacade } from './userFacade'
-import { LabelFacade } from './labelFacade'
+import { TagFacade } from './tagFacade'
 
 import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
@@ -51,8 +51,8 @@ export class CardFacade {
 
     static async update(cardReceived: Card, cardId: number): Promise<void> {
         try {
-            const cardToSave = ParamsExtractor.extract<Card>([
-                'name', 'closed', 'desc', 'due', 'dueComplete', 'pos'], cardReceived)
+            const cardToSave = ParamsExtractor.extract<Card>(
+                ['name', 'closed', 'desc', 'due', 'dueComplete', 'pos'], cardReceived)
             const repository = getManager().getRepository(Card)
             return repository.updateById(cardId, cardToSave)
         } catch (e) {
@@ -62,8 +62,8 @@ export class CardFacade {
 
     static async create(card: Card, listId: number): Promise<Card> {
         try {
-            let cardToCreate = ParamsExtractor.extract<Card>([
-                'name', 'closed', 'desc', 'due', 'dueComplete', 'pos'], card)
+            let cardToCreate = ParamsExtractor.extract<Card>(
+                ['name', 'closed', 'desc', 'due', 'dueComplete', 'pos'], card)
             cardToCreate.list = await ListFacade.getById(listId)
             return getManager().getRepository(Card).save(cardToCreate)
         } catch (e) {
@@ -114,7 +114,6 @@ export class CardFacade {
         if (card) {
             const members = await card.members  // members is the list of all members assigned to the card
             if (members) {
-                // const membersSize = members.length
                 const member = await UserFacade.getById(memberId)  // member get by memberId
                 if (member) {
                     card.members = Promise.resolve(members.slice(
@@ -122,8 +121,11 @@ export class CardFacade {
                                                         members.indexOf(member) + 1))
 
                     const deletionSuccess =  repository.save(card)
-                    if (deletionSuccess )return true
-                    else return false
+                    if (deletionSuccess ) { 
+                        return true 
+                    } else { 
+                        return false 
+                    }
                 } else {
                     throw new NotFoundException('No Member was found for this card')
                 }
@@ -134,7 +136,6 @@ export class CardFacade {
             throw new NotFoundException('No Member was found for this card')
         }
     }
-
     
     // --------------- Labels ---------------
 
@@ -179,14 +180,17 @@ export class CardFacade {
         if (card) {
             const labels = await card.tags  
             if (labels) {
-                const label = await LabelFacade.getById(labelId)  // member get by memberId
+                const label = await TagFacade.getById(labelId)  // member get by memberId
                 if (label) {
                     card.tags = Promise.resolve(labels.slice(
                                                         labels.indexOf(label), 
                                                         labels.indexOf(label) + 1))
                     const deletionSuccess =  repository.save(card)
-                    if (deletionSuccess )return true
-                    else return false
+                    if (deletionSuccess) { 
+                        return true 
+                    } else { 
+                        return false 
+                    }
                 } else {
                     throw new NotFoundException('No label was found with this id')
                 }
@@ -197,7 +201,4 @@ export class CardFacade {
             throw new NotFoundException('No label was found with this id')
         }
     }
-
-
-
 }

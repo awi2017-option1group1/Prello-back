@@ -141,7 +141,6 @@ export class Card {
 
     // --------------- Labels ---------------
 
-
     static async getAllLabels(req: express.Request, res: express.Response) {
         try {
             const labels = await CardFacade.getAllLabelsFromCardId(req.params.id)
@@ -175,5 +174,4 @@ export class Card {
             res.status(404).json({ message: e.message})
         }
     }
-
 }

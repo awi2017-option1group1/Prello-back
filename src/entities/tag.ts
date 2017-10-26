@@ -28,5 +28,5 @@ export class Tag {
     cards: Promise<Card[]>
 
     @ManyToOne(type => Board, board => board.tags)
-    idBoard: Board
+    board: Board
  }
