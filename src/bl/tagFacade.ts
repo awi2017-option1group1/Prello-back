@@ -67,8 +67,8 @@ export class TagFacade {
     static async create(tag: Tag, boardId: number): Promise<Tag> {
         try {
             let tagToCreate = ParamsExtractor.extract<Tag>(['name', 'color'], tag)
-            tagToCreate.idBoard = await BoardFacade.getById(boardId)
-            return getManager().getRepository(tag).save(tagToCreate)
+            tagToCreate.board = await BoardFacade.getById(boardId)
+            return getManager().getRepository(Tag).save(tagToCreate)
         } catch (e) {
             throw new NotFoundException(e)
         }

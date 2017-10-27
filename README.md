@@ -13,6 +13,7 @@ Prello's back-end application.
 - Install the dependencies for development mode 
 
 	`npm install`
+- Create the database (just create it, all the tables will be automatically generated latter).   
 
 ## Execution
 
@@ -28,7 +29,7 @@ Prello's back-end application.
 - To run the application in production mode (need the back-end up and running) 
 
 	`npm run build && npm start`
-- To run the tests
+- To run the tests (you should create the test database first)
 
 	`npm test`
 

@@ -6,7 +6,7 @@ export class Notification {
 
     static async getAllFromUserId(req: express.Request, res: express.Response) {
         try {
-            const notifications = await NotificationFacade.getAllFromUserId(req.params.user_id)
+            const notifications = {} // await NotificationFacade.getAllFromUserId(req.params.user_id)
             res.status(200).json(notifications)
         } catch (e) {
             res.status(404).json({ message: e.message})
@@ -42,4 +42,5 @@ export class Notification {
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }}
+    }
+}
