@@ -1,9 +1,10 @@
-import { getManager, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
+import { ParamsExtractor } from './paramsExtractorv2'
+
 import { List } from '../entities/list'
 import { BoardFacade } from './boardFacade'
-import { ParamsExtractor } from './paramsExtractor'
 
 export class ListFacade {
 
@@ -12,50 +13,67 @@ export class ListFacade {
             .createQueryBuilder('list')
             .leftJoin('list.board', 'board')
             .where('board.id = :boardId', { boardId })
+            .orderBy({ 'list.pos': 'ASC' })
             .getMany()
     }
 
+    static async getMaxPosForBoardId(boardId: number): Promise<number> {
+        const { max } = await getRepository(List)
+            .createQueryBuilder('list')
+            .select('MAX(list.pos)', 'max')
+            .leftJoin('list.board', 'board')
+            .where('board.id = :boardId', { boardId })
+            .getRawOne()
+        return max
+    }
+
     static async getById(listId: number): Promise<List> {
-        const list = await getManager()
-                            .getRepository(List)
-                            .findOneById(listId)
+        const list = await getRepository(List).findOneById(listId)
         if (list) {
             return list
         } else {
-            throw new NotFoundException('No Board was found')
+            throw new NotFoundException('List not found')
         }
     }
 
-    static async insertFromBoardId(boardId: number, list: List): Promise<List> {
+    static async insertFromBoardId(boardId: number, params: {}): Promise<List> {
         try {
-            let listToInsert = ParamsExtractor.extract<List>(['title', 'rank'], list)
-            listToInsert.board = await BoardFacade.getById(boardId)
-            return getManager().getRepository(List).create(listToInsert)
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
-    }
+            const extractor = new ParamsExtractor<List>(params).permit(['name', 'pos'])
+            const listToInsert = extractor.fill(new List())
 
-    static async update(listReceived: List): Promise<void> {
-        try {
-            const listToSave = ParamsExtractor.extract<List>(['title', 'rank'], listReceived)
-            const repository = getManager().getRepository(List)
-            return repository.updateById(listReceived.id, listToSave)
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
-    }
-
-    static async delete(listId: number): Promise<boolean> {
-        try {
-            const deletionSuccess = await getManager()
-                    .getRepository(List)
-                    .removeById(listId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
+            if (!extractor.hasParam('name')) {
+                listToInsert.name = 'EmptyName'
             }
+
+            if (!extractor.hasParam('pos')) {
+                const maxPos = await ListFacade.getMaxPosForBoardId(boardId)
+                listToInsert.pos = maxPos + 1
+            }
+
+            listToInsert.board = await BoardFacade.getById(boardId)
+
+            return getRepository(List).save(listToInsert)
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
+
+    static async update(listId: number, params: {}): Promise<List> {
+        try {
+            const extractor = new ParamsExtractor<List>(params).permit(['name', 'pos'])
+
+            const list = await ListFacade.getById(listId)
+            extractor.fill(list)
+
+            return await getRepository(List).save(list)
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
+
+    static async delete(listId: number): Promise<void> {
+        try {
+            await getRepository(List).removeById(listId)
         } catch (e) {
             throw new NotFoundException(e)
         }

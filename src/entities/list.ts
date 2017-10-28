@@ -1,12 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm'
+
 import { Card } from './card'
 import { Board } from './board'
 
 @Entity()
 export class List {
-// ------------------------------------
-// =        ENTITY DEFINITION
-// ------------------------------------
     @PrimaryGeneratedColumn()
     id: number
 
@@ -18,11 +16,8 @@ export class List {
     @Column({
         type: 'int',
     })
-    rank: number
+    pos: number
 
-// ------------------------------------
-//            EXTERNAL LINKS
-// ------------------------------------
     @OneToMany(type => Card, card => card.list)
     cards: Promise<Card[]>
 
