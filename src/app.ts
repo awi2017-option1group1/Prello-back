@@ -60,10 +60,11 @@ app.delete('/users/:user_id', User.delete)
 
 // ---------    List Routes   ---------
 app.get('/boards/:board_id/lists', List.getAllFromBoardId)
-app.get('/boards/:board_id/lists/:list_id', List.getOneById)
 app.post('/boards/:board_id/lists', List.insertFromBoardId)
-app.put('/boards/:board_id/lists/:list_id', List.update)
-app.delete('/boards/:board_id/lists/:list_id', List.delete)
+
+app.get('/lists/:list_id', List.getOneById)
+app.put('/lists/:list_id', List.update)
+app.delete('/lists/:list_id', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:board_id', Board.getOneById)

@@ -13,7 +13,7 @@ export class List {
     @Column({
         type: 'varchar',
     })
-    title: string
+    name: string
 
     @Column({
         type: 'int',

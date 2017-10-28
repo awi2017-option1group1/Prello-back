@@ -1,4 +1,4 @@
-import { getManager } from 'typeorm'
+import { getManager, getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { List } from '../entities/list'
@@ -8,13 +8,11 @@ import { ParamsExtractor } from './paramsExtractor'
 export class ListFacade {
 
     static async getAllFromBoardId(boardId: number): Promise<List[]> {
-        const board = await BoardFacade.getById(boardId)
-        const lists = board.lists
-        if (lists) {
-            return lists
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
+        return await getRepository(List)
+            .createQueryBuilder('list')
+            .leftJoin('list.board', 'board')
+            .where('board.id = :boardId', { boardId })
+            .getMany()
     }
 
     static async getById(listId: number): Promise<List> {
