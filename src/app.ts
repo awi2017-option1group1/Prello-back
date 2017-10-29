@@ -49,14 +49,13 @@ app.put('/users/:user_id', User.update)
 app.delete('/users/:user_id', User.delete)
 
 // ---------    List Routes   ---------
-app.get('/boards/:board_id/lists', List.getAllFromBoardId)
-app.get('/boards/:board_id/lists/:list_id', List.getOneById)
-app.post('/boards/:board_id/lists', List.insertFromBoardId)
-app.put('/boards/:board_id/lists/:list_id', List.update)
-app.delete('/boards/:board_id/lists/:list_id', List.delete)
+app.get('/boards/:boardId/lists', List.getAllFromBoardId)
+app.post('/boards/:boardId/lists', List.insertFromBoardId)
+app.put('/lists/:listId', List.update)
+app.delete('/lists/:listId', List.delete)
 
 // ---------    Board Routes   ---------
-app.get('/boards/:board_id', Board.getOneById)
+app.get('/boards/:boardId', Board.getOneById)
 app.get('/users/:user_id/boards', Board.getAllFromUserId)
 app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
 app.put('/boards', Board.update)
