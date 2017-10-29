@@ -13,7 +13,7 @@ export class Board {
     id: number
 
     @Column('varchar')
-    title: string
+    name: string
 
     @Column('boolean')
     isPrivate: boolean

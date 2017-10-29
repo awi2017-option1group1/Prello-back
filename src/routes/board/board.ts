@@ -1,5 +1,7 @@
 import * as express from 'express'
 
+import { isInteger } from '../../util'
+
 import { BoardFacade } from '../../bl/boardFacade'
 import { ListFacade } from '../../bl/listFacade'
 
@@ -25,8 +27,12 @@ export class Board {
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.getById(req.params.board_id)
-            res.status(200).json(board)
+            if (isInteger(req.params.boardId)) {
+                const board = await BoardFacade.getById(req.params.boardId)
+                res.status(200).json(board)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
         } catch (e) {
             res.status(404).json({ error: e.message})
         }
