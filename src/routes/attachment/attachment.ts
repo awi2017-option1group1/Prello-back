@@ -1,6 +1,6 @@
 import * as express from 'express'
 
-import { AttachmentFacade } from '../../bl/AttachmentFacade'
+import { AttachmentFacade } from '../../bl/attachmentFacade'
 
 export class Attachment {
 

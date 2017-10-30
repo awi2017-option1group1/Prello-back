@@ -1,7 +1,7 @@
 import * as express from 'express'
 
 import { CardFacade } from '../../bl/cardFacade'
-import { AttachmentFacade } from '../../bl/AttachmentFacade'
+import { AttachmentFacade } from '../../bl/attachmentFacade'
 import { TaskListFacade } from '../../bl/taskListFacade'
 
 export class Card {
