@@ -53,8 +53,8 @@ export class CardFacade {
         try {
             const cardToSave = ParamsExtractor.extract<Card>(
                 ['name', 'closed', 'desc', 'due', 'dueComplete', 'pos'], cardReceived)
-            const repository = getManager().getRepository(Card)
-            return repository.updateById(cardId, cardToSave)
+            const cardRepository = getManager().getRepository(Card)
+            return cardRepository.updateById(cardId, cardToSave)
         } catch (e) {
             throw new NotFoundException(e)
         }
@@ -89,28 +89,24 @@ export class CardFacade {
     }
 
     static async assignMember(user: User, cardId: number): Promise<void> {
-        const repository = await getManager()
+        const cardRepository = await getManager()
                             .getRepository(Card)
 
-        var card = await repository.findOneById(cardId)
+        var card = await cardRepository.findOneById(cardId)
         if (card) {
             const members = await card.members
-            if (members) {
-                card.members = Promise.resolve(members.concat(user))
-                return repository.updateById(cardId, card)
-            } else {
-                throw new NotFoundException('No Board was found')
-            }
+            card.members = Promise.resolve(members.concat(user))
+            return cardRepository.updateById(cardId, card)
         } else {
-            throw new NotFoundException('No Board was found')
+            throw new NotFoundException('No Member was found')
         }
 }
 
     static async unassignMemberById(cardId: number, memberId: number): Promise<boolean> {
-        const repository = await getManager()
+        const cardRepository = await getManager()
                                 .getRepository(Card)
 
-        var card = await repository.findOneById(cardId)
+        var card = await cardRepository.findOneById(cardId)
         if (card) {
             const members = await card.members  // members is the list of all members assigned to the card
             if (members) {
@@ -119,8 +115,7 @@ export class CardFacade {
                     card.members = Promise.resolve(members.slice(
                                                         members.indexOf(member), 
                                                         members.indexOf(member) + 1))
-
-                    const deletionSuccess =  repository.save(card)
+                    const deletionSuccess =  cardRepository.save(card)
                     if (deletionSuccess ) { 
                         return true 
                     } else { 
@@ -155,28 +150,24 @@ export class CardFacade {
     }
 
     static async assignLabel(label: Tag, cardId: number): Promise<void> {
-        const repository = await getManager()
+        const cardRepository = await getManager()
                             .getRepository(Card)
 
-        var card = await repository.findOneById(cardId)
+        var card = await cardRepository.findOneById(cardId)
         if (card) {
             const labels = await card.tags
-            if (labels) {
-                card.tags = Promise.resolve(labels.concat(label))
-                return repository.updateById(cardId, card)
-            } else {
-                throw new NotFoundException('No label was found')
-            }
+            card.tags = Promise.resolve(labels.concat(label))
+            return cardRepository.updateById(cardId, card)
         } else {
             throw new NotFoundException('No label was found')
         }
     }
 
     static async unassignLabelById(cardId: number, labelId: number): Promise<boolean> {
-        const repository = await getManager()
+        const cardRepository = await getManager()
                                 .getRepository(Card)
 
-        var card = await repository.findOneById(cardId)
+        var card = await cardRepository.findOneById(cardId)
         if (card) {
             const labels = await card.tags  
             if (labels) {
@@ -185,7 +176,7 @@ export class CardFacade {
                     card.tags = Promise.resolve(labels.slice(
                                                         labels.indexOf(label), 
                                                         labels.indexOf(label) + 1))
-                    const deletionSuccess =  repository.save(card)
+                    const deletionSuccess =  cardRepository.save(card)
                     if (deletionSuccess) { 
                         return true 
                     } else { 

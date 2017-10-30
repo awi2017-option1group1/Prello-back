@@ -50,7 +50,7 @@
     "lodash": "^4.17.4",
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
-    "typeorm": "^0.1.0"
+    "typeorm": "^0.1.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^1.0.0",

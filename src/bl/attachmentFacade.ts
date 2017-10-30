@@ -7,11 +7,11 @@ import { Attachment } from './../entities/attachment'
 
 export class AttachmentFacade {
 
-    static async delete(AttachmentId: number): Promise<boolean> {
+    static async delete(attachmentId: number): Promise<boolean> {
         try {
             const deletionSuccess = await getManager()
                     .getRepository(Attachment)
-                    .removeById(AttachmentId)
+                    .removeById(attachmentId)
             if (deletionSuccess) {
                 return true
             } else {

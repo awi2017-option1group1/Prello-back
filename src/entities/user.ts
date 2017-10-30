@@ -85,6 +85,6 @@ export class User {
     @OneToMany(type => Token, token => token.user)
     tokens: Promise<Token[]>
 
-    @ManyToMany(type => Card, card => card.tags)
+    @ManyToMany(type => Card, card => card.members)
     cards: Promise<Card[]>
  }
