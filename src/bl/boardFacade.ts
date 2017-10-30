@@ -1,4 +1,4 @@
-import { getManager } from 'typeorm'
+import { getManager, getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
@@ -35,13 +35,11 @@ export class BoardFacade {
     }
 
     static async getById(boardId: number): Promise<Board> {
-        const board = await getManager()
-                            .getRepository(Board)
-                            .findOneById(boardId)
+        const board = await getRepository(Board).findOneById(boardId)
         if (board) {
             return board
         } else {
-            throw new NotFoundException('No Board was found')
+            throw new NotFoundException('Board not found')
         }
     }
 
