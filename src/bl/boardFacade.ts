@@ -60,7 +60,7 @@ export class BoardFacade {
 
     static async update(boardReceived: Board, boardId: number): Promise<void> {
         try {
-            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
+            const board = ParamsExtractor.extract<Board>(['name', 'isPrivate'], boardReceived)
             const repository = getManager().getRepository(Board)
             return repository.updateById(boardId, board)
         } catch (e) {

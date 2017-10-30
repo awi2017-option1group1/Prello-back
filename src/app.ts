@@ -68,7 +68,7 @@ app.delete('/lists/:listId', List.delete)
 app.get('/boards/:boardId', Board.getOneById)
 app.get('/users/:user_id/boards', Board.getAllFromUserId)
 app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
-app.put('/boards', Board.update)
+app.put('/boards/:board_id', Board.update)
 app.delete('/boards/:board_id', Board.delete)
 app.post('/boards', Board.create)
 
