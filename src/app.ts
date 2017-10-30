@@ -15,7 +15,6 @@ import { Attachment } from './routes/attachment/attachment'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
-
 import { websockets } from './websockets/realtime'
 
 export const app = express()
