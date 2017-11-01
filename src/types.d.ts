@@ -5,3 +5,9 @@ declare namespace Express {
         requester: Requester
     }
 }
+
+declare namespace SocketIO {
+    export interface Socket {
+        requester: Requester
+    }
+}
