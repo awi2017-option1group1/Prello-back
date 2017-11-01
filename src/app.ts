@@ -16,6 +16,8 @@ import { Attachement } from './routes/attachement/attachement'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
+import { websockets } from './websockets/realtime'
+
 export const app = express()
 
 app.set('port', config.server.port)
@@ -29,6 +31,18 @@ app.use('*', requester())
 
 app.get('/', (req, res) => {
     res.json({ healthcheck: 'ok' })
+})
+
+app.post('/notify', (req, res) => {
+    websockets.sendEvent({
+        type: 'notification',
+        to: req.body.userId,
+        payload: {
+            title: 'Notification',
+            message: 'This notification is sent via socket.io-redis'
+        }
+    })
+    res.status(204).end()    
 })
 
 app.get('/protected', (req, res) => {
