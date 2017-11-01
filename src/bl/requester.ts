@@ -1,52 +1,96 @@
-// import * as jwt from 'jsonwebtoken'
-// import { getManager } from 'typeorm'
+import * as rq from 'request'
 
-// import { User } from '../entities/user'
-// import { encryptionKey } from '../config'
+import { config } from '../config'
+import { fullUrlFromString, AUTH_HOST } from '../url'
 
-// class TokenContent {
-//     userId: number
-//     token: string // User session token
-// }
+import { UserFacade } from './userFacade'
+import { User } from '../entities/user'
 
-// export interface Requester {
+export interface Requester {
 
-//     hasUID(userId: number): boolean
+    hasUID(userId: number): boolean
+    hasTID(teamId: number): boolean
 
-// }
+}
 
-// class EmptyRequester implements Requester {
+class EmptyRequester implements Requester {
 
-//     hasUID(userId: number): boolean {
-//         return false
-//     }
+    hasUID(userId: number): boolean {
+        return false
+    }
 
-// }
+    hasTID(teamId: number): boolean {
+        return false
+    }
 
-// class UserRequester implements Requester {
+}
 
-//     constructor(private user: User) {}
+class UserRequester implements Requester {
 
-//     hasUID(userId: number): boolean {
-//         return this.user.id === userId
-//     }
+    constructor(private user: User) {}
 
-// }
+    hasUID(userId: number): boolean {
+        return this.user.id === userId
+    }
 
-// export class RequesterFactory {
+    hasTID(teamId: number): boolean {
+        return false
+    }
 
-//     static empty = new EmptyRequester()
+}
 
-//     static async fromJWT(jwtToken: string): Promise<Requester> {
-//         const jwtTokenContent = <TokenContent> jwt.verify(jwtToken, encryptionKey)
-//         const user = await getManager().getRepository(User).findOne({
-//             token: jwtTokenContent.token
-//         })
-//         if (user) {
-//             return new UserRequester(user)
-//         } else {
-//             return RequesterFactory.empty
-//         }
-//     }
+export class RequesterToken {
+    token: string
+    type: 'header' | 'cookie'
+}
 
-// }
+export class TokenData {
+    user: {
+        uid: number
+    }
+}
+
+export class RequesterFactory {
+
+    static empty = new EmptyRequester()
+
+    static async fromToken(token: RequesterToken): Promise<Requester> {
+        try {
+            const tokenData = await RequesterFactory.retrieveTokenData(token)
+            const user = await UserFacade.getById(tokenData.user.uid)
+            if (user) {
+                return new UserRequester(user)
+            } else {
+                return RequesterFactory.empty
+            }           
+        } catch (e) {
+            console.error(e)
+            return RequesterFactory.empty
+        }
+    }
+
+    private static async retrieveTokenData(token: RequesterToken): Promise<TokenData> {
+        return new Promise<TokenData>((resolve, reject) => {
+            rq.get(
+                fullUrlFromString(`/data/token/${token.token}/${token.type}`, AUTH_HOST), 
+                {
+                    json: true,
+                    auth: {
+                        bearer: config.internalToken
+                    }
+                },
+                (reqErr, response, body) => {
+                    if (reqErr) {
+                        reject(reqErr)
+                    } else {
+                        if (response.statusCode! % 100 === 4) {
+                            reject(body)
+                        }
+                        resolve(body)
+                    }
+                }
+            )
+        }) 
+    }
+
+}
