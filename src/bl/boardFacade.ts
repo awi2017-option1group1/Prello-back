@@ -2,7 +2,7 @@ import { getManager, getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
-import { ParamsExtractor } from './paramsExtractor'
+import { ParamsExtractor } from './paramsExtractorv2'
 import { UserFacade } from './userFacade'
 import { List } from '../entities/list'
 import { Tag } from '../entities/tag'
@@ -58,11 +58,12 @@ export class BoardFacade {
         }
     }
 
-    static async update(boardReceived: Board, boardId: number): Promise<void> {
+    static async update(params: {}, boardId: number): Promise<Board> {
         try {
-            const board = ParamsExtractor.extract<Board>(['name', 'isPrivate'], boardReceived)
-            const repository = getManager().getRepository(Board)
-            return repository.updateById(boardId, board)
+            const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
+            const board = await BoardFacade.getById(boardId)
+            extractor.fill(board)
+            return await getRepository(Board).save(board)
         } catch (e) {
             throw new NotFoundException(e)
         }
@@ -94,10 +95,20 @@ export class BoardFacade {
         }
     }*/
 
-    static async create(board: Board): Promise<Board> {
+    static async create(params: {}): Promise<Board> {
         try {
-            let boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board)
-            return getManager().getRepository(Board).create(boardToCreate)
+            const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
+            const boardToInsert = extractor.fill(new Board())
+
+            if (!extractor.hasParam('name')) {
+                boardToInsert.name = 'EmptyName'
+            }
+
+            if (!extractor.hasParam('isPrivate')) {
+                boardToInsert.isPrivate = true
+            }
+
+            return getRepository(Board).save(boardToInsert)
         } catch (e) {
             throw new NotFoundException(e)
         }
