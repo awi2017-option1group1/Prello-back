@@ -66,10 +66,10 @@ app.delete('/lists/:listId', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
-app.get('/users/:user_id/boards', Board.getAllFromUserId)
-app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
-app.put('/boards/:board_id', Board.update)
-app.delete('/boards/:board_id', Board.delete)
+app.get('/users/:userId/boards', Board.getAllFromUserId)
+app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
+app.put('/boards/:boardId', Board.update)
+app.delete('/boards/:boardId', Board.delete)
 app.post('/boards', Board.create)
 
 // ---------    Card Routes   ---------
