@@ -45,7 +45,7 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5434/dev_prello'
+        url: process.env.DATABASE_URL || 'postgres://test_user:test@localhost:5432/test'
     },
 
     databaseTest: {
@@ -60,6 +60,6 @@ export const config: Config = {
     },
 
     websocket: {
-        path: process.env.WEBSOCKET_PATH || '/realtime' 
+        path: process.env.WEBSOCKET_PATH || '/realtime'
     }
 }
