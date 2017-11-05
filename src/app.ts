@@ -13,6 +13,7 @@ import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
 import { Attachement } from './routes/attachement/attachement'
+import { Comment } from './routes/comment/comment'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
@@ -96,6 +97,12 @@ app.get('attachement/:attachement_id', Attachement.getOneById)
 app.delete('/attachement/:attachement_id', Attachement.delete)
 app.post('/attachements', Task.create)
 app.post('/task/:task_id', Task.create)
+
+// ---------    Comment Routes   ---------
+app.get('/card/:card_id/comments', Comment.getAllFromCardId)
+app.delete('/comment/:comment_id', Comment.delete)
+app.post('card/:card_id/comment', Comment.create)
+// app.put('/comment', Comment.update)
 
 // ---------    TaskList Routes   ---------
 app.get('/cards/:card_id/taskLists/:taskList_id', TaskList.getAllFromCardId)

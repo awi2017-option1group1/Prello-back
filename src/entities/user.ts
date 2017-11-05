@@ -120,5 +120,5 @@ export class User {
     notifications: Promise<Notification[]>
 
     @OneToMany(type => Comment, comment => comment.user)
-    comments: Comment
+    comments: Promise<Comment[]>
  }

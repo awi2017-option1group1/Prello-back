@@ -1,8 +1,9 @@
 import { getManager } from 'typeorm'
  
 import { NotFoundException } from './errors/NotFoundException'
+import { MissingParameterException } from './errors/MissingParameterException'
 import { Comment } from '../entities/comment'
-import { ParamsExtractor } from './paramsExtractor'
+// import { ParamsExtractor } from './paramsExtractorv2'
 import { CardFacade } from './cardFacade'
 import { UserFacade } from './userFacade'
 
@@ -22,6 +23,7 @@ export class CommentFacade {
         }
     }
 
+    /*
     static async getAllFromUserId(userId: number): Promise<Comment[]> {
         try {
             const user = await UserFacade.getById(userId)
@@ -34,8 +36,9 @@ export class CommentFacade {
         } catch (e) {
             throw new NotFoundException(e)
         }
-    }
+    }*/
 
+    /*
     static async getById(commentId: number): Promise<Comment> {
         try {
             const comment = await getManager()
@@ -49,7 +52,7 @@ export class CommentFacade {
         } catch (e) {
             throw new NotFoundException(e)
         }
-    }
+    }*/
 
     static async delete(commentId: number): Promise<boolean> {
         try {
@@ -66,26 +69,49 @@ export class CommentFacade {
         }
     }
 
+    /*
     static async update(commentReceived: Comment): Promise<void> {
         try {
-            const commentToSave = ParamsExtractor.extract<Comment>(['type', 'content', 'date'], 
+            const commentToSave = ParamsExtractor.extract<Comment>(['content', 'createdDate'], 
                                                                    commentReceived)
             const repository = getManager().getRepository(Comment)
             return repository.updateById(commentReceived.id, commentToSave)
         } catch (e) {
             throw new NotFoundException(e)
         }
-    }
+    }*/
 
-    static async create(comment: Comment, cardId: number): Promise<Comment> {
+    static async create(params: {}, cardId: number): Promise<Comment> {
         try {
+
             let commentToCreate = new Comment()
-            commentToCreate = ParamsExtractor.extract<Comment>(['type', 'content', 'date'],
-                                                               comment)
+            let userId
+
+            // extract params
+            const properties = ['content', 'createdDate', 'userId']
+            properties.forEach(name => {
+                if (name === 'userId') {
+                    userId = params[name]
+                } else if (params.hasOwnProperty(name)) {
+                    // we have (name === 'content' || name === 'createdDate')
+                    commentToCreate[name] = params[name]
+                }
+            })
+            // add into user
+            if (userId !== undefined) {
+                commentToCreate.user = await UserFacade.getById(userId)
+                UserFacade.addComment(commentToCreate, userId)
+            } else {
+                throw new MissingParameterException('userId missing')
+            }
+            // add into card
             commentToCreate.card = await CardFacade.getById(cardId)
+            CardFacade.addComment(commentToCreate, cardId)
+
             return getManager().getRepository(Comment).save(commentToCreate)
         } catch (e) {
             throw new NotFoundException(e)
         }
     }
+
 }

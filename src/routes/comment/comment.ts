@@ -12,7 +12,8 @@ export class Comment {
             res.status(404).json({ message: e.message})
         }
     }
-    
+
+    /*
     static async getAllFromUserId(req: express.Request, res: express.Response) {
         try {
             const comments = await CommentFacade.getAllFromUserId(req.params.user_id)
@@ -20,16 +21,17 @@ export class Comment {
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }
+    }*/
 
-    static async getOneById(req: express.Request, res: express.Response) {
+    /*
+   static async getOneById(req: express.Request, res: express.Response) {
         try {
             const comment = await CommentFacade.getById(req.params.comment_id)
             res.status(200).json(comment)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }
+    }*/
 
     static async delete(req: express.Request, res: express.Response) {
         try {
@@ -44,6 +46,7 @@ export class Comment {
         }
     }
 
+    /*
     static async update(req: express.Request, res: express.Response) {
         try {
             const comment = CommentFacade.update(req.body)
@@ -51,11 +54,11 @@ export class Comment {
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }
+    }*/
 
     static async create(req: express.Request, res: express.Response) {
         try {
-            const comment = await CommentFacade.create(req.body, req.params.comment_id)
+            const comment = await CommentFacade.create(req.body, req.params.card_id)
             res.status(200).json(comment)
         } catch (e) {
             res.status(404).json({ message: e.message})

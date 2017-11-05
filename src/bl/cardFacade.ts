@@ -2,6 +2,7 @@ import { getManager } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Card } from '../entities/card'
+import { Comment } from '../entities/comment'
 import { ParamsExtractor } from './paramsExtractor'
 import { ListFacade } from './listFacade'
 
@@ -62,4 +63,20 @@ export class CardFacade {
             throw new NotFoundException(e)
         }
     }
+
+    static async addComment(comment: Comment, cardId: number): Promise<void> {
+        var card = await CardFacade.getById(cardId)
+        if (card) {
+            const comments = await card.comments
+            if (comments) {
+                card.comments = Promise.resolve(comments.concat(comment))
+                CardFacade.update(card)
+            } else {
+                throw new NotFoundException('No Card was found')
+            }
+        } else {
+            throw new NotFoundException('No Card was found')
+        }
+    }
+
 }

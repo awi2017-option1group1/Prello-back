@@ -7,6 +7,7 @@ import { NotFoundException } from './errors/NotFoundException'
 import { ValidationException } from './errors/ValidationException'
 
 import { User } from '../entities/user'
+import { Comment } from '../entities/comment'
 import { Password } from './password'
 
 export class UserFacade {
@@ -84,6 +85,21 @@ export class UserFacade {
             return repository.updateById(userReceived.id, userToSave)
         } catch (e) {
             throw new NotFoundException(e)
+        }
+    }
+
+    static async addComment(comment: Comment, userId: number): Promise<void> {
+        var user = await UserFacade.getById(userId)
+        if (user) {
+            const comments = await user.comments
+            if (comments) {
+                user.comments = Promise.resolve(comments.concat(comment))
+                UserFacade.update(user)
+            } else {
+                throw new NotFoundException('No User was found')
+            }
+        } else {
+            throw new NotFoundException('No User was found')
         }
     }
 
