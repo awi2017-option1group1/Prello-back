@@ -7,7 +7,10 @@ typeorm.createConnection(
     Object.assign(
         {}, 
         config[env],
-        { autoSchemaSync: true }
+        { 
+            synchronize: true,
+            dropSchema: true
+        }
     )
 ).then(function(connection) {
     console.log("Schema synchronized!");

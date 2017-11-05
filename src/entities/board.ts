@@ -12,8 +12,8 @@ export class Board {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('string')
-    title: string
+    @Column('varchar')
+    name: string
 
     @Column('boolean')
     isPrivate: boolean
@@ -25,23 +25,13 @@ export class Board {
     team: Team
 
     @ManyToMany(type => User, user => user.boards)
-    @JoinTable({
-        name: 'user_board',
-        joinColumn: {
-            name: 'board',
-            referencedColumnName: 'id'
-        },
-        inverseJoinColumn: {
-            name: 'user',
-            referencedColumnName: 'id'
-        },
-    })
-    users: User[]
+    @JoinTable()
+    users: Promise<User[]>
 
     @OneToMany(type => List, list => list.board)
-    lists: List[]
+    lists: Promise<List[]>
 
-    @ManyToMany(type => Tag, tag => tag.boards)
+    @OneToMany(type => Tag, tag => tag.board)
     @JoinTable({
         name: 'board_tag',
         joinColumn: {
@@ -53,5 +43,5 @@ export class Board {
             referencedColumnName: 'id'
         },
     })
-    tags: Tag[]
+    tags: Promise<Tag[]>
  }

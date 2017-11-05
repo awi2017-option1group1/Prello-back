@@ -1,3 +1,5 @@
-export class BaseError {
-    constructor(public message: string) {}
+export interface BaseError {
+    /* tslint:disable */
+    [key: string]: any
+    /* tslint:enable */
 }

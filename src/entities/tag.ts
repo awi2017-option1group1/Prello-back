@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne } from 'typeorm'
 import { IsIn } from 'class-validator'
 
 import { Card } from './card'
@@ -14,21 +14,19 @@ export class Tag {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: 'string',
-    })
-    label: string
+    @Column('varchar')
+    name: string
 
     @IsIn(colors)
-    @Column('string')
+    @Column('varchar')
     color: string
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
     @ManyToMany(type => Card, card => card.tags)
-    cards: Card[]
+    cards: Promise<Card[]>
 
-    @ManyToMany(type => Board, board => board.tags)
-    boards: Board[]
+    @ManyToOne(type => Board, board => board.tags)
+    board: Board
  }

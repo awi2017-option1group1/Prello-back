@@ -1,17 +1,15 @@
-import { getEntityManager } from 'typeorm'
+import { getManager } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Task } from '../entities/task'
+import { TaskListFacade } from './taskListFacade'
 import { ParamsExtractor } from './paramsExtractor'
 
 export class TaskFacade {
 
     static async getAllFromTaskListId(taskListId: number): Promise<Task[]> {
-        const tasks = await getEntityManager()
-                            .getRepository(Task)
-                            .find({
-                                    taskTist: taskListId
-                            })
+        const taskList = await TaskListFacade.getById(taskListId)
+        const tasks = taskList.tasks
         if (tasks) {
             return tasks
         } else {
@@ -20,7 +18,7 @@ export class TaskFacade {
     }
 
     static async getById(taskId: number): Promise<Task> {
-        const task = await getEntityManager()
+        const task = await getManager()
                             .getRepository(Task)
                             .findOneById(taskId)
         if (task) {
@@ -32,11 +30,10 @@ export class TaskFacade {
 
     static async delete(taskId: number): Promise<boolean> {
         try {
-            const taskToDelete = await TaskFacade.getById(taskId)
-            const deletedTask = await getEntityManager()
+            const deletionSuccess = await getManager()
                     .getRepository(Task)
-                    .remove(taskToDelete)
-            if (deletedTask) {
+                    .removeById(taskId)
+            if (deletionSuccess) {
                 return true
             } else {
                 return false
@@ -46,12 +43,11 @@ export class TaskFacade {
         }
     }
 
-    static async update(taskReceived: Task, taskToUpdate: Task): Promise<Task> {
+    static async update(taskReceived: Task): Promise<void> {
         try {
-            const taskToSave = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'],
-                                                             taskReceived, taskToUpdate)
-            const repository = getEntityManager().getRepository(Task)
-            return repository.persist(taskToSave)
+            const taskToSave = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'], taskReceived)
+            const repository = getManager().getRepository(Task)
+            return repository.updateById(taskReceived.id, taskToSave)
         } catch (e) {
             throw new NotFoundException(e)
         }
@@ -59,10 +55,9 @@ export class TaskFacade {
 
     static async create(task: Task, taskListId: number): Promise<Task> {
         try {
-            let taskToCreate = new Task()
-            taskToCreate = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'], 
-                                                         task, taskToCreate)
-            return getEntityManager().getRepository(Task).persist(taskToCreate)
+            let taskToCreate = ParamsExtractor.extract<Task>(['title', 'rank', 'isDone', 'taskList'], task)
+            taskToCreate.taskList = await TaskListFacade.getById(taskListId)
+            return getManager().getRepository(Task).create(taskToCreate)
         } catch (e) {
             throw new NotFoundException(e)
         }

@@ -10,13 +10,13 @@ export class Team {
     id: number
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         unique: true
     })
     name: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         nullable: true
     })
     description: string
@@ -28,8 +28,8 @@ export class Team {
 //            EXTERNAL LINKS
 // ------------------------------------
     @ManyToMany(type => User, user => user.teams)
-    users: User[]
+    users: Promise<User[]>
 
     @OneToMany(type => Board, board => board.team)
-    boards: Board[]
+    boards: Promise<Board[]>
  }

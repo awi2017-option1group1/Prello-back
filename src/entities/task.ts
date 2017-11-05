@@ -10,7 +10,7 @@ export class Task {
     id: number
 
     @Column({
-        type: 'string'
+        type: 'varchar'
     })
     title: string
 

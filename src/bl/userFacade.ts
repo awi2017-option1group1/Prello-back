@@ -1,31 +1,35 @@
-import { getEntityManager } from 'typeorm'
-import { v4 as uuidv4 } from 'uuid'
+import { getManager, getRepository } from 'typeorm'
+import { validate } from 'class-validator'
 
 import { ParamsExtractor } from './paramsExtractor'
 import { NotFoundException } from './errors/NotFoundException'
+
+import { ValidationException } from './errors/ValidationException'
+
 import { User } from '../entities/user'
 import { Password } from './password'
 
 export class UserFacade {
-    static async authenticate(email: string, password: string): Promise<User>  {
-        const userRepository = await getEntityManager().getRepository(User)
-        const user = await userRepository.findOne({
-            email
-        })
-        if (user && Password.compare(password, user.password)) {
-            if (!user.token) {
-                user.token = uuidv4()
-                await userRepository.persist(user)
-            }
-            return user
+    static async register(email: string, username: string, password?: string): Promise<User>  {
+        const user = new User()
+        user.email = email
+        user.username = username 
+        user.notificationsEnabled = true
+        user.confirmed = false
+        if (password) {
+            user.password = Password.encrypt(password)
+        }
+
+        const errors = await validate(user, { groups: ['registration'] })
+        if (errors.length === 0) {
+            return getManager().save(user)
         } else {
-            throw new NotFoundException('Password and email did not match')
+            throw new ValidationException(errors)
         }
     }
 
     static async getAll(): Promise<User[]>  {
-        const users = await getEntityManager()
-                            .getRepository(User)
+        const users = await getRepository(User)
                             .find()
         if (users) {
             return users
@@ -35,11 +39,9 @@ export class UserFacade {
     }
 
     static async getAllFromTeamId(teamId: number): Promise<User[]> {
-        const users = await getEntityManager()
+        const users = await getManager()
                             .getRepository(User)
-                            .find({
-                                    team: teamId
-                            })
+                            .find()
         if (users) {
             return users
         } else {
@@ -48,7 +50,7 @@ export class UserFacade {
     }
 
     static async getById(userId: number): Promise<User> {
-        const user = await getEntityManager()
+        const user = await getManager()
                             .getRepository(User)
                             .findOneById(userId)
         if (user) {
@@ -60,11 +62,10 @@ export class UserFacade {
 
     static async delete(userId: number): Promise<boolean> {
         try {
-            const userToDelete = await UserFacade.getById(userId)
-            const deletedUser = await getEntityManager()
+            const deletionSuccess = await getManager()
                     .getRepository(User)
-                    .remove(userToDelete)
-            if (deletedUser) {
+                    .removeById(userId)
+            if (deletionSuccess) {
                 return true
             } else {
                 return false
@@ -74,26 +75,13 @@ export class UserFacade {
         }
     }
 
-    static async update(userReceived: User, userToUpdate: User): Promise<User> {
+    static async update(userReceived: User): Promise<void> {
         try {
             const userToSave = ParamsExtractor.extract<User>(['firstname', 'lastname', 'biography',
                                                              'notificationsEnabled', 'email', 'password', 'token'],
-                                                             userReceived, userToUpdate)
-
-            const repository = getEntityManager().getRepository(User)
-            return repository.persist(userToSave)
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
-    }
-
-    static async create(user: User): Promise<User> {
-        try {
-            let userToCreate = new User()
-            userToCreate = ParamsExtractor.extract<User>(['firstname', 'lastname', 'biography',
-                                                         'notificationsEnabled', 'email', 'password', 'token'],
-                                                         user, userToCreate)
-            return getEntityManager().getRepository(User).persist(userToCreate)
+                                                             userReceived)
+            const repository = getManager().getRepository(User)
+            return repository.updateById(userReceived.id, userToSave)
         } catch (e) {
             throw new NotFoundException(e)
         }

@@ -22,7 +22,7 @@
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "copy-static-assets": "node copyStaticAssets.js",
-    "sync:schema": "node syncSchema.js"
+    "migrations": "node runMigrations.js"
   },
   "jest": {
     "globals": {
@@ -38,34 +38,42 @@
     "testMatch": [
       "**/test/**/*.test.(ts|js)"
     ],
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFiles": [
+      "./test/setupTests.ts"
+    ]
   },
   "dependencies": {
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.2",
     "class-validator": "^0.7.2",
     "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "express": "^4.14.0",
-    "jsonwebtoken": "^8.0.1",
     "lodash": "^4.17.4",
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
-    "typeorm": "^0.0.11",
-    "uuid": "^3.1.0"
+    "request": "^2.83.0",
+    "socket.io": "^2.0.4",
+    "socket.io-redis": "^5.2.0",
+    "typeorm": "^0.1.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^1.0.0",
     "@types/bcrypt-nodejs": "0.0.30",
     "@types/body-parser": "^1.16.5",
     "@types/compression": "0.0.33",
+    "@types/cookie-parser": "^1.4.1",
     "@types/cors": "^2.8.1",
     "@types/express": "^4.0.37",
     "@types/jest": "^19.2.2",
-    "@types/jsonwebtoken": "^7.2.3",
     "@types/lodash": "^4.14.77",
     "@types/node": "^7.0.43",
+    "@types/request": "^2.0.7",
+    "@types/socket.io": "^1.4.31",
+    "@types/socket.io-redis": "^1.0.22",
     "@types/supertest": "^2.0.3",
-    "@types/uuid": "^3.4.2",
     "concurrently": "^3.5.0",
     "jest": "^19.0.2",
     "nodemon": "^1.12.1",
