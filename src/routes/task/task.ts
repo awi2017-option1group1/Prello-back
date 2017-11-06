@@ -7,6 +7,7 @@ export class Task {
     static async getAllFromTaskListId(req: express.Request, res: express.Response) {
         try {
             const task = await TaskFacade.getAllFromTaskListId(req.params.id)
+            // req.params.id is the id of the Task
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})
@@ -50,6 +51,7 @@ export class Task {
     static async create(req: express.Request, res: express.Response) {
         try {
             const task = await TaskFacade.create(req.body, req.params.id)
+            // req.params.id is the id of the Task
             res.status(200).json(task)
         } catch (e) {
             res.status(404).json({ message: e.message})

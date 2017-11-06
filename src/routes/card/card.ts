@@ -13,7 +13,7 @@ export class Card {
             const cards = await CardFacade.getAllFromListId(req.params.id)
             res.status(200).json(cards)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -23,7 +23,7 @@ export class Card {
             // req.params.id is the id of the card
             res.status(200).json(card)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -37,7 +37,7 @@ export class Card {
                 res.status(404).json({ message : 'Not found'})
             }
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -46,7 +46,7 @@ export class Card {
             const card = await CardFacade.update(req.body, req.params.id)
             res.status(200).json(card)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -55,7 +55,7 @@ export class Card {
             const card = await CardFacade.create(req.body, req.params.id)
             res.status(200).json(card)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -67,7 +67,7 @@ export class Card {
             // req.params.id is the id of the card
             res.status(200).json(Attachment)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -77,7 +77,7 @@ export class Card {
             // req.params.id is the id of the card, req.body is an attachment to link to the card
             res.status(200).json(Attachment)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -89,7 +89,7 @@ export class Card {
             // req.params.id is the id of the card
             res.status(200).json(taskList)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -99,7 +99,7 @@ export class Card {
             // req.params.id is the id of the card
             res.status(200).json(taskList)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -111,7 +111,7 @@ export class Card {
             // req.params.id is the id of the card
             res.status(200).json(members)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -121,7 +121,7 @@ export class Card {
             // req.params.id is the id of the card, req.body is a user
             res.status(200).json(user)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -135,7 +135,7 @@ export class Card {
                 res.status(404).json({ message : 'Not found'})
             }
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -147,7 +147,7 @@ export class Card {
             // req.params.id is the id of the card
             res.status(200).json(labels)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -157,7 +157,7 @@ export class Card {
             // req.params.id is the id of the card, req.body is a label
             res.status(200).json(label)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 
@@ -171,7 +171,7 @@ export class Card {
                 res.status(404).json({ message : 'Not found'})
             }
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message})
         }
     }
 }

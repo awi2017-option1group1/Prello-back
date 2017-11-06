@@ -88,24 +88,25 @@ app.post('/boards', Board.create)
 
 // ---------    Card Routes   ---------
 app.get('/cards/:id', Card.getOneById)  
-app.get('/cards/:id/attachments', Card.getAllAttachments)  
-app.get('/cards/:id/checklists', Card.getAllChecklists)  
-app.get('/cards/:id/labels', Card.getAllLabels)  
-app.get('/cards/:id/members', Card.getAllMembers)  
-
 app.put('/cards/:id', Card.update)  
-
-app.post('/cards/:id/attachments', Card.createAttachment)   
-app.post('/cards/:id/checklists', Card.createChecklist)  
-app.post('/cards/:id/labels', Card.assignLabel)  
-app.post('/cards/:id/members', Card.assignMember)  
-
 app.delete('/cards/:id', Card.delete)
-app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById) 
+
+app.get('/cards/:id/attachments', Card.getAllAttachments) 
+app.post('/cards/:id/attachments', Card.createAttachment)    
+
+app.get('/cards/:id/checklists', Card.getAllChecklists) 
+app.post('/cards/:id/checklists', Card.createChecklist)  
+
+app.get('/cards/:id/labels', Card.getAllLabels)  
+app.post('/cards/:id/labels', Card.assignLabel) 
+app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById)  
+
+app.get('/cards/:id/members', Card.getAllMembers)  
+app.post('/cards/:id/members', Card.assignMember)  
 app.delete('/cards/:id/members/:idMember', Card.unassignMemberById) 
 
 // ---------    Task Routes   ---------
-app.get('checkitems/:id', Task.getOneById)
+app.get('/checkitems/:id', Task.getOneById)
 app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
 
@@ -115,7 +116,6 @@ app.delete('/attachment/:id', Attachment.delete)
 // ---------    TaskList Routes   ---------
 app.get('/checklists/:id', TaskList.getOneById) 
 app.get('/checklists/:id/checkItems', TaskList.getAllCheckItems)
-
 app.put('/checklists/:id', TaskList.update)
 app.post('/checklists/:id/checkItems', TaskList.createCheckItem)
 app.delete('/checklists/:id', TaskList.delete)

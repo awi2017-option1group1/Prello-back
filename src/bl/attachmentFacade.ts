@@ -1,4 +1,5 @@
 import { getManager } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { ParamsExtractor } from './paramsExtractor'
@@ -7,33 +8,20 @@ import { Attachment } from './../entities/attachment'
 
 export class AttachmentFacade {
 
-    static async delete(attachmentId: number): Promise<boolean> {
+    static async delete(attachmentId: number): Promise<void> {
         try {
-            const deletionSuccess = await getManager()
-                    .getRepository(Attachment)
-                    .removeById(attachmentId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
-            }
+            await getRepository(Attachment).removeById(attachmentId)
         } catch (e) {
-            throw new NotFoundException('No Attachment was found')
+            throw new NotFoundException(e)
         }
     }
 
     static async getAllFromCardId(cardId: number): Promise<Attachment[]> {
-        try {
-            const card = await CardFacade.getById(cardId)
-            const attachments = card.attachments
-            if (attachments) {
-                return attachments
-            } else {
-                throw new NotFoundException('No Attachement was found')
-            }
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
+        return await getRepository(Attachment)
+        .createQueryBuilder('attachment')
+        .leftJoin('attachment.card', 'card')
+        .where('card.id = :cardId', { cardId })
+        .getMany()
     }
 
     static async getById(attachementId: number): Promise<Attachment> {
@@ -44,7 +32,7 @@ export class AttachmentFacade {
             if (attachment) {
                 return attachment
             } else {
-                throw new NotFoundException('No Attachement was found')
+                throw new NotFoundException('Attachement not found')
             }
         } catch (e) {
             throw new NotFoundException(e)
