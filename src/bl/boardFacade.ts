@@ -25,18 +25,11 @@ export class BoardFacade {
     }
 
     static async getAllFromUserId(userId: number): Promise<Board[]> {
-        const user = await UserFacade.getById(userId)
-
-        if (user) {
-            const boards = await user.boards
-            if (boards) {
-                return boards
-            } else {
-                return []
-            }
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
+        return await getRepository(Board)
+            .createQueryBuilder('board')
+            .leftJoin('board.users', 'user')
+            .where('user.id = :userId', { userId: userId })
+            .getMany()
     }
 
     static async getById(boardId: number): Promise<Board> {
@@ -114,7 +107,7 @@ export class BoardFacade {
             }
 
             const user = await UserFacade.getById(userId)
-            boardToInsert.users = Promise.resolve([user])
+            boardToInsert.users = [user]
 
             return getRepository(Board).save(boardToInsert)
         } catch (e) {
