@@ -108,7 +108,7 @@ export class Board {
 
     static async create(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.create(req.body)
+            const board = await BoardFacade.create(req.body, req.params.userId)
             res.status(200).json(board)
         } catch (e) {
             res.status(404).json({ error: e.message})

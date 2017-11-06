@@ -26,9 +26,14 @@ export class BoardFacade {
 
     static async getAllFromUserId(userId: number): Promise<Board[]> {
         const user = await UserFacade.getById(userId)
-        const boards = await user.boards
-        if (boards) {
-            return boards
+
+        if (user) {
+            const boards = await user.boards
+            if (boards) {
+                return boards
+            } else {
+                return []
+            }
         } else {
             throw new NotFoundException('No Board was found')
         }
@@ -95,7 +100,7 @@ export class BoardFacade {
         }
     }*/
 
-    static async create(params: {}): Promise<Board> {
+    static async create(params: {}, userId: number): Promise<Board> {
         try {
             const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
             const boardToInsert = extractor.fill(new Board())
@@ -107,6 +112,9 @@ export class BoardFacade {
             if (!extractor.hasParam('isPrivate')) {
                 boardToInsert.isPrivate = true
             }
+
+            const user = await UserFacade.getById(userId)
+            boardToInsert.users = Promise.resolve([user])
 
             return getRepository(Board).save(boardToInsert)
         } catch (e) {
