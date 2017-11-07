@@ -34,9 +34,8 @@ app.get('/', (req, res) => {
 })
 
 app.post('/notify', (req, res) => {
-    websockets.sendEvent({
+    websockets.sendEventTo({ object: 'user', id: req.body.userId }, {
         type: 'notification',
-        to: req.body.userId,
         payload: {
             title: 'Notification',
             message: 'This notification is sent via socket.io-redis'
