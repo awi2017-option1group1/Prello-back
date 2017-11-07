@@ -8,12 +8,22 @@ import { User } from '../entities/user'
 
 export interface Requester {
 
+    getUID(): number
+    isEmptyRequester(): boolean
     hasUID(userId: number): boolean
     hasTID(teamId: number): boolean
 
 }
 
 class EmptyRequester implements Requester {
+
+    getUID(): number {
+        throw new Error('EmptyRequester do not have user id')
+    }
+
+    isEmptyRequester(): boolean {
+        return true
+    }
 
     hasUID(userId: number): boolean {
         return false
@@ -28,6 +38,14 @@ class EmptyRequester implements Requester {
 class UserRequester implements Requester {
 
     constructor(private user: User) {}
+
+    getUID(): number {
+        return this.user.id
+    }
+
+    isEmptyRequester(): boolean {
+        return false
+    }
 
     hasUID(userId: number): boolean {
         return this.user.id === userId
