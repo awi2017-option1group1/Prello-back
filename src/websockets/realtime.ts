@@ -4,14 +4,20 @@ import * as redisAdapter from 'socket.io-redis'
 
 import { config } from '../config'
 
+import { getRequesterFromCookies, getRequesterFromToken } from './authenticate'
+
 export class SocketEvent {
     type: string
-    to: string
     payload: {}
 }
 
-class WSToken {
+interface WSToken {
     token: string
+}
+
+export interface Channel {
+    object: string
+    id: number
 }
 
 export class WSServer {
@@ -51,32 +57,90 @@ export class WSServer {
         this.initialized = true
     }
 
-    sendEvent(event: SocketEvent) {
+    sendEventTo(channel: Channel, event: SocketEvent) {
         if (!this.isInitialized()) {
             throw new Error('WSServer is not initialized')
         }
 
-        this.server!.to(`user-${event.to}`).emit(event.type, event.payload)
+        console.log('send event', event, channel)
+        this.server!.to(this.channelToString(channel)).emit(event.type, event.payload)  
+    }
+
+    public disconnect(socket: SocketIO.Socket, reason?: string) {
+        if (reason) {
+            socket.emit(reason)
+        }
+        socket.disconnect()
     }
 
     private isInitialized() {
         return this.initialized
     }
 
+    /**
+     * Check the identity of the user who is connected.
+     * 1. If the requester has a login cookie, try to authorize him
+     * 1.1.   If the cookie is invalid, stop the connection
+     * 1.2.   Else authorize him
+     * 2. Else, wait until receiving an 'authorize' message with a valid token
+     */
     private onConnect(socket: SocketIO.Socket) {
         socket.emit('connected')
-        socket.on('authorize', this.onAuthorize(socket))
+        getRequesterFromCookies(socket.handshake.headers.cookie)
+        .then(
+            requester => {
+                if (requester.isEmptyRequester()) {
+                    this.disconnect(socket, 'unauthorized')
+                } else {
+                    socket.requester = requester
+                    this.authorize(socket)
+                }
+            }
+        )
+        .catch(
+            error => {
+                socket.on('authorize', this.onAuthorize(socket))
+            }
+        )
+    }
+
+    private authorize(socket: SocketIO.Socket) {
+        socket.emit('authorized')
+
+        socket.join(this.channelToString({
+            object: 'user',
+            id: socket.requester.getUID()
+        }))
+
+        socket.on('request-connection', (to: Channel) => {
+            // TODO: check authorization
+            console.log('connection requested', to)
+            socket.join(this.channelToString(to))
+        })
+
+        socket.on('remove-connection', (to: Channel) => {
+            socket.leave(this.channelToString(to))
+        })
     }
 
     private onAuthorize(socket: SocketIO.Socket) {
         return (token: WSToken) => {
-            if (token.token === '1') {
-                socket.emit('authorized')
-                socket.join(`user-${token.token}`)
-            } else {
-                socket.emit('unauthorized')
-            }          
+            getRequesterFromToken(token.token)
+            .then(
+                requester => {
+                    if (requester.isEmptyRequester()) {
+                        this.disconnect(socket, 'unauthorized')
+                    } else {
+                        socket.requester = requester
+                        this.authorize(socket)
+                    }
+                }
+            )        
         }
+    }
+
+    private channelToString(channel: Channel) {
+        return `${channel.object}-${channel.id}`
     }
 
 }

@@ -2,9 +2,10 @@ import * as express from 'express'
 import * as compression from 'compression'
 import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
+import * as cookieParser from 'cookie-parser'
 
 import { config } from './config'
-// import { RequesterFactory } from './bl/requester'
+import requester from './requesterMiddleware'
 
 import { Register } from './routes/user/register'
 import { User } from './routes/user/user'
@@ -22,31 +23,19 @@ export const app = express()
 app.set('port', config.server.port)
 app.use(compression())
 app.use(cors())
+app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-/*
-app.use('*', (req, res, next) => {
-    const auth = req.get('authorization')
-    if (auth) {
-        const token = auth.substring('Bearer '.length)
-        RequesterFactory.fromJWT(token).then((requester) => {
-            req.requester = requester
-            next()
-        })
-    } else {
-        req.requester = RequesterFactory.empty
-        next()
-    }
-})*/
+
+app.use('*', requester())
 
 app.get('/', (req, res) => {
     res.json({ healthcheck: 'ok' })
 })
 
 app.post('/notify', (req, res) => {
-    websockets.sendEvent({
+    websockets.sendEventTo({ object: 'user', id: req.body.userId }, {
         type: 'notification',
-        to: req.body.userId,
         payload: {
             title: 'Notification',
             message: 'This notification is sent via socket.io-redis'

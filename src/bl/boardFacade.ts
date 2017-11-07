@@ -5,9 +5,16 @@ import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractor'
 import { UserFacade } from './userFacade'
 import { List } from '../entities/list'
+import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
 
 export class BoardFacade {
+
+    static async checkAuthorization(board: Board, user: User) {
+        return true
+        // const users = await board.users
+        // return users.findIndex(u => u.id === user.id) !== -1
+    }
 
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
         const boards = await getManager()
