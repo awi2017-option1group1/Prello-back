@@ -12,7 +12,7 @@ import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
-import { Attachement } from './routes/attachement/attachement'
+import { Attachment } from './routes/attachment/attachment'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
@@ -34,15 +34,14 @@ app.get('/', (req, res) => {
 })
 
 app.post('/notify', (req, res) => {
-    websockets.sendEvent({
+    websockets.sendEventTo({ object: 'user', id: req.body.userId }, {
         type: 'notification',
-        to: req.body.userId,
         payload: {
             title: 'Notification',
             message: 'This notification is sent via socket.io-redis'
         }
     })
-    res.status(204).end()    
+    res.status(204).end()
 })
 
 app.get('/protected', (req, res) => {
@@ -70,36 +69,44 @@ app.delete('/lists/:listId', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
-app.get('/users/:user_id/boards', Board.getAllFromUserId)
-app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
-app.put('/boards', Board.update)
-app.delete('/boards/:board_id', Board.delete)
-app.post('/boards', Board.create)
+app.get('/users/:userId/boards', Board.getAllFromUserId)
+app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
+app.put('/boards/:boardId', Board.update)
+app.delete('/boards/:boardId', Board.delete)
+app.post('/users/:userId/boards', Board.create)
 
 // ---------    Card Routes   ---------
-app.get('/cards/:card_id', Card.getOneById)
-app.get('/boards/:board_id/lists/:list_id/cards', Card.getAllFromListId)
-app.put('/cards', Card.update)
-app.delete('/cards/:card_id', Card.delete)
-app.post('/boards/:board_id/lists/:list_id/cards', Card.create)
+app.get('/lists/:listId/cards', Card.getAllFromListId)
+app.post('/lists/:listId/cards', Card.insertFromListId)
+app.get('/cards/:cardId', Card.getOneById)  
+app.put('/cards/:cardId', Card.update)  
+app.delete('/cards/:cardId', Card.delete)
+
+app.get('/cards/:id/attachments', Card.getAllAttachments) 
+app.post('/cards/:id/attachments', Card.createAttachment)    
+
+app.get('/cards/:id/checklists', Card.getAllChecklists) 
+app.post('/cards/:id/checklists', Card.createChecklist)  
+
+app.get('/cards/:id/labels', Card.getAllLabels)  
+app.post('/cards/:id/labels', Card.assignLabel) 
+app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById)  
+
+app.get('/cards/:cardId/members', Card.getAllMembers)  
+app.post('/cards/:cardId/members', Card.assignMember)  
+app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById) 
 
 // ---------    Task Routes   ---------
-app.get('/taskList/:taskList_id/lists', Task.getAllFromTaskListId)
-app.get('task/:task_id', Task.getOneById)
-app.put('/task', Task.update)
-app.delete('/task/:task_id', Task.delete)
-app.post('/tasks', Task.create)
+app.get('/checkitems/:id', Task.getOneById)
+app.put('/checkitems/:id', Task.update)
+app.delete('/checkitems/:id', Task.delete)
 
-// ---------    Attachement Routes   ---------
-app.get('/card/:card_id/attachements', Attachement.getAllFromCardId)
-app.get('attachement/:attachement_id', Attachement.getOneById)
-app.delete('/attachement/:attachement_id', Attachement.delete)
-app.post('/attachements', Task.create)
-app.post('/task/:task_id', Task.create)
+// ---------    Attachment Routes   --------- 
+app.delete('/attachment/:id', Attachment.delete) 
 
 // ---------    TaskList Routes   ---------
-app.get('/cards/:card_id/taskLists/:taskList_id', TaskList.getAllFromCardId)
-app.get('taskList/:taskList_id', TaskList.getOneById)
-app.put('/taskList', TaskList.update)
-app.delete('/taskList/:taskList_id', TaskList.delete)
-app.post('/taskList/:taskList_id', TaskList.create)
+app.get('/checklists/:id', TaskList.getOneById) 
+app.get('/checklists/:id/checkItems', TaskList.getAllCheckItems)
+app.put('/checklists/:id', TaskList.update)
+app.post('/checklists/:id/checkItems', TaskList.createCheckItem)
+app.delete('/checklists/:id', TaskList.delete)

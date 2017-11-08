@@ -27,7 +27,7 @@ export class List {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ error: e.message })
+            res.status(400).json({ error: e.message })
         }
     }
 
@@ -40,20 +40,20 @@ export class List {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ error: e.message})
+            res.status(400).json({ error: e.message})
         }
     }
 
     static async delete(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.listId)) {
-                ListFacade.delete(req.params.listId)
+                await ListFacade.delete(req.params.listId)
                 res.status(204).end()
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ error: e.message})
+            res.status(400).json({ error: e.message})
         }
     }
 }

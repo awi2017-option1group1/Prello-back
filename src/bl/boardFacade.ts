@@ -2,12 +2,19 @@ import { getManager, getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
-import { ParamsExtractor } from './paramsExtractor'
+import { ParamsExtractor } from './paramsExtractorv2'
 import { UserFacade } from './userFacade'
 import { List } from '../entities/list'
+import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
 
 export class BoardFacade {
+
+    static async checkAuthorization(board: Board, user: User) {
+        return true
+        // const users = await board.users
+        // return users.findIndex(u => u.id === user.id) !== -1
+    }
 
     static async getAllFromTeamId(teamId: number): Promise<Board[]> {
         const boards = await getManager()
@@ -25,13 +32,11 @@ export class BoardFacade {
     }
 
     static async getAllFromUserId(userId: number): Promise<Board[]> {
-        const user = await UserFacade.getById(userId)
-        const boards = await user.boards
-        if (boards) {
-            return boards
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
+        return await getRepository(Board)
+            .createQueryBuilder('board')
+            .leftJoin('board.users', 'user')
+            .where('user.id = :userId', { userId: userId })
+            .getMany()
     }
 
     static async getById(boardId: number): Promise<Board> {
@@ -58,11 +63,12 @@ export class BoardFacade {
         }
     }
 
-    static async update(boardReceived: Board, boardId: number): Promise<void> {
+    static async update(params: {}, boardId: number): Promise<Board> {
         try {
-            const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
-            const repository = getManager().getRepository(Board)
-            return repository.updateById(boardId, board)
+            const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
+            const board = await BoardFacade.getById(boardId)
+            extractor.fill(board)
+            return await getRepository(Board).save(board)
         } catch (e) {
             throw new NotFoundException(e)
         }
@@ -94,10 +100,23 @@ export class BoardFacade {
         }
     }*/
 
-    static async create(board: Board): Promise<Board> {
+    static async create(params: {}, userId: number): Promise<Board> {
         try {
-            let boardToCreate = ParamsExtractor.extract<Board>(['title', 'isPrivate'], board)
-            return getManager().getRepository(Board).create(boardToCreate)
+            const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
+            const boardToInsert = extractor.fill(new Board())
+
+            if (!extractor.hasParam('name')) {
+                boardToInsert.name = 'EmptyName'
+            }
+
+            if (!extractor.hasParam('isPrivate')) {
+                boardToInsert.isPrivate = true
+            }
+
+            const user = await UserFacade.getById(userId)
+            boardToInsert.users = [user]
+
+            return getRepository(Board).save(boardToInsert)
         } catch (e) {
             throw new NotFoundException(e)
         }

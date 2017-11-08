@@ -26,7 +26,7 @@ export class Board {
 
     @ManyToMany(type => User, user => user.boards)
     @JoinTable()
-    users: Promise<User[]>
+    users: User[]
 
     @OneToMany(type => List, list => list.board)
     lists: Promise<List[]>
