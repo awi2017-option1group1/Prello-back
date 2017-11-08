@@ -1,0 +1,17 @@
+set NODE_ENV="development"
+set HOST="http://localhost"
+set PORT=5000
+set API_SUFFIX="api"
+set AUTH_SUFFIX="auth"
+set TYPEORM_CONNECTION="postgres"
+set TYPEORM_HOST="localhost"
+set TYPEORM_PORT=5434
+set TYPEORM_USERNAME="postgres"
+set TYPEORM_PASSWORD="postgres"
+set TYPEORM_DATABASE="dev_prello"
+set TYPEORM_ENTITIES="dist/entities/*.js"
+set TYPEORM_MIGRATIONS="dist/migrations/*.js"
+set TYPEORM_ENTITIES_DIR="src/entities"
+set TYPEORM_MIGRATIONS_DIR="src/migrations"
+set DATABASE_TYPE="postgres"
+set DATABASE_URL="postgres://postgres:root@localhost:5434/dev_prello"

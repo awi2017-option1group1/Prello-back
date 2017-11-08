@@ -16,10 +16,18 @@ export interface RealTimeEvent {
 export class RealTimeFacade {
 
     static sendEvent(event: RealTimeEvent) {
+        try {
+            RealTimeFacade.sendEventWithException(event)
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    static sendEventWithException(event: RealTimeEvent) {
         websockets.sendEventTo(event.about, {
             type: event.type,
             payload: event.payload
-        })
+        })      
     }
 
     static sendNotification() {
