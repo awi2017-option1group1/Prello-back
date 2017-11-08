@@ -48,7 +48,7 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5432/dev_prello'
+        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5434/dev_prello'
 
     },
 
