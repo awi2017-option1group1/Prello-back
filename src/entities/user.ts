@@ -87,7 +87,8 @@ export class User {
 
     @Column({
         type: 'varchar',
-        nullable: true
+        nullable: true,
+        select: false
     })
     password: string | null
 
@@ -124,5 +125,5 @@ export class User {
     comments: Comment
 
     @ManyToMany(type => Card, card => card.members)
-    cards: Promise<Card[]>
+    cards: Card[]
  }

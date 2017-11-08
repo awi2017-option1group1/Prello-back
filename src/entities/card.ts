@@ -14,10 +14,15 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('varchar')
+    @Column({
+        type: 'varchar'
+    })
     name: string
 
-    @Column('boolean')
+    @Column({
+        type: 'boolean',
+        default: false
+    })
     closed: boolean
 
     @Column({
@@ -27,16 +32,20 @@ export class Card {
     desc: string
 
     @Column({
-        type: 'date'
+        type: 'date',
+        nullable: true
     })
     due: Date
     
     @Column({
-        type: 'date'
+        type: 'date',
+        nullable: true
     })
     dueComplete: Date
 
-    @Column('int')
+    @Column({
+        type: 'int'
+    })
     pos: number
 
 // ------------------------------------
@@ -54,7 +63,7 @@ export class Card {
             referencedColumnName: 'id'
         },
     })
-    tags: Promise<Tag[]>
+    tags: Tag[]
 
     @ManyToMany(type => User, user => user.cards)
     @JoinTable({
@@ -68,17 +77,17 @@ export class Card {
             referencedColumnName: 'id'
         },
     })
-    members: Promise<User[]>
+    members: User[]
 
     @ManyToOne(type => List, list => list.cards)
     list: List
 
     @OneToMany(type => TaskList, taskList => taskList.card)
-    tasksLists: Promise<TaskList[]>
+    tasksLists: TaskList[]
 
     @OneToMany(type => Comment, comment => comment.card)
-    comments: Promise<Comment[]>
+    comments: Comment[]
 
     @OneToMany(type => Attachment, attachment => attachment.card)
-    attachments: Promise<Attachment[]>
+    attachments: Attachment[]
  }

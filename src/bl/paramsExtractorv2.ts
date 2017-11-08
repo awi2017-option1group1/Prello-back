@@ -14,6 +14,10 @@ export class ParamsExtractor<T> {
         return this.final.hasOwnProperty(name)
     }
 
+    public getParam(name: string) {
+        return this.final[name]
+    }
+
     public fill(entity: T): T {
         Object.keys(this.final).forEach(key => {
             entity[key] = this.final[key]

@@ -76,9 +76,11 @@ app.delete('/boards/:board_id', Board.delete)
 app.post('/boards', Board.create)
 
 // ---------    Card Routes   ---------
-app.get('/cards/:id', Card.getOneById)  
-app.put('/cards/:id', Card.update)  
-app.delete('/cards/:id', Card.delete)
+app.get('/lists/:listId/cards', Card.getAllFromListId)
+app.post('/lists/:listId/cards', Card.insertFromListId)
+app.get('/cards/:cardId', Card.getOneById)  
+app.put('/cards/:cardId', Card.update)  
+app.delete('/cards/:cardId', Card.delete)
 
 app.get('/cards/:id/attachments', Card.getAllAttachments) 
 app.post('/cards/:id/attachments', Card.createAttachment)    
@@ -90,9 +92,9 @@ app.get('/cards/:id/labels', Card.getAllLabels)
 app.post('/cards/:id/labels', Card.assignLabel) 
 app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById)  
 
-app.get('/cards/:id/members', Card.getAllMembers)  
-app.post('/cards/:id/members', Card.assignMember)  
-app.delete('/cards/:id/members/:idMember', Card.unassignMemberById) 
+app.get('/cards/:cardId/members', Card.getAllMembers)  
+app.post('/cards/:cardId/members', Card.assignMember)  
+app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById) 
 
 // ---------    Task Routes   ---------
 app.get('/checkitems/:id', Task.getOneById)
