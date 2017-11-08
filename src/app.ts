@@ -41,7 +41,7 @@ app.post('/notify', (req, res) => {
             message: 'This notification is sent via socket.io-redis'
         }
     })
-    res.status(204).end()    
+    res.status(204).end()
 })
 
 app.get('/protected', (req, res) => {
@@ -69,11 +69,11 @@ app.delete('/lists/:listId', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
-app.get('/users/:user_id/boards', Board.getAllFromUserId)
-app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
-app.put('/boards', Board.update)
-app.delete('/boards/:board_id', Board.delete)
-app.post('/boards', Board.create)
+app.get('/users/:userId/boards', Board.getAllFromUserId)
+app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
+app.put('/boards/:boardId', Board.update)
+app.delete('/boards/:boardId', Board.delete)
+app.post('/users/:userId/boards', Board.create)
 
 // ---------    Card Routes   ---------
 app.get('/lists/:listId/cards', Card.getAllFromListId)
