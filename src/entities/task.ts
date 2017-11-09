@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
-import { TaskList } from './taskList'
+import { CheckList } from './checkList'
 
 @Entity()
 export class Task {
@@ -27,6 +27,6 @@ export class Task {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => TaskList, taskList => taskList.tasks)
-    taskList: TaskList
+    @ManyToOne(type => CheckList, checkList => checkList.tasks)
+    checkList: CheckList
  }

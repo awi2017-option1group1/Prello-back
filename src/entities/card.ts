@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, OneToMany } from 'typeorm'
 import { Tag } from './tag'
 import { List } from './list'
-import { TaskList } from './taskList'
+import { CheckList } from './checkList'
 import { Comment } from './comment'
 import { Attachment } from './attachment'
 import { User } from './user'
@@ -36,7 +36,7 @@ export class Card {
         nullable: true
     })
     due: Date
-    
+
     @Column({
         type: 'date',
         nullable: true
@@ -82,8 +82,8 @@ export class Card {
     @ManyToOne(type => List, list => list.cards)
     list: List
 
-    @OneToMany(type => TaskList, taskList => taskList.card)
-    tasksLists: TaskList[]
+    @OneToMany(type => CheckList, checkList => checkList.card)
+    checkLists: CheckList[]
 
     @OneToMany(type => Comment, comment => comment.card)
     comments: Comment[]

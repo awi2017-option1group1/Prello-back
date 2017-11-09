@@ -2,13 +2,13 @@ import { getManager } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Task } from '../entities/task'
-import { TaskListFacade } from './taskListFacade'
+import { CheckListFacade } from './checkListFacade'
 import { ParamsExtractor } from './paramsExtractor'
 
 export class TaskFacade {
 
     static async getAllFromTaskListId(taskListId: number): Promise<Task[]> {
-        const taskList = await TaskListFacade.getById(taskListId)
+        const taskList = await CheckListFacade.getById(taskListId)
         const tasks = taskList.tasks
         if (tasks) {
             return tasks
@@ -58,7 +58,7 @@ export class TaskFacade {
         try {
             let taskToCreate = ParamsExtractor.extract<Task>(
                 ['name', 'pos', 'state'], task)
-            taskToCreate.taskList = await TaskListFacade.getById(taskListId)
+            taskToCreate.checkList = await CheckListFacade.getById(taskListId)
             return getManager().getRepository(Task).create(taskToCreate)
         } catch (e) {
             throw new NotFoundException(e)

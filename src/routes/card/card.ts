@@ -6,6 +6,7 @@ import { CardFacade } from '../../bl/cardFacade'
 import { AttachmentFacade } from '../../bl/attachmentFacade'
 import { TaskListFacade } from '../../bl/taskListFacade'
 import { TagFacade } from '../../bl/tagFacade'
+import { CheckListFacade } from '../../bl/checkListFacade'
 
 export class Card {
 
@@ -103,17 +104,20 @@ export class Card {
 
     static async getAllChecklists(req: express.Request, res: express.Response) {
         try {
-            const taskList = await TaskListFacade.getAllFromCardId(req.params.id)
-            // req.params.id is the id of the card
-            res.status(200).json(taskList)
+            if (isInteger(req.params.id)) {
+                const checkList = await CheckListFacade.create(req.params.cardId, req.body)
+                res.status(201).json(checkList)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
         } catch (e) {
-            res.status(404).json({ error: e.message})
+            res.status(400).json({ error: e.message })
         }
     }
 
     static async createChecklist(req: express.Request, res: express.Response) {
         try {
-            const taskList = await TaskListFacade.create(req.body, req.params.id)
+            const taskList = await CheckListFacade.create(req.body, req.params.id)
             // req.params.id is the id of the card
             res.status(200).json(taskList)
         } catch (e) {
@@ -130,7 +134,7 @@ export class Card {
                 res.status(200).json(members)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
-            }  
+            }
         } catch (e) {
             res.status(400).json({ error: e.message })
         }
@@ -139,11 +143,11 @@ export class Card {
     static async assignMember(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.cardId)) {
-                const user = await CardFacade.assignMember(req.params.cardId, req.body) 
+                const user = await CardFacade.assignMember(req.params.cardId, req.body)
                 res.status(200).json(user)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
-            }  
+            }
         } catch (e) {
             res.status(400).json({ error: e.message })
         }
@@ -156,7 +160,7 @@ export class Card {
                 res.status(204).end()
             } else {
                 res.status(400).json({ error: 'Invalid request parameters' })
-            }  
+            }
         } catch (e) {
             res.status(400).json({ error: e.message })
         }
