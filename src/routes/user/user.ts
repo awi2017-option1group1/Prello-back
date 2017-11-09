@@ -46,7 +46,7 @@ export class User {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const user = await UserFacade.update(req.body)
+            const user = await UserFacade.update(req.params.userId, req.body)
             res.status(200).json(user)
         } catch (e) {
             res.status(404).json({ message: e.message})
