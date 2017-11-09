@@ -45,7 +45,8 @@ export class TaskListFacade {
 
     static async update(taskListReceived: TaskList, taskListToUpdate: TaskList): Promise<void> {
         try {
-            const taskListToSave = ParamsExtractor.extract<TaskList>(['title'], taskListReceived)
+            const taskListToSave = ParamsExtractor.extract<TaskList>(
+                ['name', 'pos'], taskListReceived)
             const repository = getManager().getRepository(TaskList)
             return repository.updateById(taskListReceived.id, taskListToSave)
         } catch (e) {
@@ -55,7 +56,8 @@ export class TaskListFacade {
 
     static async create(taskList: TaskList, cardId: number): Promise<TaskList> {
         try {
-            let taskListToCreate = ParamsExtractor.extract<TaskList>(['title', 'card'], taskList)
+            let taskListToCreate = ParamsExtractor.extract<TaskList>(
+                ['name', 'pos'], taskList)
             taskListToCreate.card = await CardFacade.getById(cardId)
             return getManager().getRepository(TaskList).create(taskListToCreate)
         } catch (e) {

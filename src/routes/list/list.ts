@@ -47,7 +47,7 @@ export class List {
     static async delete(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.listId)) {
-                ListFacade.delete(req.params.listId)
+                await ListFacade.delete(req.params.listId)
                 res.status(204).end()
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })

@@ -19,7 +19,7 @@ export class List {
     pos: number
 
     @OneToMany(type => Card, card => card.list)
-    cards: Promise<Card[]>
+    cards: Card[]
 
     @ManyToOne(type => Board, board => board.lists)
     board: Board

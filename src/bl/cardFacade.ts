@@ -1,65 +1,230 @@
-import { getManager } from 'typeorm'
+import { getManager, getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
-import { Card } from '../entities/card'
-import { ParamsExtractor } from './paramsExtractor'
+import { BadRequest } from './errors/BadRequest'
+import { ParamsExtractor } from './paramsExtractorv2'
+
 import { ListFacade } from './listFacade'
+import { UserFacade } from './userFacade'
+import { TagFacade } from './tagFacade'
+
+import { User } from '../entities/user'
+import { Tag } from '../entities/tag'
+import { Card } from '../entities/card'
+
+import { RealTimeFacade } from './realtimeFacade'
+import { cardCreated, cardUpdated, cardDeleted } from './realtime/realtimeCard'
 
 export class CardFacade {
 
     static async getAllFromListId(listId: number): Promise<Card[]> {
-        const list = await ListFacade.getById(listId)
-        const cards = list.cards
-        if (cards) {
-            return cards
-        } else {
-            throw new NotFoundException('No Card was found')
-        }
+        return await getRepository(Card)
+            .createQueryBuilder('card')
+            .leftJoin('card.list', 'list')
+            .where('list.id = :listId', { listId })
+            .orderBy({ 'card.pos': 'ASC' })
+            .getMany()
     }
 
-    static async getById(cardId: number): Promise<Card> {
-        const card = await getManager()
-                            .getRepository(Card)
-                            .findOneById(cardId)
+    static async getById(cardId: number, options?: {}): Promise<Card> {
+        const card = await getRepository(Card).findOne({
+            ...options,
+            where: {
+                id: cardId
+            }
+        })
         if (card) {
             return card
         } else {
-            throw new NotFoundException('No Card was found')
+            throw new NotFoundException('Card not found')
         }
     }
 
-    static async delete(cardId: number): Promise<boolean> {
+    static async getByIdWithBoard(cardId: number): Promise<Card> {
+        const card = await getRepository(Card)
+            .createQueryBuilder('card')
+            .leftJoinAndSelect('card.list', 'list')
+            .leftJoinAndSelect('list.board', 'board')
+            .where('card.id = :cardId', { cardId })
+            .getOne()
+        if (card) {
+            return card
+        } else {
+            throw new NotFoundException('Card not found')
+        }
+    }
+
+    static async getMaxPosForListId(listId: number): Promise<number> {
+        const { max } = await getRepository(Card)
+            .createQueryBuilder('card')
+            .select('MAX(card.pos)', 'max')
+            .leftJoin('card.list', 'list')
+            .where('list.id = :listId', { listId })
+            .getRawOne()
+        return max
+    }
+
+    static async insertFromListId(listId: number, params: {}): Promise<Card> {
         try {
-            const deletionSuccess = await getManager()
-                    .getRepository(Card)
-                    .removeById(cardId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
+            const extractor = new ParamsExtractor<Card>(params)
+                .require(['name'])
+                .permit(['closed', 'desc', 'due', 'dueComplete', 'pos'])
+            const cardToInsert = extractor.fill(new Card())
+
+            if (!extractor.hasParam('pos')) {
+                const maxPos = await CardFacade.getMaxPosForListId(listId)
+                cardToInsert.pos = maxPos + 1
             }
+
+            const attachedList = await ListFacade.getById(listId, { relations: ['board'] })
+            cardToInsert.list = attachedList
+
+            const card = await getRepository(Card).save(cardToInsert)
+
+            const board = attachedList.board
+            delete card.list // Remove the list property from the card object to not send it in the response
+
+            RealTimeFacade.sendEvent(cardCreated(card, board.id))
+            return card
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
 
-    static async update(cardReceived: Card): Promise<void> {
+    static async update(cardId: number, params: {}): Promise<Card> {
         try {
-            const cardToSave = ParamsExtractor.extract<Card>(['title', 'description', 'dueDate', 'rank'], cardReceived)
-            const repository = getManager().getRepository(Card)
-            return repository.updateById(cardReceived.id, cardToSave)
+            const extractor = new ParamsExtractor<Card>(params)
+                .permit(['name', 'closed', 'desc', 'due', 'dueComplete', 'pos', 'listId'])
+            
+            const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
+            extractor.fill(cardToUpdate)
+
+            if (extractor.hasParam('listId')) {
+                const newList = await ListFacade.getById(extractor.getParam('listId'), { relations: ['board'] })
+                if (newList && newList.board.id === cardToUpdate.list.board.id) {
+                    cardToUpdate.list = newList
+                } else {
+                    throw new BadRequest('The card needs to stay in the same board')
+                }
+            }
+
+            const card = await getRepository(Card).save(cardToUpdate)
+
+            const board = card.list.board
+            delete card.list // Remove the list property from the card object to not send it in the response
+
+            RealTimeFacade.sendEvent(cardUpdated(card, board.id))
+            return card
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
 
-    static async create(card: Card, listId: number): Promise<Card> {
+    static async delete(cardId: number): Promise<void> {
         try {
-            let cardToCreate = ParamsExtractor.extract<Card>(['title', 'rank', 'description', 'dueDate'], card)
-            cardToCreate.list = await ListFacade.getById(listId)
-            return getManager().getRepository(Card).save(cardToCreate)
+            const card = await CardFacade.getByIdWithBoard(cardId)
+
+            const boardId = card.list.board.id
+            delete card.list
+
+            await getRepository(Card).removeById(cardId)
+
+            RealTimeFacade.sendEvent(cardDeleted(card, boardId))
+            return
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    // --------------- Members ---------------
+
+    static async getAllMembersFromCardId(cardId: number): Promise<User[]> {
+        const users = await CardFacade.getById(cardId, { relations: ['members'] })
+        return users.members
+    }
+
+    static async assignMember(cardId: number, params: {}): Promise<User> {
+        const extractor = new ParamsExtractor<Card>(params).require(['userId'])
+
+        const userToAssign = await UserFacade.getById(extractor.getParam('userId'))
+        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['members'] })
+
+        cardToUpdate.members = cardToUpdate.members.concat(userToAssign)
+
+        await getRepository(Card).save(cardToUpdate)
+        return userToAssign
+    }
+
+    static async unassignMemberById(cardId: number, memberId: number): Promise<void> {
+        const userToUnassign = await UserFacade.getById(memberId)
+        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['members'] })
+
+        cardToUpdate.members = cardToUpdate.members.filter(member => member.id !== userToUnassign.id)
+
+        await getRepository(Card).save(cardToUpdate)
+    }
+    
+    // --------------- Labels ---------------
+
+    static async getAllLabelsFromCardId(cardId: number): Promise<Tag[]> {
+        const labels = await getManager()
+                            .getRepository(Tag)
+                            .find({
+                                where: {
+                                    'cardId': cardId
+                                }
+                            })
+        if (labels) {
+            return labels
+        } else {
+            throw new NotFoundException('No labels found')
+        }
+    }
+
+    static async assignLabel(label: Tag, cardId: number): Promise<void> {
+        const cardRepository = await getManager()
+                            .getRepository(Card)
+
+        var card = await cardRepository.findOneById(cardId)
+        if (card) {
+            const labels = await card.tags
+            card.tags = labels.concat(label)
+            return cardRepository.updateById(cardId, card)
+        } else {
+            throw new NotFoundException('No label was found')
+        }
+    }
+
+    static async unassignLabelById(cardId: number, labelId: number): Promise<boolean> {
+        const cardRepository = await getManager()
+                                .getRepository(Card)
+
+        var card = await cardRepository.findOneById(cardId)
+        if (card) {
+            const labels = await card.tags  
+            if (labels) {
+                const label = await TagFacade.getById(labelId)  // member get by memberId
+                if (label) {
+                    card.tags = labels.slice(
+                                                        labels.indexOf(label), 
+                                                        labels.indexOf(label) + 1)
+                    const deletionSuccess =  cardRepository.save(card)
+                    if (deletionSuccess) { 
+                        return true 
+                    } else { 
+                        return false 
+                    }
+                } else {
+                    throw new NotFoundException('No label was found with this id')
+                }
+            } else {
+            throw new NotFoundException('No label was found with this id')
+            }
+        } else {
+            throw new NotFoundException('No label was found with this id')
         }
     }
 }
