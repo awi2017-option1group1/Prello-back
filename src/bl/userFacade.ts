@@ -63,7 +63,7 @@ export class UserFacade {
 
     static async update(userId: number, params: {}): Promise<User> {
         try {
-            const extractor = new ParamsExtractor<User>(params).permit(['username', 'email'])
+            const extractor = new ParamsExtractor<User>(params).permit(['username', 'email', 'fullName'])
 
             const userToUpdate = await UserFacade.getById(userId)
             extractor.fill(userToUpdate)
