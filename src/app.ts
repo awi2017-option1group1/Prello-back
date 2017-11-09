@@ -60,6 +60,7 @@ app.get('/users/:user_id', User.getOneById)
 app.get('/teams/:team_id/users', User.getAllFromTeamId)
 app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
+app.post('/users/:userId/:confirmationToken', User.confirm)
 
 // ---------    List Routes   ---------
 app.get('/boards/:boardId/lists', List.getAllFromBoardId)

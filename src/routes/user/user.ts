@@ -53,4 +53,20 @@ export class User {
         }
     }
 
+    static async confirm(req: express.Request, res: express.Response) {
+        try {
+            const user = await UserFacade.getById(req.params.userId)
+            if (user.confirmationToken === req.params.confirmationToken) {
+                const confirmed = await UserFacade.confirm(req.params.userId, req.params.confirmationToken)
+                res.status(200).json(confirmed)
+            } else {
+                res.status(404).json({ message: 'This page does not exist'})
+            }
+            
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+        
+    }
+
 }

@@ -10,19 +10,24 @@ import { ValidationException } from './errors/ValidationException'
 import { User } from '../entities/user'
 import { Password } from './password'
 
+import { sendMail } from '../mail'
+import { welcome } from '../mails/welcome'
+
 export class UserFacade {
-    static async register(email: string, username: string, password?: string): Promise<User>  {
+    static async register(email: string, username: string, uuidToken: string, password?: string): Promise<User>  {
         const user = new User()
         user.email = email
         user.username = username
         user.notificationsEnabled = true
         user.confirmed = false
+        user.confirmationToken = uuidToken
         if (password) {
             user.password = Password.encrypt(password)
         }
 
         const errors = await validate(user, { groups: ['registration'] })
         if (errors.length === 0) {
+            sendMail(email, welcome(username, user.id, uuidToken))
             return getRepository(User).save(user)
         } else {
             throw new ValidationException(errors)
@@ -63,7 +68,12 @@ export class UserFacade {
 
     static async update(userId: number, params: {}): Promise<User> {
         try {
-            const extractor = new ParamsExtractor<User>(params).permit(['username', 'email', 'fullName'])
+            const extractor = new ParamsExtractor<User>(params).permit([
+                                                                        'username', 
+                                                                        'email', 
+                                                                        'fullName', 
+                                                                        'confirmationToken', 
+                                                                        'confirmed'])
 
             const userToUpdate = await UserFacade.getById(userId)
             extractor.fill(userToUpdate)
@@ -75,4 +85,12 @@ export class UserFacade {
         }
     }
 
+    static async confirm(userId: number, uuidToken: string): Promise<User> {
+        try {
+            return await UserFacade.update( userId, {'confirmationToken': null, 'confirmed': true})
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
 }

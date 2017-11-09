@@ -98,6 +98,12 @@ export class User {
     })
     confirmed: boolean
 
+    @Column({
+        type: 'varchar',
+        nullable: true
+    })
+    confirmationToken: string | null
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
