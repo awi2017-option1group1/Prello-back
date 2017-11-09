@@ -12,7 +12,7 @@
     "node": "8.3.0"
   },
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "start:dev": "npm run build && npm run watch",
     "build": "npm run build-ts && npm run tslint",
     "serve": "nodemon dist/server.js",
