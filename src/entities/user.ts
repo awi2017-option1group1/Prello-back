@@ -114,7 +114,7 @@ export class User {
     teams: Promise<Team[]>
 
     @ManyToMany(type => Board, board => board.users)
-    boards: Promise<Board[]>
+    boards: Board[]
 
     @OneToMany(type => Notification, notification => notification.user)
     notifications: Promise<Notification[]>

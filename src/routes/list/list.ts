@@ -27,7 +27,7 @@ export class List {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ error: e.message })
+            res.status(400).json({ error: e.message })
         }
     }
 
@@ -40,7 +40,7 @@ export class List {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ error: e.message})
+            res.status(400).json({ error: e.message})
         }
     }
 
@@ -53,7 +53,7 @@ export class List {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ error: e.message})
+            res.status(400).json({ error: e.message})
         }
     }
 }

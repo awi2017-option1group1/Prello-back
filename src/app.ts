@@ -2,9 +2,10 @@ import * as express from 'express'
 import * as compression from 'compression'
 import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
+import * as cookieParser from 'cookie-parser'
 
 import { config } from './config'
-// import { RequesterFactory } from './bl/requester'
+import requester from './requesterMiddleware'
 
 import { Register } from './routes/user/register'
 import { User } from './routes/user/user'
@@ -22,37 +23,25 @@ export const app = express()
 app.set('port', config.server.port)
 app.use(compression())
 app.use(cors())
+app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-/*
-app.use('*', (req, res, next) => {
-    const auth = req.get('authorization')
-    if (auth) {
-        const token = auth.substring('Bearer '.length)
-        RequesterFactory.fromJWT(token).then((requester) => {
-            req.requester = requester
-            next()
-        })
-    } else {
-        req.requester = RequesterFactory.empty
-        next()
-    }
-})*/
+
+app.use('*', requester())
 
 app.get('/', (req, res) => {
     res.json({ healthcheck: 'ok' })
 })
 
 app.post('/notify', (req, res) => {
-    websockets.sendEvent({
+    websockets.sendEventTo({ object: 'user', id: req.body.userId }, {
         type: 'notification',
-        to: req.body.userId,
         payload: {
             title: 'Notification',
             message: 'This notification is sent via socket.io-redis'
         }
     })
-    res.status(204).end()    
+    res.status(204).end()
 })
 
 app.get('/protected', (req, res) => {
@@ -80,11 +69,11 @@ app.delete('/lists/:listId', List.delete)
 
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
-app.get('/users/:user_id/boards', Board.getAllFromUserId)
-app.get('/teams/:team_id/boards', Board.getAllFromTeamId)
-app.put('/boards', Board.update)
-app.delete('/boards/:board_id', Board.delete)
-app.post('/boards', Board.create)
+app.get('/users/:userId/boards', Board.getAllFromUserId)
+app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
+app.put('/boards/:boardId', Board.update)
+app.delete('/boards/:boardId', Board.delete)
+app.post('/users/:userId/boards', Board.create)
 
 // ---------    Card Routes   ---------
 app.get('/cards/:card_id', Card.getOneById)

@@ -2,10 +2,10 @@
 INSERT INTO team (name, description, "isPrivate")
 VALUES ('team1', 'first team', 'false');
 
-INSERT INTO "user" ("lastname", "firstname", "pseudo", "biography", "notificationsEnabled", "email", "password", "token")
-VALUES ('Bouygues', 'Quentin', 'Qbouygues', 'A great biography', 'true', 'qbouygues@gmail.com', 'pwd', 'tokenTest');
+INSERT INTO "user" ("fullName", "initial", "username", "bio", "notificationsEnabled", "email", "password", "confirmed")
+VALUES ('Bouygues', 'Quentin', 'QB', 'A great biography', 'true', 'qbouygues@gmail.com', 'pwd', 'false');
 
-INSERT INTO board ("title", "isPrivate", "teamId")
+INSERT INTO board ("name", "isPrivate", "teamId")
 VALUES ('board1', 'false', 1);
 
 INSERT INTO list("title", "rank", "boardId")

@@ -1,10 +1,14 @@
 import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
+import { BadRequest } from './errors/BadRequest'
 import { ParamsExtractor } from './paramsExtractorv2'
 
 import { List } from '../entities/list'
 import { BoardFacade } from './boardFacade'
+
+import { RealTimeFacade } from './realtimeFacade'
+import { listCreated, listUpdated, listDeleted } from './realtime/realtimeList'
 
 export class ListFacade {
 
@@ -27,8 +31,13 @@ export class ListFacade {
         return max
     }
 
-    static async getById(listId: number): Promise<List> {
-        const list = await getRepository(List).findOneById(listId)
+    static async getById(listId: number, options?: {}): Promise<List> {
+        const list = await getRepository(List).findOne({
+            ...options,
+            where: {
+                id: listId
+            }
+        })
         if (list) {
             return list
         } else {
@@ -52,9 +61,13 @@ export class ListFacade {
 
             listToInsert.board = await BoardFacade.getById(boardId)
 
-            return getRepository(List).save(listToInsert)
+            const list = await getRepository(List).save(listToInsert)
+
+            RealTimeFacade.sendEvent(listCreated(list, boardId))
+            return list
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
 
@@ -62,20 +75,36 @@ export class ListFacade {
         try {
             const extractor = new ParamsExtractor<List>(params).permit(['name', 'pos'])
 
-            const list = await ListFacade.getById(listId)
-            extractor.fill(list)
+            const listToUpdate = await ListFacade.getById(listId, { relations: ['board'] })
+            extractor.fill(listToUpdate)
+            
+            const board = listToUpdate.board
 
-            return await getRepository(List).save(list)
+            const list = await getRepository(List).save(listToUpdate)
+            delete list.board
+
+            RealTimeFacade.sendEvent(listUpdated(list, board.id))
+            return list
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
 
     static async delete(listId: number): Promise<void> {
         try {
+            const list = await ListFacade.getById(listId, { relations: ['board'] })
+
+            const boardId = list.board.id
+            delete list.board
+
             await getRepository(List).removeById(listId)
-        } catch (e) {
-            throw new NotFoundException(e)
+
+            RealTimeFacade.sendEvent(listDeleted(list, boardId))
+            return
+        } catch (e) { 
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
 

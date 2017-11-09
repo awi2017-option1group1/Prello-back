@@ -9,7 +9,7 @@ export class Board {
 
     static async getAllFromTeamId(req: express.Request, res: express.Response) {
         try {
-            const boards = await BoardFacade.getAllFromTeamId(req.params.team_id)
+            const boards = await BoardFacade.getAllFromTeamId(req.params.teamId)
             res.status(200).json(boards)
         } catch (e) {
             res.status(404).json({ error: e.message})
@@ -18,7 +18,7 @@ export class Board {
 
     static async getAllFromUserId(req: express.Request, res: express.Response) {
         try {
-            const boards = await BoardFacade.getAllFromUserId(req.params.user_id)
+            const boards = await BoardFacade.getAllFromUserId(req.params.userId)
             res.status(200).json(boards)
         } catch (e) {
             res.status(404).json({ error: e.message})
@@ -49,7 +49,7 @@ export class Board {
 
     static async getBoardLists(req: express.Request, res: express.Response) {
         try {
-            const lists = await ListFacade.getAllFromBoardId(req.params.board_id)
+            const lists = await ListFacade.getAllFromBoardId(req.params.boardId)
             res.status(200).json(lists)
         } catch (e) {
             res.status(404).json({ error: e.message})
@@ -58,7 +58,7 @@ export class Board {
 
     static async getBoardMembers(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.getById(req.params.board_id)
+            const board = await BoardFacade.getById(req.params.boardId)
             const lists = await board.users
             res.status(200).json(lists)
         } catch (e) {
@@ -68,7 +68,7 @@ export class Board {
 
     static async delete(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.delete(req.params.board_id)
+            const board = await BoardFacade.delete(req.params.boardId)
             if (board) {
                 res.status(200).json(board)
             } else {
@@ -81,7 +81,7 @@ export class Board {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const board = BoardFacade.update(req.body, req.params.board_id)
+            const board = await BoardFacade.update(req.body, req.params.boardId)
             res.status(200).json(board)
         } catch (e) {
             res.status(404).json({ error: e.message})
@@ -108,7 +108,7 @@ export class Board {
 
     static async create(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.create(req.body)
+            const board = await BoardFacade.create(req.body, req.params.userId)
             res.status(200).json(board)
         } catch (e) {
             res.status(404).json({ error: e.message})
@@ -117,7 +117,7 @@ export class Board {
 
     static async addLabel(req: express.Request, res: express.Response) {
         try {
-            const success = await BoardFacade.addLabel(req.body, req.params.board_id)
+            const success = await BoardFacade.addLabel(req.body, req.params.boardId)
             if (success) {
                 res.status(200)
             } else {
@@ -130,7 +130,7 @@ export class Board {
 
     static async addList(req: express.Request, res: express.Response) {
         try {
-            const success = await BoardFacade.addList(req.body, req.params.board_id)
+            const success = await BoardFacade.addList(req.body, req.params.boardId)
             if (success) {
                 res.status(200)
             } else {
