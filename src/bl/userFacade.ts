@@ -23,41 +23,28 @@ export class UserFacade {
 
         const errors = await validate(user, { groups: ['registration'] })
         if (errors.length === 0) {
-            return getManager().save(user)
+            return getRepository(User).save(user)
         } else {
             throw new ValidationException(errors)
         }
     }
 
     static async getAll(): Promise<User[]>  {
-        const users = await getRepository(User)
-                            .find()
-        if (users) {
-            return users
-        } else {
-            throw new NotFoundException('No User was found')
-        }
+        return await getRepository(User).find()
     }
 
     static async getAllFromTeamId(teamId: number): Promise<User[]> {
-        const users = await getManager()
-                            .getRepository(User)
-                            .find()
-        if (users) {
-            return users
-        } else {
-            throw new NotFoundException('No User was found')
-        }
+        return await getRepository(User).find()
     }
 
     static async getById(userId: number): Promise<User> {
-        console.log(userId)
         const user = await getRepository(User)
                             .findOneById(userId)
+        const user = await getRepository(User).findOneById(userId)
         if (user) {
             return user
         } else {
-            throw new NotFoundException('No User was found')
+            throw new NotFoundException('User not found')
         }
     }
 

@@ -7,6 +7,7 @@ import { Team } from './team'
 import { Board } from './board'
 import { Notification } from './notification'
 import { Comment } from './comment'
+import { Card } from './card'
 
 @Entity()
 export class User {
@@ -86,7 +87,8 @@ export class User {
 
     @Column({
         type: 'varchar',
-        nullable: true
+        nullable: true,
+        select: false
     })
     password: string | null
 
@@ -121,4 +123,7 @@ export class User {
 
     @OneToMany(type => Comment, comment => comment.user)
     comments: Comment
+
+    @ManyToMany(type => Card, card => card.members)
+    cards: Card[]
  }

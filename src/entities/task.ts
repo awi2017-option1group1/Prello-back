@@ -12,17 +12,17 @@ export class Task {
     @Column({
         type: 'varchar'
     })
-    title: string
+    name: string
 
     @Column({
         type: 'int'
     })
-    rank: number
+    pos: number
 
     @Column({
         type: 'boolean'
     })
-    isDone: boolean
+    state: boolean
 
 // ------------------------------------
 //            EXTERNAL LINKS

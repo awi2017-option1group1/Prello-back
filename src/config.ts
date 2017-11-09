@@ -1,4 +1,5 @@
 import { ConnectionOptions } from 'typeorm'
+import { SmtpOptions } from 'nodemailer-smtp-transport'
 
 export interface ServerConfig {
     host: string
@@ -27,6 +28,7 @@ export interface Config {
     databaseTest: ConnectionOptions
     redis: RedisConfig
     websocket: SocketConfig
+    smtp: SmtpOptions
 }
 
 export const config: Config = {
@@ -60,6 +62,17 @@ export const config: Config = {
     },
 
     websocket: {
-        path: process.env.WEBSOCKET_PATH || '/realtime'
+        path: process.env.WEBSOCKET_PATH || '/realtime' 
+    },
+
+    smtp: {
+        service: 'Gmail',
+        auth: {
+            type: 'oauth2',
+            user: process.env.SMTP_USER || '',
+            clientId: process.env.SMTP_CLIENT_ID || '',
+            clientSecret: process.env.SMTP_CLIENT_SECRET || '',
+            refreshToken: process.env.SMTP_REFRESH_TOKEN || ''
+        }
     }
 }

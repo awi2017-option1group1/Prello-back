@@ -3,7 +3,8 @@ import { Tag } from './tag'
 import { List } from './list'
 import { TaskList } from './taskList'
 import { Comment } from './comment'
-import { Attachement } from './attachement'
+import { Attachment } from './attachment'
+import { User } from './user'
 
 @Entity()
 export class Card {
@@ -13,22 +14,39 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('varchar')
-    title: string
+    @Column({
+        type: 'varchar'
+    })
+    name: string
+
+    @Column({
+        type: 'boolean',
+        default: false
+    })
+    closed: boolean
 
     @Column({
         type: 'text',
         nullable: true
     })
-    description: string
+    desc: string
 
     @Column({
-        type: 'date'
+        type: 'date',
+        nullable: true
     })
-    dueDate: Date
+    due: Date
+    
+    @Column({
+        type: 'date',
+        nullable: true
+    })
+    dueComplete: Date
 
-    @Column('int')
-    rank: number
+    @Column({
+        type: 'int'
+    })
+    pos: number
 
 // ------------------------------------
 //            EXTERNAL LINKS
@@ -45,17 +63,31 @@ export class Card {
             referencedColumnName: 'id'
         },
     })
-    tags: Promise<Tag[]>
+    tags: Tag[]
+
+    @ManyToMany(type => User, user => user.cards)
+    @JoinTable({
+        name: 'card_users',
+        joinColumn: {
+            name: 'card',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'user',
+            referencedColumnName: 'id'
+        },
+    })
+    members: User[]
 
     @ManyToOne(type => List, list => list.cards)
     list: List
 
     @OneToMany(type => TaskList, taskList => taskList.card)
-    tasksLists: Promise<TaskList[]>
+    tasksLists: TaskList[]
 
     @OneToMany(type => Comment, comment => comment.card)
-    comments: Promise<Comment[]>
+    comments: Comment[]
 
-    @OneToMany(type => Attachement, attachement => attachement.card)
-    attachements: Promise<Attachement[]>
+    @OneToMany(type => Attachment, attachment => attachment.card)
+    attachments: Attachment[]
  }
