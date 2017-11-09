@@ -38,8 +38,6 @@ export class UserFacade {
     }
 
     static async getById(userId: number): Promise<User> {
-        const user = await getRepository(User)
-                            .findOneById(userId)
         const user = await getRepository(User).findOneById(userId)
         if (user) {
             return user
