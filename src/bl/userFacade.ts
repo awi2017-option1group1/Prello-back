@@ -1,8 +1,9 @@
 import { getManager, getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
-import { ParamsExtractor } from './paramsExtractor'
+import { ParamsExtractor } from './paramsExtractorv2'
 import { NotFoundException } from './errors/NotFoundException'
+import { BadRequest } from './errors/BadRequest'
 
 import { ValidationException } from './errors/ValidationException'
 
@@ -13,7 +14,7 @@ export class UserFacade {
     static async register(email: string, username: string, password?: string): Promise<User>  {
         const user = new User()
         user.email = email
-        user.username = username 
+        user.username = username
         user.notificationsEnabled = true
         user.confirmed = false
         if (password) {
@@ -60,15 +61,17 @@ export class UserFacade {
         }
     }
 
-    static async update(userReceived: User): Promise<void> {
+    static async update(userId: number, params: {}): Promise<User> {
         try {
-            const userToSave = ParamsExtractor.extract<User>(['firstname', 'lastname', 'biography',
-                                                             'notificationsEnabled', 'email', 'password', 'token'],
-                                                             userReceived)
-            const repository = getManager().getRepository(User)
-            return repository.updateById(userReceived.id, userToSave)
+            const extractor = new ParamsExtractor<User>(params).permit(['username', 'email', 'fullName'])
+
+            const userToUpdate = await UserFacade.getById(userId)
+            extractor.fill(userToUpdate)
+
+            return await getRepository(User).save(userToUpdate)
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
 
