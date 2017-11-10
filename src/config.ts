@@ -9,6 +9,7 @@ export interface ServerConfig {
 }
 
 export interface RedisConfig {
+    url: string
     host: string
     port: number
 }
@@ -47,7 +48,7 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.DATABASE_URL || 'postgres://test_user:test@localhost:5432/test'
+        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5434/dev_prello'
     },
 
     databaseTest: {
@@ -58,7 +59,8 @@ export const config: Config = {
 
     redis: {
         host: process.env.REDIS_HOST || '192.168.99.100',
-        port: process.env.REDIS_PORT || 6379
+        port: process.env.REDIS_PORT || 6379,
+        url: process.env.REDIS_URL
     },
 
     websocket: {
