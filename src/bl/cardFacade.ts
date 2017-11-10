@@ -11,9 +11,18 @@ import { TagFacade } from './tagFacade'
 import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
 import { Card } from '../entities/card'
+import { Comment } from '../entities/comment'
 
 import { RealTimeFacade } from './realtimeFacade'
 import { cardCreated, cardUpdated, cardDeleted } from './realtime/realtimeCard'
+
+type CommentToSend = {
+    id: number,
+    content: string
+    createdDate: Date,
+    userId: number,
+    userName: string
+}
 
 export class CardFacade {
 
@@ -188,5 +197,53 @@ export class CardFacade {
         cardToUpdate.tags = cardToUpdate.tags.filter(tag => tag.id !== labelToUnassign.id)
 
         await getRepository(Card).save(cardToUpdate)
+    }
+
+    // --------------- Comments ---------------
+
+    static async addComment(comment: Comment, cardId: number): Promise<void> {
+        var card = await CardFacade.getById(cardId)
+        if (card) {
+            const comments = await card.comments
+            if (comments) {
+                card.comments = comments.concat(comment)
+                getRepository(Card).save(card)
+            } else {
+                throw new NotFoundException('No Card was found')
+            }
+        } else {
+            throw new NotFoundException('No Card was found')
+        }
+    }
+
+    static async getAllFromCardId(cardId: number): Promise<CommentToSend[]> {
+
+        const comments = await getManager()
+            .getRepository(Comment)
+            .createQueryBuilder('comment')
+            .leftJoin('comment.card', 'card')
+            .leftJoinAndSelect('comment.user', 'user')
+            .where('card.id = :cardId', { cardId })
+            .orderBy({ 'comment.createdDate': 'ASC' })
+            .getMany()
+        if (comments) {
+            const commentsToSend: CommentToSend[] = []
+            comments.forEach(function(comment: Comment) {
+                const userId = comment.user.id
+                const userName = comment.user.username
+                const commentToSend: CommentToSend = {
+                    id: comment.id,
+                    content: comment.content,
+                    createdDate: comment.createdDate,
+                    userId: userId,
+                    userName: userName
+                }
+                commentsToSend.push(commentToSend)
+            })
+            return commentsToSend
+        } else {
+            throw new NotFoundException('No Comment was found')
+        }
+
     }
 }

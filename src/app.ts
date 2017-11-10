@@ -12,7 +12,12 @@ import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
+<<<<<<< fb493855a140fef3fc4261954442d3f1b155edac
 import { Tag } from './routes/tag/tag'
+=======
+import { Attachment } from './routes/attachment/attachment'
+import { Comment } from './routes/comment/comment'
+>>>>>>> feat: add comment routes 
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
@@ -107,6 +112,12 @@ app.delete('/labels/:labelId', Tag.delete)
 app.get('/checkitems/:id', Task.getOneById)
 app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
+
+// ---------    Comment Routes   ---------
+app.get('/card/:card_id/comments', Comment.getAllFromCardId)
+app.delete('/comment/:comment_id', Comment.delete)
+app.post('/card/:card_id/comment', Comment.create)
+// app.put('/comment', Comment.update)
 
 // ---------    TaskList Routes   ---------
 app.get('/checklists/:id', TaskList.getOneById) 

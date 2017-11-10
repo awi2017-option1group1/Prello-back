@@ -18,7 +18,7 @@ export class Comment {
     @Column({
         type: 'date'
     })
-    date: Date
+    createdDate: Date
 
 // ------------------------------------
 //            EXTERNAL LINKS
