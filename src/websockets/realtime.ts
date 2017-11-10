@@ -20,6 +20,17 @@ export interface Channel {
     id: number
 }
 
+const getRedisConnection = (): SocketIORedis.RedisAdapter => {
+    if (config.redis.url) {
+        return redisAdapter(config.redis.url)
+    } else {
+        return redisAdapter({
+            host: config.redis.host,
+            port: config.redis.port
+        })
+    }
+}
+
 export class WSServer {
 
     private initialized: boolean
@@ -42,10 +53,7 @@ export class WSServer {
             path: config.websocket.path,
             origins: '*:*',
             transports: ['websocket'],
-            adapter: redisAdapter({
-                host: config.redis.host,
-                port: config.redis.port
-            })
+            adapter: getRedisConnection()
         })
 
         /* tslint:disable */
