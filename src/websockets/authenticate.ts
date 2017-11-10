@@ -5,6 +5,10 @@ import { config } from '../config'
 import { RequesterFactory } from '../bl/requester'
 
 export const getRequesterFromCookies = (cookieString: string) => {
+    if (!cookieString) {
+        throw new Error('No cookie detected')
+    }
+
     const cookies = parse(cookieString)
     if (cookies[config.loginCookieName]) {
         return RequesterFactory.fromToken({
