@@ -27,8 +27,9 @@ export class UserFacade {
 
         const errors = await validate(user, { groups: ['registration'] })
         if (errors.length === 0) {
-            sendMail(email, welcome(username, user.id, uuidToken))
-            return getRepository(User).save(user)
+            const userReturned = await getRepository(User).save(user)
+            sendMail(email, welcome(username, userReturned.id, uuidToken))
+            return userReturned
         } else {
             throw new ValidationException(errors)
         }

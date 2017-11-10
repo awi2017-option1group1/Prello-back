@@ -5,12 +5,9 @@ import { UserFacade } from '../../bl/userFacade'
 export class Register {
     static async register(req: express.Request, res: express.Response) {
         try {
-            const d = uuid('photon.igpolytech.fr', uuid.DNS)
-            console.log('-------------')
-            console.log(d)
             const user = await UserFacade.register( req.body.email, 
                                                     req.body.username, 
-                                                    d, 
+                                                    uuid('photon.igpolytech.fr', uuid.DNS), 
                                                     req.body.password)
             res.status(200).json(user)
         } catch (e) {

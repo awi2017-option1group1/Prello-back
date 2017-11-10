@@ -66,9 +66,9 @@ export const config: Config = {
     },
 
     smtp: {
-        service: 'Gmail',
+        service: '',
         auth: {
-            type: 'oauth2',
+            type: '',
             user: process.env.SMTP_USER || '',
             clientId: process.env.SMTP_CLIENT_ID || '',
             clientSecret: process.env.SMTP_CLIENT_SECRET || '',
