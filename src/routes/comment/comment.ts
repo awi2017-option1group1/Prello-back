@@ -47,15 +47,14 @@ export class Comment {
         }
     }
 
-    /*
     static async update(req: express.Request, res: express.Response) {
         try {
-            const comment = CommentFacade.update(req.body)
+            const comment = await CommentFacade.update(req.params.comment_id, req.body)
             res.status(200).json(comment)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
-    }*/
+    }
 
     static async create(req: express.Request, res: express.Response) {
         try {

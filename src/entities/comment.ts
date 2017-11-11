@@ -16,7 +16,7 @@ export class Comment {
     content: string
 
     @Column({
-        type: 'date'
+        type: 'timestamp'
     })
     createdDate: Date
 

@@ -23,3 +23,14 @@ export const commentDeleted = (comment: Comment, boardId: number): RealTimeEvent
         payload: comment
     }
 )
+
+export const commentUpdated = (comment: Comment, boardId: number): RealTimeEvent => (
+    {
+        type: 'update-comment',
+        about: {
+            object: 'board',
+            id: boardId
+        },
+        payload: comment
+    }
+)

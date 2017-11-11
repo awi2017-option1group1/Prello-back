@@ -117,7 +117,7 @@ app.delete('/checkitems/:id', Task.delete)
 app.get('/card/:card_id/comments', Comment.getAllFromCardId)
 app.delete('/comment/:comment_id', Comment.delete)
 app.post('/card/:card_id/comment', Comment.create)
-// app.put('/comment', Comment.update)
+app.put('/comment/:comment_id', Comment.update)
 
 // ---------    TaskList Routes   ---------
 app.get('/checklists/:id', TaskList.getOneById) 
