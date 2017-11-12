@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm'
 import { Card } from './card'
-import { Task } from './task'
+import { CheckItem } from './checkItem'
 
 @Entity()
 export class CheckList {
@@ -24,6 +24,6 @@ export class CheckList {
     @ManyToOne(type => Card, card => card.checkLists)
     card: Card
 
-    @OneToMany(type => Task, task => task.checkList)
-    tasks: Task[]
+    @OneToMany(type => CheckItem, checkItem => checkItem.checkList)
+    checkItems: CheckItem[]
  }

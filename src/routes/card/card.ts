@@ -105,21 +105,21 @@ export class Card {
     static async getAllChecklists(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.id)) {
-                const checkList = await CheckListFacade.create(req.params.cardId, req.body)
-                res.status(201).json(checkList)
+                const checkLists = await CheckListFacade.getAllFromCardId(req.params.id)
+                res.status(200).json(checkLists)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(400).json({ error: e.message })
+            res.status(404).json({ error: e.message })
         }
     }
 
     static async createChecklist(req: express.Request, res: express.Response) {
         try {
-            const taskList = await CheckListFacade.create(req.body, req.params.id)
+            const checkListCreated = await CheckListFacade.create(req.params.id, req.body)
             // req.params.id is the id of the card
-            res.status(200).json(taskList)
+            res.status(200).json(checkListCreated)
         } catch (e) {
             res.status(404).json({ error: e.message})
         }

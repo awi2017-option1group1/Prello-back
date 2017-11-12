@@ -15,6 +15,7 @@ import { Task } from './routes/task/task'
 import { Tag } from './routes/tag/tag'
 import { Comment } from './routes/comment/comment'
 import { TaskList } from './routes/taskList/taskList'
+import { CheckItem } from './routes/checkItem/checkItem'
 import { CheckList } from './routes/checkList/checkList'
 import { List } from './routes/list/list'
 
@@ -99,6 +100,7 @@ app.get('/cards/:cardId/members', Card.getAllMembers)
 app.post('/cards/:cardId/members', Card.assignMember)
 app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById)
 
+<<<<<<< 407e8134c561e20235073849c06d4fcb6eb3aaef
 // ---------    Tags Routes   --------- 
 app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
 app.post('/boards/:boardId/labels', Tag.insertFromBoardId) 
@@ -109,6 +111,12 @@ app.delete('/labels/:labelId', Tag.delete)
 app.get('/checkitems/:id', Task.getOneById)
 app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
+=======
+// ---------    CheckItem Routes   ---------
+app.get('/checkitems/:id', CheckItem.getOneById)
+app.put('/checkitems/:id', CheckItem.update)
+app.delete('/checkitems/:id', CheckItem.delete)
+>>>>>>> fix(CheckList / Item) : code for checkList and checkItem front
 
 // ---------    Comment Routes   ---------
 app.get('/cards/:cardId/comments', Comment.getAllFromCardId)

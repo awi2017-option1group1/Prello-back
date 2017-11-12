@@ -1,13 +1,11 @@
-import { getManager } from 'typeorm'
 import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { CheckList } from '../entities/checkList'
-// import { ParamsExtractor } from './paramsExtractor'
 import { ParamsExtractor } from './paramsExtractorv2'
 import { BadRequest } from './errors/BadRequest'
 import { RealTimeFacade } from './realtimeFacade'
-import { CheckListUpdated, checkListCreated } from './realtime/realtimeCheckList'
+import { checkListUpdated, checkListCreated, checkListDeleted } from './realtime/realtimeCheckList'
 import { CardFacade } from './cardFacade'
 
 export class CheckListFacade {
@@ -23,13 +21,12 @@ export class CheckListFacade {
     }
 
     static async getAllFromCardId(cardId: number): Promise<CheckList[]> {
-        const card = await CardFacade.getById(cardId)
-        const checkLists = card.checkLists
-        if (checkLists) {
-            return checkLists
-        } else {
-            throw new NotFoundException('CheckList not found')
-        }
+        return await getRepository(CheckList)
+            .createQueryBuilder('checkList')
+            .leftJoin('checkList.card', 'card')
+            .where('card.id = :cardId', { cardId })
+            .orderBy({ 'checkList.pos': 'ASC' })
+            .getMany()
     }
 
     static async getById(checkListId: number, options?: {}): Promise<CheckList> {
@@ -46,50 +43,37 @@ export class CheckListFacade {
         }
     }
 
-    static async delete(checkListId: number): Promise<boolean> {
+    static async delete(checkListId: number): Promise<void> {
         try {
-            const deletionSuccess = await getManager()
-                    .getRepository(CheckList)
-                    .removeById(checkListId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
-            }
+            const checkList = await CheckListFacade.getById(checkListId, { relations: ['card'] })
+
+            const cardId = checkList.card.id
+            delete checkList.card
+
+            await getRepository(CheckList).removeById(checkListId)
+
+            RealTimeFacade.sendEvent(checkListDeleted(checkList, cardId))
+            return
         } catch (e) {
-            throw new NotFoundException(e)
+            console.error(e)
+            throw new BadRequest(e)
         }
     }
-
-    /*
-    static async update(checkListReceived: CheckList, checkListToUpdate: CheckList): Promise<void> {
-        try {
-            const checkListToSave = ParamsExtractor.extract<CheckList>(
-                ['name', 'pos'], checkListReceived)
-            const repository = getManager().getRepository(CheckList)
-            return repository.updateById(checkListReceived.id, checkListToSave)
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
-    }*/
 
     static async update(checkListId: number, params: {}): Promise<CheckList> {
         try {
             const extractor = new ParamsExtractor<CheckList>(params).permit(['name', 'pos'])
 
-            const checkListToUpdate = await CheckListFacade.getById(checkListId)
-            console.log(checkListToUpdate)
+            const listToUpdate = await CheckListFacade.getById(checkListId, { relations: ['card'] })
+            extractor.fill(listToUpdate)
 
-            extractor.fill(checkListToUpdate)
+            const card = listToUpdate.card
 
-            const card = checkListToUpdate.card
+            const list = await getRepository(CheckList).save(listToUpdate)
+            delete list.card
 
-            const checkList = await getRepository(CheckList).save(checkListToUpdate)
-            console.log('OK 5')
-            delete checkList.card
-
-            RealTimeFacade.sendEvent(CheckListUpdated(checkList, card.id))
-            return checkList
+            RealTimeFacade.sendEvent(checkListUpdated(list, card.id))
+            return list
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)

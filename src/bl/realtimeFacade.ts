@@ -1,6 +1,6 @@
 import { websockets } from '../websockets/realtime'
 
-export type AboutObject = 'board' | 'card'
+export type AboutObject = 'board' | 'card' | 'checkList'
 
 export interface RealTimeEvent {
     type: string,
