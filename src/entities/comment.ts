@@ -23,7 +23,9 @@ export class Comment {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.comments)
+    @ManyToOne(type => Card, card => card.comments, {
+        onDelete: 'CASCADE'
+    })
     card: Card
 
     @ManyToOne(type => User, user => user.comments)

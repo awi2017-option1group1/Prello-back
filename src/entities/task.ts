@@ -27,6 +27,8 @@ export class Task {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => TaskList, taskList => taskList.tasks)
+    @ManyToOne(type => TaskList, taskList => taskList.tasks, {
+        onDelete: 'CASCADE'
+    })
     taskList: TaskList
  }

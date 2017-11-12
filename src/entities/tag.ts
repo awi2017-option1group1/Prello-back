@@ -27,6 +27,8 @@ export class Tag {
     @ManyToMany(type => Card, card => card.tags)
     cards: Promise<Card[]>
 
-    @ManyToOne(type => Board, board => board.tags)
+    @ManyToOne(type => Board, board => board.tags, {
+        onDelete: 'CASCADE'
+    })
     board: Board
  }
