@@ -1,4 +1,4 @@
-import { getManager, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { BadRequest } from './errors/BadRequest'
@@ -169,62 +169,24 @@ export class CardFacade {
     
     // --------------- Labels ---------------
 
-    static async getAllLabelsFromCardId(cardId: number): Promise<Tag[]> {
-        const labels = await getManager()
-                            .getRepository(Tag)
-                            .find({
-                                where: {
-                                    'cardId': cardId
-                                }
-                            })
-        if (labels) {
-            return labels
-        } else {
-            throw new NotFoundException('No labels found')
-        }
+    static async assignLabel(cardId: number, params: {}): Promise<Tag> {
+        const extractor = new ParamsExtractor<Card>(params).require(['labelId'])
+
+        const labelToAssign = await TagFacade.getById(extractor.getParam('labelId'))
+        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['tags'] })
+
+        cardToUpdate.tags = cardToUpdate.tags.concat(labelToAssign)
+        
+        await getRepository(Card).save(cardToUpdate)
+        return labelToAssign
     }
 
-    static async assignLabel(label: Tag, cardId: number): Promise<void> {
-        const cardRepository = await getManager()
-                            .getRepository(Card)
+    static async unassignLabelById(cardId: number, labelId: number): Promise<void> {
+        const labelToUnassign = await TagFacade.getById(labelId)
+        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['tags'] })
 
-        var card = await cardRepository.findOneById(cardId)
-        if (card) {
-            const labels = await card.tags
-            card.tags = labels.concat(label)
-            return cardRepository.updateById(cardId, card)
-        } else {
-            throw new NotFoundException('No label was found')
-        }
-    }
+        cardToUpdate.tags = cardToUpdate.tags.filter(tag => tag.id !== labelToUnassign.id)
 
-    static async unassignLabelById(cardId: number, labelId: number): Promise<boolean> {
-        const cardRepository = await getManager()
-                                .getRepository(Card)
-
-        var card = await cardRepository.findOneById(cardId)
-        if (card) {
-            const labels = await card.tags  
-            if (labels) {
-                const label = await TagFacade.getById(labelId)  // member get by memberId
-                if (label) {
-                    card.tags = labels.slice(
-                                                        labels.indexOf(label), 
-                                                        labels.indexOf(label) + 1)
-                    const deletionSuccess =  cardRepository.save(card)
-                    if (deletionSuccess) { 
-                        return true 
-                    } else { 
-                        return false 
-                    }
-                } else {
-                    throw new NotFoundException('No label was found with this id')
-                }
-            } else {
-            throw new NotFoundException('No label was found with this id')
-            }
-        } else {
-            throw new NotFoundException('No label was found with this id')
-        }
+        await getRepository(Card).save(cardToUpdate)
     }
 }

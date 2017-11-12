@@ -12,7 +12,7 @@ import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
-import { Attachment } from './routes/attachment/attachment'
+import { Tag } from './routes/tag/tag'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
@@ -73,7 +73,7 @@ app.get('/users/:userId/boards', Board.getAllFromUserId)
 app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
-app.post('/users/:userId/boards', Board.create)
+app.post('/users/:userId/boards', Board.create) 
 
 // ---------    Card Routes   ---------
 app.get('/lists/:listId/cards', Card.getAllFromListId)
@@ -88,21 +88,24 @@ app.post('/cards/:id/attachments', Card.createAttachment)
 app.get('/cards/:id/checklists', Card.getAllChecklists) 
 app.post('/cards/:id/checklists', Card.createChecklist)  
 
-app.get('/cards/:id/labels', Card.getAllLabels)  
-app.post('/cards/:id/labels', Card.assignLabel) 
-app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById)  
+app.get('/cards/:cardId/labels', Card.getAllLabels)  
+app.post('/cards/:cardId/labels', Card.assignLabel) 
+app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)  
 
 app.get('/cards/:cardId/members', Card.getAllMembers)  
 app.post('/cards/:cardId/members', Card.assignMember)  
 app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById) 
 
+// ---------    Tags Routes   --------- 
+app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
+app.post('/boards/:boardId/labels', Tag.insertFromBoardId) 
+app.put('/labels/:labelId', Tag.update) 
+app.delete('/labels/:labelId', Tag.delete) 
+
 // ---------    Task Routes   ---------
 app.get('/checkitems/:id', Task.getOneById)
 app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
-
-// ---------    Attachment Routes   --------- 
-app.delete('/attachment/:id', Attachment.delete) 
 
 // ---------    TaskList Routes   ---------
 app.get('/checklists/:id', TaskList.getOneById) 

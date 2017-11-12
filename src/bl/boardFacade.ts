@@ -4,9 +4,7 @@ import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractorv2'
 import { UserFacade } from './userFacade'
-import { List } from '../entities/list'
 import { User } from '../entities/user'
-import { Tag } from '../entities/tag'
 
 export class BoardFacade {
 
@@ -39,8 +37,13 @@ export class BoardFacade {
             .getMany()
     }
 
-    static async getById(boardId: number): Promise<Board> {
-        const board = await getRepository(Board).findOneById(boardId)
+    static async getById(boardId: number, options?: {}): Promise<Board> {
+        const board = await getRepository(Board).findOne({
+            ...options,
+            where: {
+                id: boardId
+            }
+        })
         if (board) {
             return board
         } else {
@@ -119,42 +122,6 @@ export class BoardFacade {
             return getRepository(Board).save(boardToInsert)
         } catch (e) {
             throw new NotFoundException(e)
-        }
-    }
-
-    static async addLabel(label: Tag, boardId: number): Promise<void> {
-        const repository = await getManager()
-                            .getRepository(Board)
-
-        var board = await repository.findOneById(boardId)
-        if (board) {
-            const tags = await board.tags
-            if (tags) {
-                board.tags = Promise.resolve(tags.concat(label))
-                return repository.updateById(boardId, board)
-            } else {
-                throw new NotFoundException('No Board was found')
-            }
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
-    }
-
-    static async addList(list: List, boardId: number): Promise<void> {
-        const repository = await getManager()
-                            .getRepository(Board)
-
-        var board = await repository.findOneById(boardId)
-        if (board) {
-            const lists = await board.lists
-            if (lists) {
-                board.lists = Promise.resolve(lists.concat(list))
-                return repository.updateById(boardId, board)
-            } else {
-                throw new NotFoundException('No Board was found')
-            }
-        } else {
-            throw new NotFoundException('No Board was found')
         }
     }
 }
