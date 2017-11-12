@@ -6,8 +6,8 @@ import { Comment } from './comment'
 import { List } from './list'
 import { Notification } from './notification'
 import { Tag } from './tag'
-import { Task } from './task'
-import { TaskList } from './taskList'
+import { CheckItem } from './checkItem'
+import { CheckList } from './checkList'
 import { Team } from './team'
 import { TeamRole } from './teamRole'
 import { User } from './user'
@@ -21,8 +21,8 @@ export const entities = [
     List,
     Notification,
     Tag,
-    Task,
-    TaskList,
+    CheckItem,
+    CheckList,
     Team,
     TeamRole,
     User
