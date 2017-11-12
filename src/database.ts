@@ -1,5 +1,7 @@
 import { ConnectionOptions } from 'typeorm'
 
+import { entities } from './entities'
+
 import { config } from './config'
 
 const getDatabaseConfig = () => {
@@ -14,10 +16,7 @@ export const fromConfig = (): ConnectionOptions => ({
     ...getDatabaseConfig(),
     synchronize: false,
     entities: [
-        `${__dirname}/entities/*.js`
-    ],
-    migrations: [
-        `${__dirname}/migrations/*.js`
+        ...entities
     ],
     logging: ['query', 'error']
 })
