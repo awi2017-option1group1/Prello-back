@@ -1,4 +1,4 @@
-/* import * as request from 'supertest'
+import * as request from 'supertest'
 
 import { Connection } from 'typeorm'
 import { createTestingConnection, reloadTestingDatabase, closeTestingConnection } from '../utils'
@@ -19,6 +19,7 @@ describe('Test the User#gelAll route', () => {
     beforeEach(() => reloadTestingDatabase(connection))
     afterAll(() => closeTestingConnection(connection))
 
+    /*
     it('should response the GET ALL method', async (done) => {
         const user = new User()
         user.email = 'user#getall@test.fr'
@@ -60,6 +61,7 @@ describe('Test the User#gelAll route', () => {
             done()
         })
     })
+    */
 
     it('should response the POST register method (with password)', async (done) => {
         request(app).post('/register')
@@ -77,6 +79,7 @@ describe('Test the User#gelAll route', () => {
         })
     })
 
+    /*
     it('should response the POST register method (with error if no email provided)', async (done) => {
         request(app).post('/register')
         .send({
@@ -87,5 +90,5 @@ describe('Test the User#gelAll route', () => {
         .then(response => {
             done()
         })
-    })
-})*/
+    })*/
+})
