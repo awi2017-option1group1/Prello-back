@@ -53,4 +53,14 @@ export class User {
         }
     }
 
+    static async confirm(req: express.Request, res: express.Response) {
+        try {
+            const confirmed = await UserFacade.confirm(req.params.userId, req.params.confirmationToken)
+            res.status(200).json(confirmed)
+        } catch (e) {
+            res.status(404).json({ message: e.message.message})
+        }
+        
+    }
+
 }

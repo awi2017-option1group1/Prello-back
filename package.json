@@ -58,7 +58,8 @@
     "request": "^2.83.0",
     "socket.io": "^2.0.4",
     "socket.io-redis": "^5.2.0",
-    "typeorm": "^0.1.0"
+    "typeorm": "^0.1.0",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^1.0.0",
@@ -77,6 +78,7 @@
     "@types/socket.io": "^1.4.31",
     "@types/socket.io-redis": "^1.0.22",
     "@types/supertest": "^2.0.3",
+    "@types/uuid": "^3.4.3",
     "concurrently": "^3.5.0",
     "jest": "^19.0.2",
     "nodemon": "^1.12.1",

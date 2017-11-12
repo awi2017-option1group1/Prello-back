@@ -10,20 +10,26 @@ import { ValidationException } from './errors/ValidationException'
 import { User } from '../entities/user'
 import { Password } from './password'
 
+import { sendMail } from '../mail'
+import { welcome } from '../mails/welcome'
+
 export class UserFacade {
-    static async register(email: string, username: string, password?: string): Promise<User>  {
+    static async register(email: string, username: string, uuidToken: string, password?: string): Promise<User>  {
         const user = new User()
         user.email = email
         user.username = username
         user.notificationsEnabled = true
         user.confirmed = false
+        user.confirmationToken = uuidToken
         if (password) {
             user.password = Password.encrypt(password)
         }
 
         const errors = await validate(user, { groups: ['registration'] })
         if (errors.length === 0) {
-            return getRepository(User).save(user)
+            const userReturned = await getRepository(User).save(user)
+            sendMail(email, welcome(username, userReturned.id, uuidToken))
+            return userReturned
         } else {
             throw new ValidationException(errors)
         }
@@ -76,4 +82,20 @@ export class UserFacade {
         }
     }
 
+    static async confirm(userId: number, uuidToken: string): Promise<User> {
+        try {
+            const user = await UserFacade.getById(userId)
+            if (user.confirmationToken === uuidToken) {
+                user.confirmationToken = null
+                user.confirmed = true
+                return await getRepository(User).save(user)
+            } else {
+                throw new BadRequest('This page does not exist')
+            }
+            
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
 }
