@@ -69,13 +69,7 @@ export class UserFacade {
 
     static async update(userId: number, params: {}): Promise<User> {
         try {
-            const extractor = new ParamsExtractor<User>(params).permit([
-                                                                        'username', 
-                                                                        'email', 
-                                                                        'fullName', 
-                                                                        'confirmationToken', 
-                                                                        'confirmed'])
-
+            const extractor = new ParamsExtractor<User>(params).permit(['username', 'email', 'fullName'])
             const userToUpdate = await UserFacade.getById(userId)
             extractor.fill(userToUpdate)
 
@@ -88,7 +82,15 @@ export class UserFacade {
 
     static async confirm(userId: number, uuidToken: string): Promise<User> {
         try {
-            return await UserFacade.update( userId, {'confirmationToken': null, 'confirmed': true})
+            const user = await UserFacade.getById(userId)
+            if (user.confirmationToken === uuidToken) {
+                user.confirmationToken = null
+                user.confirmed = true
+                return await getRepository(User).save(user)
+            } else {
+                throw new BadRequest('This page does not exist')
+            }
+            
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)
