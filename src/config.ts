@@ -9,6 +9,7 @@ export interface ServerConfig {
 }
 
 export interface RedisConfig {
+    url: string
     host: string
     port: number
 }
@@ -58,21 +59,24 @@ export const config: Config = {
 
     redis: {
         host: process.env.REDIS_HOST || '127.0.0.1',
-        port: process.env.REDIS_PORT || 6379
+        port: process.env.REDIS_PORT || 6379,
+        url: process.env.REDIS_URL
     },
 
     websocket: {
         path: process.env.WEBSOCKET_PATH || '/realtime' 
     },
-
+    
     smtp: {
         service: 'Gmail',
         auth: {
             type: 'oauth2',
-            user: process.env.SMTP_USER || '',
-            clientId: process.env.SMTP_CLIENT_ID || '',
-            clientSecret: process.env.SMTP_CLIENT_SECRET || '',
-            refreshToken: process.env.SMTP_REFRESH_TOKEN || ''
+            user: process.env.SMTP_USER || 'porquepix1@gmail.com',
+            clientId: process.env.SMTP_CLIENT_ID 
+                || '327141825309-e1uo4fm1s4p7tvkh10lge4r9it9a5abd.apps.googleusercontent.com',
+            clientSecret: process.env.SMTP_CLIENT_SECRET || '81c20_6f5WxCMeJvleB_vvis',
+            refreshToken: process.env.SMTP_REFRESH_TOKEN 
+                || '1/fEBoKO4_zM1Olo-OKmk0Epag4buSn71u0J5s50kB6CYWatiUlZ-4hy9Jl2nFK6NS'
         }
     }
 }

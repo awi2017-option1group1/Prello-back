@@ -13,7 +13,7 @@ const getAuthorizationToken = (req: express.Request): NullableRequesterToken => 
             token: authHeader.substring('Bearer '.length),
             type: 'header'
         }
-    }else {
+    } else {
         return null
     }
 }
