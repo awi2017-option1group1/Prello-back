@@ -11,9 +11,9 @@ import { Register } from './routes/user/register'
 import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
-import { Task } from './routes/task/task'
 import { Tag } from './routes/tag/tag'
 import { Comment } from './routes/comment/comment'
+import { Task } from './routes/task/task'
 import { TaskList } from './routes/taskList/taskList'
 import { CheckItem } from './routes/checkItem/checkItem'
 import { CheckList } from './routes/checkList/checkList'
@@ -77,7 +77,7 @@ app.get('/users/:userId/boards', Board.getAllFromUserId)
 app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
-app.post('/users/:userId/boards', Board.create) 
+app.post('/users/:userId/boards', Board.create)
 
 // ---------    Card Routes   ---------
 app.get('/lists/:listId/cards', Card.getAllFromListId)
@@ -100,29 +100,16 @@ app.get('/cards/:cardId/members', Card.getAllMembers)
 app.post('/cards/:cardId/members', Card.assignMember)
 app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById)
 
-<<<<<<< 407e8134c561e20235073849c06d4fcb6eb3aaef
 // ---------    Tags Routes   --------- 
 app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
 app.post('/boards/:boardId/labels', Tag.insertFromBoardId) 
 app.put('/labels/:labelId', Tag.update) 
 app.delete('/labels/:labelId', Tag.delete) 
 
-// ---------    Task Routes   ---------
-app.get('/checkitems/:id', Task.getOneById)
-app.put('/checkitems/:id', Task.update)
-app.delete('/checkitems/:id', Task.delete)
-=======
 // ---------    CheckItem Routes   ---------
 app.get('/checkitems/:id', CheckItem.getOneById)
 app.put('/checkitems/:id', CheckItem.update)
 app.delete('/checkitems/:id', CheckItem.delete)
->>>>>>> fix(CheckList / Item) : code for checkList and checkItem front
-
-// ---------    Comment Routes   ---------
-app.get('/cards/:cardId/comments', Comment.getAllFromCardId)
-app.post('/cards/:cardId/comments', Comment.create)
-app.put('/comments/:commentId', Comment.update)
-app.delete('/comments/:commentId', Comment.delete)
 
 // ---------    CheckList Routes   ---------
 app.get('/checklists/:id', CheckList.getOneById)
@@ -130,3 +117,15 @@ app.get('/checklists/:id/checkItems', CheckList.getAllCheckItems)
 app.put('/checklists/:id', CheckList.update)
 app.post('/checklists/:id/checkItems', CheckList.createCheckItem)
 app.delete('/checklists/:id', CheckList.delete)
+
+// ---------    Comment Routes   ---------
+app.get('/cards/:cardId/comments', Comment.getAllFromCardId)
+app.post('/cards/:cardId/comments', Comment.create)
+app.put('/comments/:commentId', Comment.update)
+app.delete('/comments/:commentId', Comment.delete)
+
+// ---------    Tags Routes   ---------
+app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
+app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
+app.put('/labels/:labelId', Tag.update)
+app.delete('/labels/:labelId', Tag.delete)
