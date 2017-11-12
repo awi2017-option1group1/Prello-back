@@ -43,5 +43,5 @@ export class Board {
             referencedColumnName: 'id'
         },
     })
-    tags: Promise<Tag[]>
+    tags: Tag[]
  }

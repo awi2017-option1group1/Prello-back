@@ -24,8 +24,8 @@ export class User {
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
-            const board = await UserFacade.getById(req.params.user_id)
-            res.status(200).json(board)
+            const user = await UserFacade.getById(req.params.user_id)
+            res.status(200).json(user)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }

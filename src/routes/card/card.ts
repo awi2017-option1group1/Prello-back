@@ -5,6 +5,7 @@ import { isInteger } from '../../util'
 import { CardFacade } from '../../bl/cardFacade'
 import { AttachmentFacade } from '../../bl/attachmentFacade'
 import { TaskListFacade } from '../../bl/taskListFacade'
+import { TagFacade } from '../../bl/tagFacade'
 
 export class Card {
 
@@ -165,9 +166,12 @@ export class Card {
 
     static async getAllLabels(req: express.Request, res: express.Response) {
         try {
-            const labels = await CardFacade.getAllLabelsFromCardId(req.params.id)
-            // req.params.id is the id of the card
-            res.status(200).json(labels)
+            if (isInteger(req.params.cardId)) {
+                const labels = await TagFacade.getAllFromCardId(req.params.cardId)
+                res.status(200).json(labels)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
         } catch (e) {
             res.status(404).json({ error: e.message})
         }
@@ -175,9 +179,12 @@ export class Card {
 
     static async assignLabel(req: express.Request, res: express.Response) {
         try {
-            const label = await CardFacade.assignLabel(req.body, req.params.id) 
-            // req.params.id is the id of the card, req.body is a label
-            res.status(200).json(label)
+            if (isInteger(req.params.cardId)) {
+                const label = await CardFacade.assignLabel(req.params.cardId, req.body) 
+                res.status(200).json(label)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
         } catch (e) {
             res.status(404).json({ error: e.message})
         }
@@ -185,13 +192,12 @@ export class Card {
 
     static async unassignLabelById(req: express.Request, res: express.Response) {
         try {
-            const card = await CardFacade.unassignLabelById(req.params.id, req.params.idLabel)
-            // req.params.id is the id of the card, req.params.idLabelr is the id of the label to delete
-            if (card) {
-                res.status(200).json(card)
+            if (isInteger(req.params.cardId) && isInteger(req.params.labelId)) {
+                await CardFacade.unassignLabelById(req.params.cardId, req.params.labelId)
+                res.status(204).end()
             } else {
-                res.status(404).json({ message : 'Not found'})
-            }
+                res.status(400).json({ error: 'Invalid request parameters' })
+            }      
         } catch (e) {
             res.status(404).json({ error: e.message})
         }

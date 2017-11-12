@@ -1,4 +1,5 @@
 import { NotFoundException } from './errors/NotFoundException'
+import { Password } from './password'
 
 export class ParamsExtractor<T> {
 
@@ -20,11 +21,15 @@ export class ParamsExtractor<T> {
 
     public fill(entity: T): T {
         Object.keys(this.final).forEach(key => {
-            entity[key] = this.final[key]
+            if ( key === 'password') {
+                entity[key] = Password.encrypt(this.final[key])
+            } else {
+                entity[key] = this.final[key]
+            }
         })
         return entity
     }
-    
+
     public require(names: string[]) {
         names.forEach(name => {
             if (this.params[name]) {
