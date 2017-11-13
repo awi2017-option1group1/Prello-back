@@ -56,7 +56,7 @@ export class Board {
             res.status(404).json({ error: e.message})
         }
     }
-    
+
     static async update(req: express.Request, res: express.Response) {
         try {
             const board = await BoardFacade.update(req.requester, req.body, req.params.boardId)

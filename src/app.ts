@@ -16,6 +16,7 @@ import { Comment } from './routes/comment/comment'
 import { CheckItem } from './routes/checkItem/checkItem'
 import { CheckList } from './routes/checkList/checkList'
 import { List } from './routes/list/list'
+import { Notification } from './routes/notifiaction/notification'
 
 import { websockets } from './websockets/realtime'
 
@@ -82,19 +83,19 @@ app.get('/cards/:cardId', Card.getOneById)
 app.put('/cards/:cardId', Card.update)
 app.delete('/cards/:cardId', Card.delete)
 
-app.get('/cards/:cardId/labels', Card.getAllLabels)  
-app.post('/cards/:cardId/labels', Card.assignLabel) 
-app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)  
+app.get('/cards/:cardId/labels', Card.getAllLabels)
+app.post('/cards/:cardId/labels', Card.assignLabel)
+app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)
 
 app.get('/cards/:cardId/members', Card.getAllMembers)
 app.post('/cards/:cardId/members', Card.assignMember)
 app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById)
 
-// ---------    Tags Routes   --------- 
+// ---------    Tags Routes   ---------
 app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
-app.post('/boards/:boardId/labels', Tag.insertFromBoardId) 
-app.put('/labels/:labelId', Tag.update) 
-app.delete('/labels/:labelId', Tag.delete) 
+app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
+app.put('/labels/:labelId', Tag.update)
+app.delete('/labels/:labelId', Tag.delete)
 
 // ---------    CheckList Routes   ---------
 app.get('/cards/:cardId/checklists', CheckList.getAllFromCardId)
@@ -119,3 +120,8 @@ app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
 app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
 app.put('/labels/:labelId', Tag.update)
 app.delete('/labels/:labelId', Tag.delete)
+
+// ---------    Notification Routes   ---------
+app.get('/notifications/:id', Notification.getById)
+app.get('/users/:id/notifications', Notification.getAllFromUserId)
+app.delete('/notifications/:id', Notification.delete)
