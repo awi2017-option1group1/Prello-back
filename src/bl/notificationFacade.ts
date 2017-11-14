@@ -16,6 +16,12 @@ export class NotificationFacade {
             .getMany()
     }
 
+    static async deleteAllFromUserId(userId: number): Promise<void> {
+        const notificationsToDelete = await NotificationFacade.getAllFromUserId(userId)
+        let ids = notificationsToDelete.map(n => n.id)
+        return await getRepository(Notification).removeByIds(ids)
+    }
+
     static async getById(notificationId: number): Promise<Notification> {
         const notification = await getManager()
                             .getRepository(Notification)
@@ -53,7 +59,6 @@ export class NotificationFacade {
                 .leftJoin('user.boards', 'board')
                 .where('board.id = :boardId', { boardId })
                 .getMany()
-            console.log(new Date())
             users.forEach(async user => {
                 if (user.notificationsEnabled) {
                     let notification = new Notification()
