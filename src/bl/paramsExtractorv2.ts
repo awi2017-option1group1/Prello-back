@@ -44,6 +44,7 @@ export class ParamsExtractor<T> {
     public permit(names: string[]) {
         names.forEach(name => {
             if (this.params.hasOwnProperty(name)) {
+                console.log(name)
                 this.final[name] = this.params[name]
             }
         })

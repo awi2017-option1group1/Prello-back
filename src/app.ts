@@ -13,6 +13,7 @@ import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
 import { Tag } from './routes/tag/tag'
+import { Comment } from './routes/comment/comment'
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
@@ -107,6 +108,12 @@ app.delete('/labels/:labelId', Tag.delete)
 app.get('/checkitems/:id', Task.getOneById)
 app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
+
+// ---------    Comment Routes   ---------
+app.get('/cards/:cardId/comments', Comment.getAllFromCardId)
+app.post('/cards/:cardId/comments', Comment.create)
+app.put('/comments/:commentId', Comment.update)
+app.delete('/comments/:commentId', Comment.delete)
 
 // ---------    TaskList Routes   ---------
 app.get('/checklists/:id', TaskList.getOneById) 

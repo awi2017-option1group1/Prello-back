@@ -11,6 +11,7 @@ import { TagFacade } from './tagFacade'
 import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
 import { Card } from '../entities/card'
+import { Comment } from '../entities/comment'
 
 import { RealTimeFacade } from './realtimeFacade'
 import { cardCreated, cardUpdated, cardDeleted } from './realtime/realtimeCard'
@@ -188,5 +189,27 @@ export class CardFacade {
         cardToUpdate.tags = cardToUpdate.tags.filter(tag => tag.id !== labelToUnassign.id)
 
         await getRepository(Card).save(cardToUpdate)
+    }
+
+    // --------------- Comments ---------------
+
+    static async getAllFromCardId(cardId: number): Promise<Comment[]> {
+        const comments = await getRepository(Comment)
+            .createQueryBuilder('comment')
+            .leftJoin('comment.card', 'card')
+            .leftJoinAndSelect('comment.user', 'user')
+            .where('card.id = :cardId', { cardId })
+            .orderBy({ 'comment.createdDate': 'ASC' })
+            .getMany()
+        if (comments) {
+            return comments.map((comment) => ({
+                ...comment,
+                user: {
+                    id: comment.user.id,
+                    username: comment.user.username
+                } as User
+            }))
+        } 
+        return []
     }
 }
