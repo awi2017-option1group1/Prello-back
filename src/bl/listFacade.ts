@@ -77,7 +77,7 @@ export class ListFacade {
 
             const listToUpdate = await ListFacade.getById(listId, { relations: ['board'] })
             extractor.fill(listToUpdate)
-            
+
             const board = listToUpdate.board
 
             const list = await getRepository(List).save(listToUpdate)
@@ -102,7 +102,7 @@ export class ListFacade {
 
             RealTimeFacade.sendEvent(listDeleted(list, boardId))
             return
-        } catch (e) { 
+        } catch (e) {
             console.error(e)
             throw new BadRequest(e)
         }

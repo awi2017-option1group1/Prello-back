@@ -1,7 +1,7 @@
 /* tslint:disable */
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class user1510491133387 implements MigrationInterface {
+export class User1510491133387 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.query(`ALTER TABLE "public"."user" ADD "confirmationToken" character varying`);

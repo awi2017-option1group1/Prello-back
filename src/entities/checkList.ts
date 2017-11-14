@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm'
 import { Card } from './card'
-import { Task } from './task'
+import { CheckItem } from './checkItem'
 
 @Entity()
-export class TaskList {
+export class CheckList {
 // ------------------------------------
 // =        ENTITY DEFINITION
 // ------------------------------------
@@ -21,9 +21,11 @@ export class TaskList {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.tasksLists)
+    @ManyToOne(type => Card, card => card.checkLists, {
+        onDelete: 'CASCADE'
+    })
     card: Card
 
-    @OneToMany(type => Task, task => task.taskList)
-    tasks: Promise<Task[]>
+    @OneToMany(type => CheckItem, checkItem => checkItem.checkList)
+    checkItems: CheckItem[]
  }

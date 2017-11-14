@@ -48,8 +48,7 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5432/dev_prello'
-
+        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5434/dev_prello'
     },
 
     databaseTest: {
@@ -59,10 +58,8 @@ export const config: Config = {
     },
 
     redis: {
-        host: process.env.REDIS_HOST || '127.0.0.1',
+        host: process.env.REDIS_HOST || '192.168.99.100',
         port: process.env.REDIS_PORT || 6379,
-        // host: process.env.REDIS_HOST || '192.168.99.100',
-        // port: process.env.REDIS_PORT || 6379,
         url: process.env.REDIS_URL
     },
 

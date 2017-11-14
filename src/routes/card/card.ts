@@ -3,8 +3,6 @@ import * as express from 'express'
 import { isInteger } from '../../util'
 
 import { CardFacade } from '../../bl/cardFacade'
-import { AttachmentFacade } from '../../bl/attachmentFacade'
-import { TaskListFacade } from '../../bl/taskListFacade'
 import { TagFacade } from '../../bl/tagFacade'
 
 export class Card {
@@ -77,50 +75,6 @@ export class Card {
         }
     }
 
-    // --------------- Attachment ---------------
-
-    static async getAllAttachments(req: express.Request, res: express.Response) {
-        try {
-            const Attachment = await AttachmentFacade.getAllFromCardId(req.params.id)
-            // req.params.id is the id of the card
-            res.status(200).json(Attachment)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
-        }
-    }
-
-    static async createAttachment(req: express.Request, res: express.Response) {
-        try {
-            const Attachment = await AttachmentFacade.createByCardId(req.body, req.params.id)
-            // req.params.id is the id of the card, req.body is an attachment to link to the card
-            res.status(200).json(Attachment)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
-        }
-    }
-
-    // --------------- Checklist ---------------
-
-    static async getAllChecklists(req: express.Request, res: express.Response) {
-        try {
-            const taskList = await TaskListFacade.getAllFromCardId(req.params.id)
-            // req.params.id is the id of the card
-            res.status(200).json(taskList)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
-        }
-    }
-
-    static async createChecklist(req: express.Request, res: express.Response) {
-        try {
-            const taskList = await TaskListFacade.create(req.body, req.params.id)
-            // req.params.id is the id of the card
-            res.status(200).json(taskList)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
-        }
-    }
-
     // --------------- Members ---------------
 
     static async getAllMembers(req: express.Request, res: express.Response) {
@@ -130,7 +84,7 @@ export class Card {
                 res.status(200).json(members)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
-            }  
+            }
         } catch (e) {
             res.status(400).json({ error: e.message })
         }
@@ -139,11 +93,11 @@ export class Card {
     static async assignMember(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.cardId)) {
-                const user = await CardFacade.assignMember(req.params.cardId, req.body) 
+                const user = await CardFacade.assignMember(req.params.cardId, req.body)
                 res.status(200).json(user)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
-            }  
+            }
         } catch (e) {
             res.status(400).json({ error: e.message })
         }
@@ -156,7 +110,7 @@ export class Card {
                 res.status(204).end()
             } else {
                 res.status(400).json({ error: 'Invalid request parameters' })
-            }  
+            }
         } catch (e) {
             res.status(400).json({ error: e.message })
         }
