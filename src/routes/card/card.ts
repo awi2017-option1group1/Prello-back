@@ -3,10 +3,7 @@ import * as express from 'express'
 import { isInteger } from '../../util'
 
 import { CardFacade } from '../../bl/cardFacade'
-import { AttachmentFacade } from '../../bl/attachmentFacade'
-import { TaskListFacade } from '../../bl/taskListFacade'
 import { TagFacade } from '../../bl/tagFacade'
-import { CheckListFacade } from '../../bl/checkListFacade'
 
 export class Card {
 
@@ -75,53 +72,6 @@ export class Card {
             }
         } catch (e) {
             res.status(400).json({ error: e.message })
-        }
-    }
-
-    // --------------- Attachment ---------------
-
-    static async getAllAttachments(req: express.Request, res: express.Response) {
-        try {
-            const Attachment = await AttachmentFacade.getAllFromCardId(req.params.id)
-            // req.params.id is the id of the card
-            res.status(200).json(Attachment)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
-        }
-    }
-
-    static async createAttachment(req: express.Request, res: express.Response) {
-        try {
-            const Attachment = await AttachmentFacade.createByCardId(req.body, req.params.id)
-            // req.params.id is the id of the card, req.body is an attachment to link to the card
-            res.status(200).json(Attachment)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
-        }
-    }
-
-    // --------------- Checklist ---------------
-
-    static async getAllChecklists(req: express.Request, res: express.Response) {
-        try {
-            if (isInteger(req.params.id)) {
-                const checkLists = await CheckListFacade.getAllFromCardId(req.params.id)
-                res.status(200).json(checkLists)
-            } else {
-                res.status(400).json({ error: 'Invalid request parameter' })
-            }
-        } catch (e) {
-            res.status(404).json({ error: e.message })
-        }
-    }
-
-    static async createChecklist(req: express.Request, res: express.Response) {
-        try {
-            const checkListCreated = await CheckListFacade.create(req.params.id, req.body)
-            // req.params.id is the id of the card
-            res.status(200).json(checkListCreated)
-        } catch (e) {
-            res.status(404).json({ error: e.message})
         }
     }
 

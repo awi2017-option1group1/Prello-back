@@ -13,8 +13,6 @@ import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Tag } from './routes/tag/tag'
 import { Comment } from './routes/comment/comment'
-import { Task } from './routes/task/task'
-import { TaskList } from './routes/taskList/taskList'
 import { CheckItem } from './routes/checkItem/checkItem'
 import { CheckList } from './routes/checkList/checkList'
 import { List } from './routes/list/list'
@@ -86,12 +84,6 @@ app.get('/cards/:cardId', Card.getOneById)
 app.put('/cards/:cardId', Card.update)
 app.delete('/cards/:cardId', Card.delete)
 
-app.get('/cards/:id/attachments', Card.getAllAttachments)
-app.post('/cards/:id/attachments', Card.createAttachment)
-
-app.get('/cards/:id/checklists', Card.getAllChecklists)
-app.post('/cards/:id/checklists', Card.createChecklist)
-
 app.get('/cards/:cardId/labels', Card.getAllLabels)  
 app.post('/cards/:cardId/labels', Card.assignLabel) 
 app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)  
@@ -106,17 +98,17 @@ app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
 app.put('/labels/:labelId', Tag.update) 
 app.delete('/labels/:labelId', Tag.delete) 
 
-// ---------    CheckItem Routes   ---------
-app.get('/checkitems/:id', CheckItem.getOneById)
-app.put('/checkitems/:id', CheckItem.update)
-app.delete('/checkitems/:id', CheckItem.delete)
-
 // ---------    CheckList Routes   ---------
-app.get('/checklists/:id', CheckList.getOneById)
-app.get('/checklists/:id/checkItems', CheckList.getAllCheckItems)
-app.put('/checklists/:id', CheckList.update)
-app.post('/checklists/:id/checkItems', CheckList.createCheckItem)
-app.delete('/checklists/:id', CheckList.delete)
+app.get('/cards/:cardId/checklists', CheckList.getAllFromCardId)
+app.post('/cards/:cardId/checklists', CheckList.insertFromCardId)
+app.put('/checklists/:checklistId', CheckList.update)
+app.delete('/checklists/:checklistId', CheckList.delete)
+
+// ---------    CheckItem Routes   ---------
+app.get('/checklists/:checklistId/checkitems', CheckItem.getAllFromChecklistId)
+app.post('/checklists/:checklistId/checkitems', CheckItem.insertFromChecklistId)
+app.put('/checkitems/:checkitemId', CheckItem.update)
+app.delete('/checkitems/:checkitemId', CheckItem.delete)
 
 // ---------    Comment Routes   ---------
 app.get('/cards/:cardId/comments', Comment.getAllFromCardId)

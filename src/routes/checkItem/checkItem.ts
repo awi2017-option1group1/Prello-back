@@ -1,60 +1,60 @@
 import * as express from 'express'
 
+import { isInteger } from '../../util'
+
 import { CheckItemFacade } from '../../bl/checkItemFacade'
 
 export class CheckItem {
 
-    static async getAllFromCheckListId(req: express.Request, res: express.Response) {
+    static async getAllFromChecklistId(req: express.Request, res: express.Response) {
         try {
-            const checkItems = await CheckItemFacade.getAllFromCheckListId(req.params.id)
-            // req.params.id is the id of the CheckList
-            res.status(200).json(checkItems)
-        } catch (e) {
-            res.status(404).json({ message: e.message})
-        }
-    }
-
-    static async getOneById(req: express.Request, res: express.Response) {
-        try {
-            const checkItem = await CheckItemFacade.getById(req.params.id)
-            // req.params.id is the id of the CheckItem
-            res.status(200).json(checkItem)
-        } catch (e) {
-            res.status(404).json({ message: e.message})
-        }
-    }
-
-    static async delete(req: express.Request, res: express.Response) {
-        try {
-            const deletionSuccess = await CheckItemFacade.delete(req.params.id)
-            // req.params.id is the id of the CheckItem
-            if (deletionSuccess) {
-                res.status(200).json(deletionSuccess)
+            if (isInteger(req.params.checklistId)) {
+                const checkItems = await CheckItemFacade.getAllFromCheckListId(req.params.checklistId)
+                res.status(200).json(checkItems)
             } else {
-                res.status(404).json({ message : 'Not found'})
+                res.status(400).json({ error: 'Invalid request parameter' })
             }
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(400).json({ message: e.message })
+        }
+    }
+
+    static async insertFromChecklistId(req: express.Request, res: express.Response) {
+        try {
+            if (isInteger(req.params.checklistId)) {
+                const checkItem = await CheckItemFacade.insertFromChecklistId(req.params.checklistId, req.body)
+                res.status(201).json(checkItem)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
+        } catch (e) {
+            res.status(400).json({ message: e.message })
         }
     }
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const checkItem = await CheckItemFacade.update(req.body, req.params.id)
-            // req.params.id is the id of the CheckItem, req.body contains the new checkItem
-            res.status(200).json(checkItem)
+            if (isInteger(req.params.checkitemId)) {
+                const checkItem = await CheckItemFacade.update(req.params.checkitemId, req.body)
+                res.status(200).json(checkItem)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(400).json({ message: e.message })
         }
     }
 
-    static async create(req: express.Request, res: express.Response) {
+    static async delete(req: express.Request, res: express.Response) {
         try {
-            const checkItem = await CheckItemFacade.create(req.body, req.params.id)
-            // req.params.id is the id of the CheckItem
-            res.status(200).json(checkItem)
+            if (isInteger(req.params.checkitemId)) {
+                await CheckItemFacade.delete(req.params.checkitemId)
+                res.status(204).end()
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(400).json({ message: e.message })
         }
     }
 }

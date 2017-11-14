@@ -1,14 +1,22 @@
 import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
-import { CheckList } from '../entities/checkList'
 import { ParamsExtractor } from './paramsExtractorv2'
 import { BadRequest } from './errors/BadRequest'
-import { RealTimeFacade } from './realtimeFacade'
-import { checkListUpdated, checkListCreated, checkListDeleted } from './realtime/realtimeCheckList'
+
+import { CheckList } from '../entities/checkList'
 import { CardFacade } from './cardFacade'
 
 export class CheckListFacade {
+
+    static async getAllFromCardId(cardId: number): Promise<CheckList[]> {
+        return await getRepository(CheckList)
+            .createQueryBuilder('checkList')
+            .leftJoin('checkList.card', 'card')
+            .where('card.id = :cardId', { cardId })
+            .orderBy({ 'checkList.pos': 'ASC' })
+            .getMany()
+    }
 
     static async getMaxPosForCardId(cardId: number): Promise<number> {
         const { max } = await getRepository(CheckList)
@@ -18,15 +26,6 @@ export class CheckListFacade {
             .where('card.id = :cardId', { cardId })
             .getRawOne()
         return max
-    }
-
-    static async getAllFromCardId(cardId: number): Promise<CheckList[]> {
-        return await getRepository(CheckList)
-            .createQueryBuilder('checkList')
-            .leftJoin('checkList.card', 'card')
-            .where('card.id = :cardId', { cardId })
-            .orderBy({ 'checkList.pos': 'ASC' })
-            .getMany()
     }
 
     static async getById(checkListId: number, options?: {}): Promise<CheckList> {
@@ -43,44 +42,7 @@ export class CheckListFacade {
         }
     }
 
-    static async delete(checkListId: number): Promise<void> {
-        try {
-            const checkList = await CheckListFacade.getById(checkListId, { relations: ['card'] })
-
-            const cardId = checkList.card.id
-            delete checkList.card
-
-            await getRepository(CheckList).removeById(checkListId)
-
-            RealTimeFacade.sendEvent(checkListDeleted(checkList, cardId))
-            return
-        } catch (e) {
-            console.error(e)
-            throw new BadRequest(e)
-        }
-    }
-
-    static async update(checkListId: number, params: {}): Promise<CheckList> {
-        try {
-            const extractor = new ParamsExtractor<CheckList>(params).permit(['name', 'pos'])
-
-            const listToUpdate = await CheckListFacade.getById(checkListId, { relations: ['card'] })
-            extractor.fill(listToUpdate)
-
-            const card = listToUpdate.card
-
-            const list = await getRepository(CheckList).save(listToUpdate)
-            delete list.card
-
-            RealTimeFacade.sendEvent(checkListUpdated(list, card.id))
-            return list
-        } catch (e) {
-            console.error(e)
-            throw new BadRequest(e)
-        }
-    }
-
-    static async create(cardId: number, params: {}): Promise<CheckList> {
+    static async insertFromCardId(cardId: number, params: {}): Promise<CheckList> {
         try {
             const extractor = new ParamsExtractor<CheckList>(params).permit(['name', 'pos'])
             const checkListToInsert = extractor.fill(new CheckList())
@@ -96,13 +58,50 @@ export class CheckListFacade {
 
             checkListToInsert.card = await CardFacade.getById(cardId)
 
+            // RealTimeFacade.sendEvent(checkListCreated(checkList, cardId))
+            
             const checkList = await getRepository(CheckList).save(checkListToInsert)
-
-            RealTimeFacade.sendEvent(checkListCreated(checkList, cardId))
+            delete checkList.card
             return checkList
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)
         }
     }
+
+    static async update(checkListId: number, params: {}): Promise<CheckList> {
+        try {
+            const extractor = new ParamsExtractor<CheckList>(params).permit(['name', 'pos'])
+
+            const listToUpdate = await CheckListFacade.getById(checkListId, { relations: ['card'] })
+            extractor.fill(listToUpdate)
+
+            // const card = listToUpdate.card
+            delete listToUpdate.card
+            // RealTimeFacade.sendEvent(checkListUpdated(list, card.id))
+            
+            const list = await getRepository(CheckList).save(listToUpdate)
+            return list
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    static async delete(checkListId: number): Promise<void> {
+        try {
+            // const checkList = await CheckListFacade.getById(checkListId, { relations: ['card'] })
+            // const cardId = checkList.card.id
+            // delete checkList.card
+            // RealTimeFacade.sendEvent(checkListDeleted(checkList, cardId))
+
+            await getRepository(CheckList).removeById(checkListId)
+
+            return
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
 }

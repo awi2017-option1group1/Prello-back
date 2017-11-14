@@ -1,4 +1,3 @@
-import { getManager } from 'typeorm'
 import { getRepository } from 'typeorm'
 
 import { ParamsExtractor } from './paramsExtractorv2'
@@ -8,8 +7,6 @@ import { BadRequest } from './errors/BadRequest'
 
 import { CheckItem } from '../entities/checkItem'
 import { CheckListFacade } from './checkListFacade'
-import { RealTimeFacade } from './realtimeFacade'
-import { checkItemCreated, checkItemUpdated } from './realtime/realtimeCheckItem'
 
 export class CheckItemFacade {
 
@@ -46,43 +43,7 @@ export class CheckItemFacade {
         }
     }
 
-    static async delete(checkItemId: number): Promise<boolean> {
-        try {
-            const deletionSuccess = await getManager()
-                    .getRepository(CheckItem)
-                    .removeById(checkItemId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
-            }
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
-    }
-
-    // static async update(checkItemReceived: CheckItem, checkItemListId: number): Promise<void> {
-    static async update(checkItemId: number, params: {}): Promise<CheckItem> {
-        try {
-            const extractor = new ParamsExtractor<CheckItem>(params).permit(['name', 'pos', 'state'])
-
-            const checkItemToUpdate = await CheckItemFacade.getById(checkItemId, { relations: ['checkList'] })
-            extractor.fill(checkItemToUpdate)
-
-            const checkList = checkItemToUpdate.checkList
-
-            const checkItem = await getRepository(CheckItem).save(checkItemToUpdate)
-            delete checkItem.checkList
-
-            RealTimeFacade.sendEvent(checkItemUpdated(checkItem, checkList.id))
-            return checkItem
-        } catch (e) {
-            console.error(e)
-            throw new BadRequest(e)
-        }
-    }
-
-    static async create(checkListId: number, params: {}): Promise<CheckItem> {
+    static async insertFromChecklistId(checkListId: number, params: {}): Promise<CheckItem> {
         try {
             const extractor = new ParamsExtractor<CheckItem>(params).permit(['name', 'pos', 'state'])
             const checkItemToInsert = extractor.fill(new CheckItem())
@@ -102,10 +63,40 @@ export class CheckItemFacade {
 
             checkItemToInsert.checkList = await CheckListFacade.getById(checkListId)
 
-            const checkItem = await getRepository(CheckItem).save(checkItemToInsert)
+            // RealTimeFacade.sendEvent(checkItemCreated(checkItem, checkListId))
 
-            RealTimeFacade.sendEvent(checkItemCreated(checkItem, checkListId))
+            const checkItem = await getRepository(CheckItem).save(checkItemToInsert)
+            delete checkItem.checkList
             return checkItem
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    static async update(checkItemId: number, params: {}): Promise<CheckItem> {
+        try {
+            const extractor = new ParamsExtractor<CheckItem>(params).permit(['name', 'pos', 'state'])
+
+            const checkItemToUpdate = await CheckItemFacade.getById(checkItemId, { relations: ['checkList'] })
+            extractor.fill(checkItemToUpdate)
+
+            // const checkList = checkItemToUpdate.checkList
+            delete checkItemToUpdate.checkList
+            // RealTimeFacade.sendEvent(checkItemUpdated(checkItem, checkList.id))
+            
+            const checkItem = await getRepository(CheckItem).save(checkItemToUpdate)
+            return checkItem
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    static async delete(checkItemId: number): Promise<void> {
+        try {
+            await getRepository(CheckItem).removeById(checkItemId)
+            return
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)

@@ -11,8 +11,6 @@ export class RootMigration1509029313383 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "list" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "pos" integer NOT NULL, "boardId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "board" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "isPrivate" boolean NOT NULL, "teamId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "tag" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "color" character varying NOT NULL, "boardId" integer, PRIMARY KEY("id"))`);
-        await queryRunner.query(`CREATE TABLE "task" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "rank" integer NOT NULL, "isDone" boolean NOT NULL, "taskListId" integer, PRIMARY KEY("id"))`);
-        await queryRunner.query(`CREATE TABLE "task_list" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "cardId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "card" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "description" text, "dueDate" date NOT NULL, "rank" integer NOT NULL, "listId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "attachement" ("id" SERIAL NOT NULL, "type" character varying NOT NULL, "URL" text NOT NULL, "cardId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "board_role" ("id" SERIAL NOT NULL, "role" text NOT NULL, PRIMARY KEY("id"))`);
@@ -53,8 +51,6 @@ export class RootMigration1509029313383 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "user_team" DROP CONSTRAINT "fk_d45a315d65fb5c88ce89ed82a4f"`);
         await queryRunner.query(`ALTER TABLE "attachement" DROP CONSTRAINT "fk_1b55dda3c5744aac69cd5b03a92"`);
         await queryRunner.query(`ALTER TABLE "card" DROP CONSTRAINT "fk_0ad426ec552cfce3192f30a1a19"`);
-        await queryRunner.query(`ALTER TABLE "task_list" DROP CONSTRAINT "fk_f129c340de8ddc4cae5232b3bad"`);
-        await queryRunner.query(`ALTER TABLE "task" DROP CONSTRAINT "fk_d0047906a862c652fd82d4947d5"`);
         await queryRunner.query(`ALTER TABLE "tag" DROP CONSTRAINT "fk_9eacbff885bd58d8e13efa4f4a1"`);
         await queryRunner.query(`ALTER TABLE "board" DROP CONSTRAINT "fk_b82dcddb5bc5f9b166487ba4f0d"`);
         await queryRunner.query(`ALTER TABLE "list" DROP CONSTRAINT "fk_92fd99cabd2cd7336817771307e"`);

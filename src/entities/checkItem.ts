@@ -27,6 +27,8 @@ export class CheckItem {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => CheckList, checkList => checkList.checkItems)
+    @ManyToOne(type => CheckList, checkList => checkList.checkItems, {
+        onDelete: 'CASCADE'
+    })
     checkList: CheckList
  }
