@@ -14,7 +14,6 @@ export class CommentFacade {
     static async getById(commentId: number): Promise<Comment> {
         const comment = await getRepository(Comment)
                                 .createQueryBuilder('comment')
-                                .leftJoinAndSelect('comment.card', 'card')
                                 .leftJoinAndSelect('comment.user', 'user')
                                 .where('comment.id = :commentId', { commentId })
                                 .getOne()

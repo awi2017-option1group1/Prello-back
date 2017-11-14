@@ -114,8 +114,8 @@ app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
 
 // ---------    Comment Routes   ---------
-app.get('/card/:cardId/comments', Comment.getAllFromCardId)
-app.post('/card/:cardId/comments', Comment.create)
+app.get('/cards/:cardId/comments', Comment.getAllFromCardId)
+app.post('/cards/:cardId/comments', Comment.create)
 app.put('/comments/:commentId', Comment.update)
 app.delete('/comments/:commentId', Comment.delete)
 

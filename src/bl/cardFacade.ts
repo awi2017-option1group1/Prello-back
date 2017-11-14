@@ -16,14 +16,6 @@ import { Comment } from '../entities/comment'
 import { RealTimeFacade } from './realtimeFacade'
 import { cardCreated, cardUpdated, cardDeleted } from './realtime/realtimeCard'
 
-type CommentToSend = {
-    id: number,
-    content: string
-    createdDate: Date,
-    userId: number,
-    userName: string
-}
-
 export class CardFacade {
 
     static async getAllFromListId(listId: number): Promise<Card[]> {
@@ -201,8 +193,7 @@ export class CardFacade {
 
     // --------------- Comments ---------------
 
-    static async getAllFromCardId(cardId: number): Promise<CommentToSend[]> {
-
+    static async getAllFromCardId(cardId: number): Promise<Comment[]> {
         const comments = await getManager()
             .getRepository(Comment)
             .createQueryBuilder('comment')
@@ -212,23 +203,14 @@ export class CardFacade {
             .orderBy({ 'comment.createdDate': 'ASC' })
             .getMany()
         if (comments) {
-            const commentsToSend: CommentToSend[] = []
-            comments.forEach(function(comment: Comment) {
-                const userId = comment.user.id
-                const userName = comment.user.username
-                const commentToSend: CommentToSend = {
-                    id: comment.id,
-                    content: comment.content,
-                    createdDate: comment.createdDate,
-                    userId: userId,
-                    userName: userName
-                }
-                commentsToSend.push(commentToSend)
-            })
-            return commentsToSend
-        } else {
-            throw new NotFoundException('No Comment was found')
-        }
-
+            return comments.map((comment) => ({
+                ...comment,
+                user: {
+                    id: comment.user.id,
+                    username: comment.user.username
+                } as User
+            }))
+        } 
+        return []
     }
 }
