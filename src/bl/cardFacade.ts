@@ -194,8 +194,7 @@ export class CardFacade {
     // --------------- Comments ---------------
 
     static async getAllFromCardId(cardId: number): Promise<Comment[]> {
-        const comments = await getManager()
-            .getRepository(Comment)
+        const comments = await getRepository(Comment)
             .createQueryBuilder('comment')
             .leftJoin('comment.card', 'card')
             .leftJoinAndSelect('comment.user', 'user')

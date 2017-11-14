@@ -42,7 +42,6 @@ export class ParamsExtractor<T> {
     }
 
     public permit(names: string[]) {
-        console.log('entrer permit')
         names.forEach(name => {
             if (this.params.hasOwnProperty(name)) {
                 console.log(name)

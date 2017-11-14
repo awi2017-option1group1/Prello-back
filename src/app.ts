@@ -12,12 +12,8 @@ import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
 import { Task } from './routes/task/task'
-<<<<<<< fb493855a140fef3fc4261954442d3f1b155edac
 import { Tag } from './routes/tag/tag'
-=======
-import { Attachment } from './routes/attachment/attachment'
 import { Comment } from './routes/comment/comment'
->>>>>>> feat: add comment routes 
 import { TaskList } from './routes/taskList/taskList'
 import { List } from './routes/list/list'
 
