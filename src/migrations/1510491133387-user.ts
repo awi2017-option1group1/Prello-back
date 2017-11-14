@@ -5,7 +5,7 @@ export class user1510491133387 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.query(`ALTER TABLE "public"."user" ADD "confirmationToken" character varying`);
-        await queryRunner.query(`ALTER TABLE "public"."user" ADD CONSTRAINT "uk_user_username" UNIQUE ("username")`);
+        // await queryRunner.query(`ALTER TABLE "public"."user" ADD CONSTRAINT "uk_user_username" UNIQUE ("username")`);
         await queryRunner.query(`ALTER TABLE "public"."user" ALTER COLUMN "password" DROP NOT NULL`);
     }
 

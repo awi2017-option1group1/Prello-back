@@ -1,7 +1,7 @@
 /* tslint:disable */
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class userResetToken1510669800125 implements MigrationInterface {
+export class TimestampUser1510676413453 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.query(`ALTER TABLE "public"."user" ADD "resetToken" character varying`);

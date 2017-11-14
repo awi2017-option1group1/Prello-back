@@ -46,19 +46,15 @@ describe('Test the User#gelAll route', () => {
         })
         .expect(200)
         .then(response => {
-            expect(response.body).toEqual({bio: null, 
-                confirmationToken: 'a27c56f4-1985-589d-8086-d924a428d07c', 
+            expect(response.body).toEqual([{'bio': null, 
                 confirmed: false, 
-                email: 'register@test.fr', 
+                email: 'user#getall@test.fr', 
                 fullName: null, 
                 id: 1, 
                 initial: null, 
                 notificationsEnabled: true, 
-                password: null, 
-                resetTimeStamp: null, 
-                resetToken: null, 
-                username: 'register'
-            })
+                username: 'user#getall'
+        }])
             done()
         })
     })

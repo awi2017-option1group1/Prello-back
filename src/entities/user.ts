@@ -100,19 +100,21 @@ export class User {
 
     @Column({
         type: 'varchar',
-        nullable: true
+        nullable: true,
+        select: false
     })
     confirmationToken: string | null
 
     @Column({
         type: 'varchar',
-        nullable: true
+        nullable: true,
+        select: false
     })
     resetToken: string | null
 
     @Column({
         type: 'timestamp',
-        nullable: true
+        nullable: true,
     })
     resetTimeStamp: Date | null
 

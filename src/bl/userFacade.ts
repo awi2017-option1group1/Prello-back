@@ -96,13 +96,19 @@ export class UserFacade {
 
     static async confirm(userId: number, uuidToken: string): Promise<User> {
         try {
-            const user = await UserFacade.getById(userId)
-            if (user.confirmationToken === uuidToken) {
+            const user = await await getRepository(User).findOne({
+                where: {
+                    confirmationToken: uuidToken,
+                    id: userId,
+                }
+            })
+
+            if (!user) {
+                throw new BadRequest('This page does not exist')
+            } else {
                 user.confirmationToken = null
                 user.confirmed = true
                 return await getRepository(User).save(user)
-            } else {
-                throw new BadRequest('This page does not exist')
             }
             
         } catch (e) {
@@ -111,7 +117,7 @@ export class UserFacade {
         }
     }
 
-    static async reset(email: string): Promise<User> {
+    static async reset(email: string): Promise<Boolean> {
         if (!email) {
             throw new BadRequest('This user does not exist')
         }
@@ -120,24 +126,32 @@ export class UserFacade {
             const token = uuid('photon.igpolytech.fr', uuid.DNS)
             user.resetToken = token
             user.resetTimeStamp = new Date()
-            console.log(user.resetTimeStamp)
-
+            getRepository(User).save(user)
+            
             sendMail(email, resetPassword(user.username, user.id, token))
             
-            return await getRepository(User).save(user)
+            return true
         } catch (e) {
             throw new BadRequest(e)
         }
 
     }
 
-    static async checkResetToken(userID: number, token: string): Promise<User> {
+    static async checkResetToken(userID: number, token: string): Promise<Boolean> {
         try {
-            const user = await UserFacade.getById(userID)
-            const timeDifference = user.resetTimeStamp ? user.resetTimeStamp.getTime() - new Date().getTime() : 10000000
+            const user = await await getRepository(User).findOne({
+                where: {
+                    resetToken: token,
+                    id: userID,
+                }
+            })
 
-            if (user.resetToken === token && timeDifference < 600) { // 10 minutes
-                return user
+            if (!user) {
+                throw new BadRequest('not exist')
+            }
+            const timeDifference = user.resetTimeStamp ? new Date().getTime() - user.resetTimeStamp.getTime() : 10000000
+            if (timeDifference < 300000) { // 10 minutes
+                return true
             } else {
                 throw new NotFoundException('Page not found')
             }
@@ -146,14 +160,25 @@ export class UserFacade {
         }
     }
 
-    static async updatePassword(userID: number, token: string, newPassword: string): Promise<User> {
+    static async updatePassword(userID: number, token: string, newPassword: string): Promise<boolean> {
         try {
-            const user = await UserFacade.checkResetToken(userID, token)
-            if (user) {
+            const isGood = await UserFacade.checkResetToken(userID, token)
+            if (isGood) {
+                const user = await await getRepository(User).findOne({
+                    where: {
+                        resetToken: token,
+                        id: userID,
+                    }
+                })
+
+                if (!user) {
+                    throw new BadRequest('not exist')
+                }
+
                 user.resetToken = null
                 user.resetTimeStamp = null
                 user.password = Password.encrypt(newPassword)
-                return await getRepository(User).save(user)
+                return true
             } else {
                 throw new BadRequest('This page does not exist')
             }
