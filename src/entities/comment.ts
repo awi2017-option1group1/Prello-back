@@ -20,6 +20,11 @@ export class Comment {
     })
     createdDate: Date
 
+    @Column({
+        type: 'timestamp'
+    })
+    updatedDate: Date
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------

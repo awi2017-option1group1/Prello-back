@@ -114,10 +114,10 @@ app.put('/checkitems/:id', Task.update)
 app.delete('/checkitems/:id', Task.delete)
 
 // ---------    Comment Routes   ---------
-app.get('/card/:card_id/comments', Comment.getAllFromCardId)
-app.delete('/comment/:comment_id', Comment.delete)
-app.post('/card/:card_id/comment', Comment.create)
-app.put('/comment/:comment_id', Comment.update)
+app.get('/card/:cardId/comments', Comment.getAllFromCardId)
+app.post('/card/:cardId/comments', Comment.create)
+app.put('/comments/:commentId', Comment.update)
+app.delete('/comments/:commentId', Comment.delete)
 
 // ---------    TaskList Routes   ---------
 app.get('/checklists/:id', TaskList.getOneById) 

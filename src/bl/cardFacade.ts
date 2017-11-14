@@ -201,21 +201,6 @@ export class CardFacade {
 
     // --------------- Comments ---------------
 
-    static async addComment(comment: Comment, cardId: number): Promise<void> {
-        var card = await CardFacade.getById(cardId)
-        if (card) {
-            const comments = await card.comments
-            if (comments) {
-                card.comments = comments.concat(comment)
-                getRepository(Card).save(card)
-            } else {
-                throw new NotFoundException('No Card was found')
-            }
-        } else {
-            throw new NotFoundException('No Card was found')
-        }
-    }
-
     static async getAllFromCardId(cardId: number): Promise<CommentToSend[]> {
 
         const comments = await getManager()
