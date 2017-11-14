@@ -1,8 +1,9 @@
+/*
 import * as rq from 'request'
 
 import { config } from '../config'
 import { fullUrlFromString, AUTH_HOST } from '../url'
-
+*/
 import { UserFacade } from './userFacade'
 import { User } from '../entities/user'
 
@@ -74,8 +75,10 @@ export class RequesterFactory {
 
     static async fromToken(token: RequesterToken): Promise<Requester> {
         try {
-            const tokenData = await RequesterFactory.retrieveTokenData(token)
-            const user = await UserFacade.getById(tokenData.user.uid)
+            // const tokenData = await RequesterFactory.retrieveTokenData(token)
+            // console.log('tokenData: ' + tokenData)
+            const user = await UserFacade.getById(1)
+            console.log('user: ' + user)
             if (user) {
                 return new UserRequester(user)
             } else {
@@ -86,7 +89,7 @@ export class RequesterFactory {
             return RequesterFactory.empty
         }
     }
-
+/*
     private static async retrieveTokenData(token: RequesterToken): Promise<TokenData> {
         return new Promise<TokenData>((resolve, reject) => {
             rq.get(
@@ -110,5 +113,6 @@ export class RequesterFactory {
             )
         }) 
     }
+*/
 
 }

@@ -62,6 +62,9 @@ app.get('/teams/:team_id/users', User.getAllFromTeamId)
 app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
 app.post('/users/:userId/:confirmationToken', User.confirm)
+app.post('/users/forgot', User.reset)
+app.get('/users/:userID/reset/:token', User.checkResetToken)
+app.post('/users/:userID/reset/:token', User.updatePassword)
 
 // ---------    List Routes   ---------
 app.get('/boards/:boardId/lists', List.getAllFromBoardId)

@@ -104,6 +104,18 @@ export class User {
     })
     confirmationToken: string | null
 
+    @Column({
+        type: 'varchar',
+        nullable: true
+    })
+    resetToken: string | null
+
+    @Column({
+        type: 'timestamp',
+        nullable: true
+    })
+    resetTimeStamp: Date | null
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------

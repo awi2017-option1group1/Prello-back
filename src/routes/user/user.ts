@@ -63,4 +63,31 @@ export class User {
         
     }
 
+    static async reset(req: express.Request, res: express.Response) {
+        try {
+            const email = req.body.email
+            const user = await UserFacade.reset(email)
+            res.status(200).json(user)
+        } catch (e) {
+            res.status(404).json({message: e.message.message})
+        }
+    }
+
+    static async checkResetToken(req: express.Request, res: express.Response) {
+        try {
+            const user = await UserFacade.checkResetToken(req.params.userID, req.params.token)
+            res.status(203).json(user)
+        } catch (e) {
+            res.status(404).json({message: e.message.message})
+        }
+    }
+
+    static async updatePassword(req: express.Request, res: express.Response) {
+        try {
+            const updatedUser = await UserFacade.updatePassword(req.params.userID, req.params.token, req.body.password)
+            res.status(200).json(updatedUser)
+        } catch (e) {
+            res.status(404).json({message: e.message.message})
+        }
+    }
 }
