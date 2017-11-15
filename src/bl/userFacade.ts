@@ -96,7 +96,7 @@ export class UserFacade {
 
     static async confirm(userId: number, uuidToken: string): Promise<User> {
         try {
-            const user = await await getRepository(User).findOne({
+            const user = await getRepository(User).findOne({
                 where: {
                     confirmationToken: uuidToken,
                     id: userId,
@@ -164,7 +164,7 @@ export class UserFacade {
         try {
             const isGood = await UserFacade.checkResetToken(userID, token)
             if (isGood) {
-                const user = await await getRepository(User).findOne({
+                const user = await getRepository(User).findOne({
                     where: {
                         resetToken: token,
                         id: userID,
@@ -174,10 +174,11 @@ export class UserFacade {
                 if (!user) {
                     throw new BadRequest('not exist')
                 }
-
+                console.log(user)
                 user.resetToken = null
                 user.resetTimeStamp = null
                 user.password = Password.encrypt(newPassword)
+                getRepository(User).save(user)
                 return true
             } else {
                 throw new BadRequest('This page does not exist')
