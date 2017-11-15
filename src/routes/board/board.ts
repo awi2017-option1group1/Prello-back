@@ -59,7 +59,7 @@ export class Board {
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const board = await BoardFacade.update(req.requester, req.body, req.params.boardId)
+            const board = await BoardFacade.update(req.body, req.params.boardId, req.requester)
             res.status(200).json(board)
         } catch (e) {
             res.status(404).json({ error: e.message})

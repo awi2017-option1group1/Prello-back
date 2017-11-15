@@ -1,9 +1,9 @@
-import { getManager, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Notification } from '../entities/notification'
 import { User } from '../entities/user'
-import { ParamsExtractor } from './paramsExtractor'
+import { ParamsExtractor } from './paramsExtractorv2'
 
 export class NotificationFacade {
 
@@ -23,9 +23,8 @@ export class NotificationFacade {
     }
 
     static async getById(notificationId: number): Promise<Notification> {
-        const notification = await getManager()
-                            .getRepository(Notification)
-                            .findOneById(notificationId)
+        const notification = await getRepository(Notification)
+                                    .findOneById(notificationId)
         if (notification) {
             return notification
         } else {
@@ -41,12 +40,12 @@ export class NotificationFacade {
         }
     }
 
-    static async create(notification: Notification): Promise<Notification> {
+    static async create(params: {}): Promise<Notification> {
         try {
-            let notificationToCreate = new Notification()
-            notificationToCreate = ParamsExtractor.extract<Notification>(['about', 'from', 'type', 'user', 'date'],
-                                                                         notification)
-            return getManager().getRepository(Notification).save(notificationToCreate)
+            const extractor = new ParamsExtractor<Notification>(params)
+                .permit(['about', 'from', 'type', 'user', 'date'])
+            const notificationToCreate = extractor.fill(new Notification())
+            return await getRepository(Notification).save(notificationToCreate)
         } catch (e) {
             throw new NotFoundException(e)
         }

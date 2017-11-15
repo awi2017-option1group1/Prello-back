@@ -1,5 +1,4 @@
 import { getManager, getRepository } from 'typeorm'
-import * as express from 'express'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
@@ -64,13 +63,13 @@ export class BoardFacade {
         }
     }
 
-    static async update(requester: Requester, params: express.Request, boardId: number): Promise<Board> {
+    static async update(params: {}, boardId: number, requester: Requester): Promise<Board> {
         try {
-            const extractor = new ParamsExtractor<Board>(params.body).permit(['name', 'isPrivate'])
+            const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
             let board = await BoardFacade.getById(requester, boardId)
             extractor.fill(board)
             board = await getRepository(Board).save(board)
-            NotificationFacade.createBoardUpdateNotifications(boardId, params.requester.getUID())
+            NotificationFacade.createBoardUpdateNotifications(boardId, requester.getUID())
             return board
         } catch (e) {
             throw new NotFoundException(e)
