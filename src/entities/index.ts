@@ -1,4 +1,3 @@
-import { Attachment } from './attachment'
 import { Board } from './board'
 import { BoardRole } from './boardRole'
 import { Card } from './card'
@@ -13,7 +12,6 @@ import { TeamRole } from './teamRole'
 import { User } from './user'
 
 export const entities = [
-    Attachment,
     Board,
     BoardRole,
     Card,

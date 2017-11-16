@@ -12,10 +12,7 @@ export class RootMigration1509029313383 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "board" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "isPrivate" boolean NOT NULL, "teamId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "tag" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "color" character varying NOT NULL, "boardId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "card" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "description" text, "dueDate" date NOT NULL, "rank" integer NOT NULL, "listId" integer, PRIMARY KEY("id"))`);
-        await queryRunner.query(`CREATE TABLE "attachement" ("id" SERIAL NOT NULL, "type" character varying NOT NULL, "URL" text NOT NULL, "cardId" integer, PRIMARY KEY("id"))`);
         await queryRunner.query(`CREATE TABLE "board_role" ("id" SERIAL NOT NULL, "role" text NOT NULL, PRIMARY KEY("id"))`);
-        await queryRunner.query(`CREATE TABLE "team_role" ("id" SERIAL NOT NULL, "role" character varying NOT NULL, PRIMARY KEY("id"))`);
-        await queryRunner.query(`CREATE TABLE "user_team" ("user" integer NOT NULL, "team" integer NOT NULL, PRIMARY KEY("user", "team"))`);
         await queryRunner.query(`CREATE TABLE "board_users_user" ("boardId" integer NOT NULL, "userId" integer NOT NULL, PRIMARY KEY("boardId", "userId"))`);
         await queryRunner.query(`CREATE TABLE "card_tags" ("card" integer NOT NULL, "tag" integer NOT NULL, PRIMARY KEY("card", "tag"))`);
         await queryRunner.query(`CREATE INDEX "ind_8226f6255c8943fe0c23c99b62" ON "user_team"("user")`);
@@ -65,10 +62,7 @@ export class RootMigration1509029313383 implements MigrationInterface {
         await queryRunner.query(`-- TODO: revert CREATE INDEX "ind_8226f6255c8943fe0c23c99b62" ON "user_team"("user")`);
         await queryRunner.query(`DROP TABLE "card_tags"`);
         await queryRunner.query(`DROP TABLE "board_users_user"`);
-        await queryRunner.query(`DROP TABLE "user_team"`);
-        await queryRunner.query(`DROP TABLE "team_role"`);
         await queryRunner.query(`DROP TABLE "board_role"`);
-        await queryRunner.query(`DROP TABLE "attachement"`);
         await queryRunner.query(`DROP TABLE "card"`);
         await queryRunner.query(`DROP TABLE "task_list"`);
         await queryRunner.query(`DROP TABLE "task"`);
