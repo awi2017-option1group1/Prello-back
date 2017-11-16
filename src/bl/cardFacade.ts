@@ -227,4 +227,25 @@ export class CardFacade {
             throw new NotFoundException('No label was found with this id')
         }
     }
+
+    static async search(value: string): Promise<Card[]> {
+        try {
+            const realValue = `%${value}%`
+            const cards = await getRepository(Card)
+            .createQueryBuilder('card')
+            .select()
+            .where('card.name LIKE :realValue', { realValue })
+            .getMany()
+            console.log(cards)
+            if (cards) {
+                const realCards = cards.map(c => 
+                    c = Object({name: c.name, description: c.desc, link: `/cards/${c.id}`}))
+                return realCards
+            }
+            return []
+            
+        } catch (e) {
+            throw new BadRequest(e)
+        }
+    }
 }

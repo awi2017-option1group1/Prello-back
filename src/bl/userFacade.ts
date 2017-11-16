@@ -10,6 +10,10 @@ import { ValidationException } from './errors/ValidationException'
 import { User } from '../entities/user'
 import { Password } from './password'
 
+import { BoardFacade } from '../bl/boardFacade'
+import { ListFacade } from '../bl/listFacade'
+import { CardFacade } from '../bl/cardFacade'
+
 export class UserFacade {
     static async register(email: string, username: string, password?: string): Promise<User>  {
         const user = new User()
@@ -71,6 +75,21 @@ export class UserFacade {
             return await getRepository(User).save(userToUpdate)
         } catch (e) {
             console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    static async search(userID: number, value: string): Promise<Object> {
+        try {
+            const results = {
+                boards: await BoardFacade.search(value),
+                lists: await ListFacade.search(value),
+                cards: await CardFacade.search(value),
+            }
+            console.log(results)
+            return results
+            
+        } catch (e) {
             throw new BadRequest(e)
         }
     }

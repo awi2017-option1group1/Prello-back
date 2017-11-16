@@ -7,6 +7,7 @@ import { UserFacade } from './userFacade'
 import { List } from '../entities/list'
 import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
+import { BadRequest } from '../bl/errors/BadRequest'
 
 export class BoardFacade {
 
@@ -155,6 +156,26 @@ export class BoardFacade {
             }
         } else {
             throw new NotFoundException('No Board was found')
+        }
+    }
+
+    static async search(value: string): Promise<Board[]> {
+        try {
+            const realValue = `%${value}%`
+            const boards = await getRepository(Board)
+            .createQueryBuilder('board')
+            .select()
+            .where('board.name LIKE :realValue', { realValue })
+            .getMany()
+
+            if (boards) {
+                const realBoards = boards.map(b => b = Object({name: b.name, description: '', link: `/boards/${b.id}`}))
+                return realBoards
+            }
+            return []
+            
+        } catch (e) {
+            throw new BadRequest(e)
         }
     }
 }
