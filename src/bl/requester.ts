@@ -75,7 +75,16 @@ export class RequesterFactory {
     static async fromToken(token: RequesterToken): Promise<Requester> {
         try {
             const tokenData = await RequesterFactory.retrieveTokenData(token)
-            const user = await UserFacade.getById(tokenData.user.uid)
+            return RequesterFactory.fromUid(tokenData.user.uid)          
+        } catch (e) {
+            console.error(e)
+            return RequesterFactory.empty
+        }
+    }
+
+    static async fromUid(uid: number): Promise<Requester> {
+        try {
+            const user = await UserFacade.getById(uid)
             if (user) {
                 return new UserRequester(user)
             } else {
