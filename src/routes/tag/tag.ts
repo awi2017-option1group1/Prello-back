@@ -8,12 +8,7 @@ export class Tag {
     static async getAllFromBoardId(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.boardId)) {
-                let tags
-                if (req.query.search) {
-                    tags = await TagFacade.search(req.params.boardId, req.query.search)
-                } else {
-                    tags = await TagFacade.getAllFromBoardId(req.params.boardId)
-                }
+                const tags = await TagFacade.getAllFromBoardId(req.requester, req.params.boardId)
                 res.status(200).json(tags)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
@@ -26,7 +21,7 @@ export class Tag {
     static async insertFromBoardId(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.boardId)) {
-                const tag = await TagFacade.create(req.params.boardId, req.body)
+                const tag = await TagFacade.create(req.requester, req.params.boardId, req.body)
                 res.status(201).json(tag)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
@@ -39,7 +34,7 @@ export class Tag {
     static async update(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.labelId)) {
-                const tag = await TagFacade.update(req.params.labelId, req.body)
+                const tag = await TagFacade.update(req.requester, req.params.labelId, req.body)
                 res.status(200).json(tag)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
@@ -52,7 +47,7 @@ export class Tag {
     static async delete(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.labelId)) {
-                await TagFacade.delete(req.params.labelId)
+                await TagFacade.delete(req.requester, req.params.labelId)
                 res.status(204).end()
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })

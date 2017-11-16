@@ -1,5 +1,4 @@
 import { Board } from './board'
-import { BoardRole } from './boardRole'
 import { Card } from './card'
 import { Comment } from './comment'
 import { List } from './list'
@@ -11,7 +10,6 @@ import { User } from './user'
 
 export const entities = [
     Board,
-    BoardRole,
     Card,
     Comment,
     List,

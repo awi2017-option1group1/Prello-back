@@ -1,9 +1,13 @@
+import { CardFacade } from './cardFacade'
 import * as rq from 'request'
 import { getRepository } from 'typeorm'
 
 import { config } from '../config'
 import { fullUrlFromString, AUTH_HOST } from '../url'
+
 import { User } from '../entities/user'
+import { BoardFacade } from './boardFacade'
+import { ListFacade } from './listFacade'
 
 export class AuthCondition {
     constructor(public condition: boolean) {}
@@ -13,6 +17,10 @@ export class AuthCondition {
             throw new Error('Not Authorized!')
         }
     }
+
+    toBoolean() {
+        return this.condition
+    }
 }
 
 export interface Requester {
@@ -20,7 +28,11 @@ export interface Requester {
     getUID(): number
     isEmptyRequester(): boolean
     hasUID(userId: number): boolean
+
     shouldHaveUid(userId: number): AuthCondition
+    shouldHaveBoardAccess(boardId: number): Promise<AuthCondition>
+    shouldHaveListAccess(listId: number): Promise<AuthCondition>
+    shouldHaveCardAccess(cardId: number): Promise<AuthCondition>
 
 }
 
@@ -40,6 +52,18 @@ class EmptyRequester implements Requester {
 
     shouldHaveUid(userId: number): AuthCondition {
         return new AuthCondition(false)
+    }
+
+    shouldHaveBoardAccess(boardId: number): Promise<AuthCondition> {
+        return Promise.resolve(new AuthCondition(false))
+    }
+
+    shouldHaveListAccess(listId: number): Promise<AuthCondition> {
+        return Promise.resolve(new AuthCondition(false))
+    }
+
+    shouldHaveCardAccess(cardId: number): Promise<AuthCondition> {
+        return Promise.resolve(new AuthCondition(false))
     }
 
 }
@@ -62,6 +86,23 @@ class UserRequester implements Requester {
 
     shouldHaveUid(userId: number): AuthCondition {
         return new AuthCondition(this.hasUID(userId))
+    }
+
+    async shouldHaveBoardAccess(boardId: number): Promise<AuthCondition> {
+        const hasAccess = await BoardFacade.hasAccess(this.getUID(), boardId)
+        return new AuthCondition(hasAccess)
+    }
+
+    async shouldHaveListAccess(listId: number): Promise<AuthCondition> {
+        const list =  await ListFacade.getById(listId, { relations: ['board'] })
+        const hasAccess = await BoardFacade.hasAccess(this.getUID(), list.board.id)
+        return new AuthCondition(hasAccess)
+    }
+
+    async shouldHaveCardAccess(cardId: number): Promise<AuthCondition> {
+        const card = await CardFacade.getByIdWithBoard(cardId)
+        const hasAccess = await BoardFacade.hasAccess(this.getUID(), card.list.board.id)
+        return new AuthCondition(hasAccess)
     }
 
 }

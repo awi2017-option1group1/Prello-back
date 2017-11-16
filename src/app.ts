@@ -71,7 +71,6 @@ app.delete('/lists/:listId', List.delete)
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
 app.get('/users/:userId/boards', Board.getAllFromUserId)
-app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
 app.post('/users/:userId/boards', Board.create)

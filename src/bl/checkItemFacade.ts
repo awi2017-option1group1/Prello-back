@@ -5,18 +5,33 @@ import { ParamsExtractor } from './paramsExtractorv2'
 import { NotFoundException } from './errors/NotFoundException'
 import { BadRequest } from './errors/BadRequest'
 
+import { Requester } from './requester'
 import { CheckItem } from '../entities/checkItem'
 import { CheckListFacade } from './checkListFacade'
 
 export class CheckItemFacade {
 
-    static async getAllFromCheckListId(checkListId: number): Promise<CheckItem[]> {
+    static async getAllFromCheckListId(requester: Requester, checkListId: number): Promise<CheckItem[]> {
         return await getRepository(CheckItem)
             .createQueryBuilder('checkItem')
             .leftJoin('checkItem.checkList', 'checkList')
             .where('checkList.id = :checkListId', { checkListId })
             .orderBy({ 'checkItem.pos': 'ASC' })
             .getMany()
+    }
+
+    static async getByIdWithCard(checkItemId: number): Promise<CheckItem> {
+        const checkItem = await getRepository(CheckItem)
+            .createQueryBuilder('checkItem')
+            .leftJoinAndSelect('checkItem.checkList', 'checkList')
+            .leftJoinAndSelect('checkList.card', 'card')
+            .where('checkItem.id = :checkItemId', { checkItemId })
+            .getOne()
+        if (checkItem) {
+            return checkItem
+        } else {
+            throw new NotFoundException('CheckList not found')
+        }
     }
 
     static async getMaxPosForCheckListId(checkListId: number): Promise<number> {
@@ -43,7 +58,7 @@ export class CheckItemFacade {
         }
     }
 
-    static async insertFromChecklistId(checkListId: number, params: {}): Promise<CheckItem> {
+    static async insertFromChecklistId(requester: Requester, checkListId: number, params: {}): Promise<CheckItem> {
         try {
             const extractor = new ParamsExtractor<CheckItem>(params).permit(['name', 'pos', 'state'])
             const checkItemToInsert = extractor.fill(new CheckItem())
@@ -74,12 +89,15 @@ export class CheckItemFacade {
         }
     }
 
-    static async update(checkItemId: number, params: {}): Promise<CheckItem> {
+    static async update(requester: Requester, checkItemId: number, params: {}): Promise<CheckItem> {
         try {
             const extractor = new ParamsExtractor<CheckItem>(params).permit(['name', 'pos', 'state'])
 
-            const checkItemToUpdate = await CheckItemFacade.getById(checkItemId, { relations: ['checkList'] })
+            const checkItemToUpdate = await CheckItemFacade.getByIdWithCard(checkItemId)
             extractor.fill(checkItemToUpdate)
+
+            const hasAccess = await requester.shouldHaveCardAccess(checkItemToUpdate.checkList.card.id)
+            hasAccess.orElseThrowError()
 
             // const checkList = checkItemToUpdate.checkList
             delete checkItemToUpdate.checkList
@@ -93,8 +111,13 @@ export class CheckItemFacade {
         }
     }
 
-    static async delete(checkItemId: number): Promise<void> {
+    static async delete(requester: Requester, checkItemId: number): Promise<void> {
         try {
+            const checkItemToDelete = await CheckItemFacade.getByIdWithCard(checkItemId)
+
+            const hasAccess = await requester.shouldHaveCardAccess(checkItemToDelete.checkList.card.id)
+            hasAccess.orElseThrowError()
+
             await getRepository(CheckItem).removeById(checkItemId)
             return
         } catch (e) {

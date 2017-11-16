@@ -11,12 +11,13 @@ import { Requester } from './requester'
 
 export class CommentFacade {
 
-    static async getById(commentId: number): Promise<Comment> {
-        const comment = await getRepository(Comment)
-                                .createQueryBuilder('comment')
-                                .leftJoinAndSelect('comment.user', 'user')
-                                .where('comment.id = :commentId', { commentId })
-                                .getOne()
+    static async getById(commentId: number, options?: {}): Promise<Comment> {
+        const comment = await await getRepository(Comment).findOne({
+            ...options,
+            where: {
+                id: commentId
+            }
+        })
         if (comment) {
             return comment
         } else {
@@ -26,12 +27,14 @@ export class CommentFacade {
 
     static async insertFromCardId(requester: Requester, cardId: number, params: {}): Promise<Comment> {
         try {
+            (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
             const extractor = new ParamsExtractor<Comment>(params).require(['content'])
             const commentToInsert = extractor.fill(new Comment())
 
             commentToInsert.createdDate = new Date()
             commentToInsert.updatedDate = commentToInsert.createdDate
-            commentToInsert.user = await UserFacade.getById(requester.getUID())
+            commentToInsert.user = await UserFacade.getById(requester, requester.getUID())
             commentToInsert.card = await CardFacade.getById(cardId)
             
             // RealTimeFacade.sendEvent(commentCreated(commentToReturn, boardId))
@@ -44,15 +47,19 @@ export class CommentFacade {
         }
     }
 
-    static async update(commentId: number, params: {}): Promise<Comment> {
+    static async update(requester: Requester, commentId: number, params: {}): Promise<Comment> {
         try {
             const extractor = new ParamsExtractor<Comment>(params).require(['content'])
 
-            const commentToUpdate = await CommentFacade.getById(commentId)
+            const commentToUpdate = await CommentFacade.getById(commentId, { relations: ['card'] })
             extractor.fill(commentToUpdate)
             
             commentToUpdate.updatedDate = new Date()
 
+            const hasAccess = await requester.shouldHaveCardAccess(commentToUpdate.card.id)
+            hasAccess.orElseThrowError()
+
+            delete commentToUpdate.card
             // RealTimeFacade.sendEvent(commentUpdated(comment, boardId))
             
             const comment = await getRepository(Comment).save(commentToUpdate)
@@ -63,9 +70,12 @@ export class CommentFacade {
         }
     }
 
-    static async delete(commentId: number): Promise<void> {
+    static async delete(requester: Requester, commentId: number): Promise<void> {
         try {
-            // const comment = await CommentFacade.getById(commentId)
+            const comment = await CommentFacade.getById(commentId, { relations: ['card'] })
+
+            const hasAccess = await requester.shouldHaveCardAccess(comment.card.id)
+            hasAccess.orElseThrowError()
             // RealTimeFacade.sendEvent(commentDeleted(comment, cardId))
 
             await getRepository(Comment).removeById(commentId)
