@@ -7,8 +7,6 @@ import { Notification } from './notification'
 import { Tag } from './tag'
 import { CheckItem } from './checkItem'
 import { CheckList } from './checkList'
-import { Team } from './team'
-import { TeamRole } from './teamRole'
 import { User } from './user'
 
 export const entities = [
@@ -21,7 +19,5 @@ export const entities = [
     Tag,
     CheckItem,
     CheckList,
-    Team,
-    TeamRole,
     User
 ]

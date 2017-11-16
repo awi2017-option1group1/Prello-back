@@ -58,7 +58,6 @@ app.get('/protected', (req, res) => {
 app.post('/register', Register.register)
 app.get('/users', User.getAll)
 app.get('/users/:user_id', User.getOneById)
-app.get('/teams/:team_id/users', User.getAllFromTeamId)
 app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
 app.post('/users/:userId/:confirmationToken', User.confirm)

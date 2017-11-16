@@ -1,17 +1,26 @@
 import * as rq from 'request'
+import { getRepository } from 'typeorm'
 
 import { config } from '../config'
 import { fullUrlFromString, AUTH_HOST } from '../url'
-
-import { UserFacade } from './userFacade'
 import { User } from '../entities/user'
+
+export class AuthCondition {
+    constructor(public condition: boolean) {}
+
+    orElseThrowError() {
+        if (!this.condition) {
+            throw new Error('Not Authorized!')
+        }
+    }
+}
 
 export interface Requester {
 
     getUID(): number
     isEmptyRequester(): boolean
     hasUID(userId: number): boolean
-    hasTID(teamId: number): boolean
+    shouldHaveUid(userId: number): AuthCondition
 
 }
 
@@ -29,8 +38,8 @@ class EmptyRequester implements Requester {
         return false
     }
 
-    hasTID(teamId: number): boolean {
-        return false
+    shouldHaveUid(userId: number): AuthCondition {
+        return new AuthCondition(false)
     }
 
 }
@@ -51,8 +60,8 @@ class UserRequester implements Requester {
         return this.user.id === userId
     }
 
-    hasTID(teamId: number): boolean {
-        return false
+    shouldHaveUid(userId: number): AuthCondition {
+        return new AuthCondition(this.hasUID(userId))
     }
 
 }
@@ -84,7 +93,7 @@ export class RequesterFactory {
 
     static async fromUid(uid: number): Promise<Requester> {
         try {
-            const user = await UserFacade.getById(uid)
+            const user = await getRepository(User).findOneById(uid)
             if (user) {
                 return new UserRequester(user)
             } else {

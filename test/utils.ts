@@ -33,5 +33,5 @@ export const getRequester = async (connection: Connection): Promise<Requester> =
     user.notificationsEnabled = true
     user.confirmed = true
     const requester = await connection.getRepository(User).save(user)
-    return RequesterFactory.fromUid(requester.id) 
+    return await RequesterFactory.fromUid(requester.id) 
 }

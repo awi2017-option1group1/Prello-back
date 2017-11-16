@@ -1,4 +1,4 @@
-import { getManager, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
 import { ParamsExtractor } from './paramsExtractorv2'
@@ -7,6 +7,7 @@ import { BadRequest } from './errors/BadRequest'
 
 import { ValidationException } from './errors/ValidationException'
 
+import { Requester } from './requester'
 import { User } from '../entities/user'
 import { Password } from './password'
 
@@ -39,11 +40,9 @@ export class UserFacade {
         return await getRepository(User).find()
     }
 
-    static async getAllFromTeamId(teamId: number): Promise<User[]> {
-        return await getRepository(User).find()
-    }
+    static async getById(requester: Requester, userId: number): Promise<User> {
+        requester.shouldHaveUid(userId).orElseThrowError()
 
-    static async getById(userId: number): Promise<User> {
         const user = await getRepository(User).findOneById(userId)
         if (user) {
             return user
@@ -52,27 +51,14 @@ export class UserFacade {
         }
     }
 
-    static async delete(userId: number): Promise<boolean> {
+    static async update(requester: Requester, userId: number, params: {}): Promise<User> {
         try {
-            const deletionSuccess = await getManager()
-                    .getRepository(User)
-                    .removeById(userId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
-            }
-        } catch (e) {
-            throw new NotFoundException(e)
-        }
-    }
+            requester.shouldHaveUid(userId).orElseThrowError()
 
-    static async update(userId: number, params: {}): Promise<User> {
-        try {
             const extractor = new ParamsExtractor<User>(params).permit(['username', 'email',
                 'fullName', 'bio', 'notificationsEnabled', 'password'])
 
-            const userToUpdate = await UserFacade.getById(userId)
+            const userToUpdate = await UserFacade.getById(requester, userId)
             extractor.fill(userToUpdate)
 
             return await getRepository(User).save(userToUpdate)
@@ -82,17 +68,28 @@ export class UserFacade {
         }
     }
 
+    static async delete(requester: Requester, userId: number): Promise<void> {
+        try {
+            requester.shouldHaveUid(userId).orElseThrowError()
+
+            await getRepository(User).removeById(userId)
+            return
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
     static async confirm(userId: number, uuidToken: string): Promise<User> {
         try {
-            const user = await UserFacade.getById(userId)
-            if (user.confirmationToken === uuidToken) {
+            const user = await getRepository(User).findOneById(userId)
+            if (user && user.confirmationToken === uuidToken) {
                 user.confirmationToken = null
                 user.confirmed = true
                 return await getRepository(User).save(user)
             } else {
                 throw new BadRequest('This page does not exist')
             }
-            
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)

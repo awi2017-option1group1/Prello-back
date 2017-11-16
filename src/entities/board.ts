@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm'
-import { Team } from './team'
 import { User } from './user'
 import { List } from './list'
 import { Tag } from './tag'
@@ -21,8 +20,6 @@ export class Board {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Team, team => team.users)
-    team: Team
 
     @ManyToMany(type => User, user => user.boards)
     @JoinTable()
