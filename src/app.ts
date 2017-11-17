@@ -76,6 +76,9 @@ app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
 app.post('/users/:userId/boards', Board.create)
+app.get('/boards/:boardId/members', Board.getAllMembers)
+app.post('/boards/:boardId/members', Board.assignMember)
+app.delete('/boards/:boardId/members/:memberId', Board.unassignMemberById)
 
 // ---------    Card Routes   ---------
 app.get('/lists/:listId/cards', Card.getAllFromListId)
@@ -84,19 +87,19 @@ app.get('/cards/:cardId', Card.getOneById)
 app.put('/cards/:cardId', Card.update)
 app.delete('/cards/:cardId', Card.delete)
 
-app.get('/cards/:cardId/labels', Card.getAllLabels)  
-app.post('/cards/:cardId/labels', Card.assignLabel) 
-app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)  
+app.get('/cards/:cardId/labels', Card.getAllLabels)
+app.post('/cards/:cardId/labels', Card.assignLabel)
+app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)
 
 app.get('/cards/:cardId/members', Card.getAllMembers)
 app.post('/cards/:cardId/members', Card.assignMember)
 app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById)
 
-// ---------    Tags Routes   --------- 
+// ---------    Tags Routes   ---------
 app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
-app.post('/boards/:boardId/labels', Tag.insertFromBoardId) 
-app.put('/labels/:labelId', Tag.update) 
-app.delete('/labels/:labelId', Tag.delete) 
+app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
+app.put('/labels/:labelId', Tag.update)
+app.delete('/labels/:labelId', Tag.delete)
 
 // ---------    CheckList Routes   ---------
 app.get('/cards/:cardId/checklists', CheckList.getAllFromCardId)

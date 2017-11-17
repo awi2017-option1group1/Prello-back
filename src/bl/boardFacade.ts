@@ -124,4 +124,33 @@ export class BoardFacade {
             throw new NotFoundException(e)
         }
     }
+
+    // --------------- Members ---------------
+
+    static async getAllMembersFromBoardId(boardId: number): Promise<User[]> {
+        const board = await BoardFacade.getById(boardId, { relations: ['users'] })
+        return board.users
+    }
+
+    static async assignMember(boardId: number, params: {}): Promise<User> {
+        const extractor = new ParamsExtractor<Board>(params).require(['username'])
+
+        const userToAssign = await UserFacade.getByUsername(extractor.getParam('username'))
+        const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
+
+        boardToUpdate.users = boardToUpdate.users.concat(userToAssign)
+
+        await getRepository(Board).save(boardToUpdate)
+        return userToAssign
+    }
+
+    static async unassignMemberById(boardId: number, memberId: number): Promise<void> {
+        const userToUnassign = await UserFacade.getById(memberId)
+        const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
+
+        boardToUpdate.users = boardToUpdate.users.filter(user => user.id !== userToUnassign.id)
+
+        await getRepository(Board).save(boardToUpdate)
+    }
+
 }

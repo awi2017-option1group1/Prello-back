@@ -52,6 +52,19 @@ export class UserFacade {
         }
     }
 
+    static async getByUsername(username: String): Promise<User> {
+        const user = await getRepository(User).findOne({
+            where: {
+                username: username
+            }
+        })
+        if (user) {
+            return user
+        } else {
+            throw new NotFoundException('User not found')
+        }
+    }
+
     static async delete(userId: number): Promise<boolean> {
         try {
             const deletionSuccess = await getManager()
@@ -92,7 +105,7 @@ export class UserFacade {
             } else {
                 throw new BadRequest('This page does not exist')
             }
-            
+
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)
