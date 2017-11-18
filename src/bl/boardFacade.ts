@@ -1,17 +1,15 @@
 import { getManager, getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
+import { BadRequest } from './errors/BadRequest'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractorv2'
 
 import { NotificationFacade } from './notificationFacade'
+import { UserFacade } from './userFacade'
+
 import { User } from '../entities/user'
-<<<<<<< HEAD
-import { Tag } from '../entities/tag'
-import { BadRequest } from '../bl/errors/BadRequest'
-=======
 import { Requester } from './requester'
->>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
 
 export class BoardFacade {
 
@@ -90,13 +88,11 @@ export class BoardFacade {
                     user.id=
                 }
             })
-
             return repository.updateById(boardId, board)
         } catch (e) {
             throw new NotFoundException(e)
         }
     }
-
     static async updateMembers(boardReceived: Board, boardId: number, memberId: number): Promise<void> {
         try {
             const board = ParamsExtractor.extract<Board>(['title', 'isPrivate'], boardReceived)
@@ -132,26 +128,6 @@ export class BoardFacade {
         }
     }
 
-    // --------------- Members ---------------
-
-    static async getAllMembersFromBoardId(boardId: number): Promise<User[]> {
-        const board = await BoardFacade.getById(boardId, { relations: ['users'] })
-        return board.users
-    }
-
-    static async assignMember(boardId: number, params: {}): Promise<User> {
-        const extractor = new ParamsExtractor<Board>(params).require(['username'])
-
-        const userToAssign = await UserFacade.getByUsername(extractor.getParam('username'))
-        const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
-
-        boardToUpdate.users = boardToUpdate.users.concat(userToAssign)
-
-        await getRepository(Board).save(boardToUpdate)
-        return userToAssign
-    }
-
-<<<<<<< HEAD
     static async search(value: string): Promise<Board[]> {
         try {
             const realValue = `%${value}%`
@@ -172,7 +148,25 @@ export class BoardFacade {
             throw new BadRequest(e)
         }
     }
-=======
+
+    // --------------- Members ---------------
+    static async getAllMembersFromBoardId(boardId: number): Promise<User[]> {
+        const board = await BoardFacade.getById(boardId, { relations: ['users'] })
+        return board.users
+    }
+
+    static async assignMember(boardId: number, params: {}): Promise<User> {
+        const extractor = new ParamsExtractor<Board>(params).require(['username'])
+
+        const userToAssign = await UserFacade.getByUsername(extractor.getParam('username'))
+        const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
+
+        boardToUpdate.users = boardToUpdate.users.concat(userToAssign)
+
+        await getRepository(Board).save(boardToUpdate)
+        return userToAssign
+    }
+
     static async unassignMemberById(boardId: number, memberId: number): Promise<void> {
         const userToUnassign = await UserFacade.getById(memberId)
         const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
@@ -182,5 +176,4 @@ export class BoardFacade {
         await getRepository(Board).save(boardToUpdate)
     }
 
->>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
 }

@@ -61,11 +61,8 @@ app.get('/users', User.getAll)
 app.get('/users/:user_id', User.getOneById)
 app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
-<<<<<<< HEAD
 app.get('/users/:userID/search/:value', User.search)
-=======
-app.post('/users/:userId/:confirmationToken', User.confirm)
->>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
+app.post('/users/:userId/confirm/:confirmationToken', User.confirm)
 
 // ---------    List Routes   ---------
 app.get('/boards/:boardId/lists', List.getAllFromBoardId)

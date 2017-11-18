@@ -11,14 +11,11 @@ import { Requester } from './requester'
 import { User } from '../entities/user'
 import { Password } from './password'
 
-<<<<<<< HEAD
 import { BoardFacade } from '../bl/boardFacade'
 import { ListFacade } from '../bl/listFacade'
 import { CardFacade } from '../bl/cardFacade'
-=======
 import { sendMail } from '../mail'
 import { welcome } from '../mails/welcome'
->>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
 
 export class UserFacade {
     static async register(email: string, username: string, uuidToken: string, password?: string): Promise<User>  {
@@ -87,7 +84,6 @@ export class UserFacade {
         }
     }
 
-<<<<<<< HEAD
     static async search(userID: number, value: string): Promise<Object> {
         try {
             const results = {
@@ -110,7 +106,9 @@ export class UserFacade {
             return results
             
         } catch (e) {
-=======
+           throw new BadRequest(e)
+        }
+    }
     static async delete(requester: Requester, userId: number): Promise<void> {
         try {
             requester.shouldHaveUid(userId).orElseThrowError()
@@ -119,13 +117,10 @@ export class UserFacade {
             return
         } catch (e) {
             console.error(e)
->>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
             throw new BadRequest(e)
         }
     }
 
-<<<<<<< HEAD
-=======
     static async confirm(userId: number, uuidToken: string): Promise<User> {
         try {
             const user = await getRepository(User).findOneById(userId)
@@ -141,5 +136,4 @@ export class UserFacade {
             throw new BadRequest(e)
         }
     }
->>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
 }
