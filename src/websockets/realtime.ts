@@ -1,3 +1,4 @@
+import { BoardFacade } from '../bl/boardFacade'
 import * as http from 'http'
 import * as io from 'socket.io'
 import * as redisAdapter from 'socket.io-redis'
@@ -121,9 +122,11 @@ export class WSServer {
         }))
 
         socket.on('request-connection', (to: Channel) => {
-            // TODO: check authorization
-            console.log('connection requested', to)
-            socket.join(this.channelToString(to))
+            if (to.object === 'board') {
+                if (socket.requester.shouldHaveBoardAccess(to.id).toBoolean()) {
+                    socket.join(this.channelToString(to))
+                }
+            }
         })
 
         socket.on('remove-connection', (to: Channel) => {

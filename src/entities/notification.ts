@@ -18,6 +18,9 @@ export class Notification {
     @Column('int')
     from: number
 
+    @Column('timestamp')
+    date: Date
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------

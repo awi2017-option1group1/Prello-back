@@ -1,6 +1,6 @@
 import { websockets } from '../websockets/realtime'
 
-export type AboutObject = 'board'
+export type AboutObject = 'board' | 'card' | 'checkList'
 
 export interface RealTimeEvent {
     type: string,
@@ -27,7 +27,7 @@ export class RealTimeFacade {
         websockets.sendEventTo(event.about, {
             type: event.type,
             payload: event.payload
-        })      
+        })
     }
 
     static sendNotification() {

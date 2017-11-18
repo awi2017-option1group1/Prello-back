@@ -3,36 +3,31 @@ import { getManager, getRepository } from 'typeorm'
 import { NotFoundException } from './errors/NotFoundException'
 import { Board } from '../entities/board'
 import { ParamsExtractor } from './paramsExtractorv2'
-import { UserFacade } from './userFacade'
-import { List } from '../entities/list'
+
+import { NotificationFacade } from './notificationFacade'
 import { User } from '../entities/user'
+<<<<<<< HEAD
 import { Tag } from '../entities/tag'
 import { BadRequest } from '../bl/errors/BadRequest'
+=======
+import { Requester } from './requester'
+>>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
 
 export class BoardFacade {
 
-    static async checkAuthorization(board: Board, user: User) {
-        return true
-        // const users = await board.users
-        // return users.findIndex(u => u.id === user.id) !== -1
+    static async hasAccess(userId: number, boardId: number): Promise<boolean> {
+        const board = await getRepository(Board)
+            .createQueryBuilder('board')
+            .leftJoin('board.users', 'user')
+            .where('user.id = :userId', { userId })
+            .where('board.id = :boardId', { boardId })
+            .getOne()
+        return board !== undefined
     }
 
-    static async getAllFromTeamId(teamId: number): Promise<Board[]> {
-        const boards = await getManager()
-                            .getRepository(Board)
-                            .find({
-                                where: {
-                                    'teamId': teamId
-                                }
-                            })
-        if (boards) {
-            return boards
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
-    }
+    static async getAllFromUserId(requester: Requester, userId: number): Promise<Board[]> {
+        requester.shouldHaveUid(userId).orElseThrowError()
 
-    static async getAllFromUserId(userId: number): Promise<Board[]> {
         return await getRepository(Board)
             .createQueryBuilder('board')
             .leftJoin('board.users', 'user')
@@ -40,8 +35,15 @@ export class BoardFacade {
             .getMany()
     }
 
-    static async getById(boardId: number): Promise<Board> {
-        const board = await getRepository(Board).findOneById(boardId)
+    static async getById(requester: Requester, boardId: number, options?: {}): Promise<Board> {
+        (await requester.shouldHaveBoardAccess(boardId)).orElseThrowError()
+
+        const board = await getRepository(Board).findOne({
+            ...options,
+            where: {
+                id: boardId
+            }
+        })
         if (board) {
             return board
         } else {
@@ -49,8 +51,10 @@ export class BoardFacade {
         }
     }
 
-    static async delete(boardId: number): Promise<boolean> {
+    static async delete(requester: Requester, boardId: number): Promise<boolean> {
         try {
+            (await requester.shouldHaveBoardAccess(boardId)).orElseThrowError()
+
             const deletionSuccess = await getManager()
                     .getRepository(Board)
                     .removeById(boardId)
@@ -64,12 +68,14 @@ export class BoardFacade {
         }
     }
 
-    static async update(params: {}, boardId: number): Promise<Board> {
+    static async update(params: {}, boardId: number, requester: Requester): Promise<Board> {
         try {
             const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
-            const board = await BoardFacade.getById(boardId)
+            let board = await BoardFacade.getById(requester, boardId)
             extractor.fill(board)
-            return await getRepository(Board).save(board)
+            board = await getRepository(Board).save(board)
+            NotificationFacade.createBoardUpdateNotifications(boardId, requester.getUID())
+            return board
         } catch (e) {
             throw new NotFoundException(e)
         }
@@ -101,7 +107,7 @@ export class BoardFacade {
         }
     }*/
 
-    static async create(params: {}, userId: number): Promise<Board> {
+    static async create(requester: Requester, params: {}): Promise<Board> {
         try {
             const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
             const boardToInsert = extractor.fill(new Board())
@@ -114,7 +120,10 @@ export class BoardFacade {
                 boardToInsert.isPrivate = true
             }
 
-            const user = await UserFacade.getById(userId)
+            const user = await getRepository(User).findOneById(requester.getUID())
+            if (!user) {
+                throw new NotFoundException('User not found!')
+            }
             boardToInsert.users = [user]
 
             return getRepository(Board).save(boardToInsert)
@@ -123,42 +132,26 @@ export class BoardFacade {
         }
     }
 
-    static async addLabel(label: Tag, boardId: number): Promise<void> {
-        const repository = await getManager()
-                            .getRepository(Board)
+    // --------------- Members ---------------
 
-        var board = await repository.findOneById(boardId)
-        if (board) {
-            const tags = await board.tags
-            if (tags) {
-                board.tags = Promise.resolve(tags.concat(label))
-                return repository.updateById(boardId, board)
-            } else {
-                throw new NotFoundException('No Board was found')
-            }
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
+    static async getAllMembersFromBoardId(boardId: number): Promise<User[]> {
+        const board = await BoardFacade.getById(boardId, { relations: ['users'] })
+        return board.users
     }
 
-    static async addList(list: List, boardId: number): Promise<void> {
-        const repository = await getManager()
-                            .getRepository(Board)
+    static async assignMember(boardId: number, params: {}): Promise<User> {
+        const extractor = new ParamsExtractor<Board>(params).require(['username'])
 
-        var board = await repository.findOneById(boardId)
-        if (board) {
-            const lists = await board.lists
-            if (lists) {
-                board.lists = Promise.resolve(lists.concat(list))
-                return repository.updateById(boardId, board)
-            } else {
-                throw new NotFoundException('No Board was found')
-            }
-        } else {
-            throw new NotFoundException('No Board was found')
-        }
+        const userToAssign = await UserFacade.getByUsername(extractor.getParam('username'))
+        const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
+
+        boardToUpdate.users = boardToUpdate.users.concat(userToAssign)
+
+        await getRepository(Board).save(boardToUpdate)
+        return userToAssign
     }
 
+<<<<<<< HEAD
     static async search(value: string): Promise<Board[]> {
         try {
             const realValue = `%${value}%`
@@ -179,4 +172,15 @@ export class BoardFacade {
             throw new BadRequest(e)
         }
     }
+=======
+    static async unassignMemberById(boardId: number, memberId: number): Promise<void> {
+        const userToUnassign = await UserFacade.getById(memberId)
+        const boardToUpdate = await BoardFacade.getById(boardId, { relations: ['users'] })
+
+        boardToUpdate.users = boardToUpdate.users.filter(user => user.id !== userToUnassign.id)
+
+        await getRepository(Board).save(boardToUpdate)
+    }
+
+>>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
 }

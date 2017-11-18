@@ -8,49 +8,45 @@ export class User {
             const users = await UserFacade.getAll()
             res.status(200).json(users)
         } catch (e) {
-            console.error(e)
-            res.status(404).json({ message: e.message})
-        }
-    }
-
-    static async getAllFromTeamId(req: express.Request, res: express.Response) {
-        try {
-            const users = await UserFacade.getAllFromTeamId(req.params.list_id)
-            res.status(200).json(users)
-        } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message })
         }
     }
 
     static async getOneById(req: express.Request, res: express.Response) {
         try {
-            const board = await UserFacade.getById(req.params.user_id)
-            res.status(200).json(board)
+            const user = await UserFacade.getById(req.requester, req.params.user_id)
+            res.status(200).json(user)
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message })
         }
     }
 
     static async delete(req: express.Request, res: express.Response) {
         try {
-            const user = await UserFacade.delete(req.params.user_id)
-            if (user) {
-                res.status(200).json(user)
-            } else {
-                res.status(404).json({ message : 'Not found'})
-            }
+            await UserFacade.delete(req.requester, req.params.user_id)
+            res.status(204).end()
         } catch (e) {
-            res.status(404).json({ message: e.message})
+            res.status(404).json({ error: e.message })
         }
     }
 
     static async update(req: express.Request, res: express.Response) {
         try {
-            const user = await UserFacade.update(req.params.userId, req.body)
+            const user = await UserFacade.update(req.requester, req.params.userId, req.body)
             res.status(200).json(user)
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
+    }
+
+    static async confirm(req: express.Request, res: express.Response) {
+        try {
+            const confirmed = await UserFacade.confirm(req.params.userId, req.params.confirmationToken)
+            res.status(200).json(confirmed)
+        } catch (e) {
+            res.status(404).json({ message: e.message.message})
+        }
+        
     }
 
     static async search(req: express.Request, res: express.Response) {

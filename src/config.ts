@@ -48,17 +48,25 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
+<<<<<<< HEAD
         url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5432/dev_prello'
+=======
+        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5434/dev_prello'
+>>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
     },
 
     databaseTest: {
-        type: process.env.DATABASE_TYPE,
+        type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.TEST_DATABASE_URL
+        url: process.env.TEST_DATABASE_URL || 'postgres://postgres:root@localhost:5434/test_prello'
     },
 
     redis: {
+<<<<<<< HEAD
         host: process.env.REDIS_HOST || '127.0.0.1',
+=======
+        host: process.env.REDIS_HOST || '192.168.99.100',
+>>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
         port: process.env.REDIS_PORT || 6379,
         url: process.env.REDIS_URL
     },
@@ -68,8 +76,9 @@ export const config: Config = {
     },
     
     smtp: {
-        service: 'Gmail',
+        service: '',
         auth: {
+<<<<<<< HEAD
             type: 'oauth2',
             user: process.env.SMTP_USER || 'porquepix1@gmail.com',
             clientId: process.env.SMTP_CLIENT_ID 
@@ -77,6 +86,13 @@ export const config: Config = {
             clientSecret: process.env.SMTP_CLIENT_SECRET || '81c20_6f5WxCMeJvleB_vvis',
             refreshToken: process.env.SMTP_REFRESH_TOKEN 
                 || '1/fEBoKO4_zM1Olo-OKmk0Epag4buSn71u0J5s50kB6CYWatiUlZ-4hy9Jl2nFK6NS'
+=======
+            type: '',
+            user: process.env.SMTP_USER || '',
+            clientId: process.env.SMTP_CLIENT_ID || '',
+            clientSecret: process.env.SMTP_CLIENT_SECRET || '',
+            refreshToken: process.env.SMTP_REFRESH_TOKEN || ''
+>>>>>>> 43a0f87e434a090c3c6ec54adab7e4c4fd6943f0
         }
     }
 }

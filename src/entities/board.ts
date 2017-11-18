@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm'
-import { Team } from './team'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm'
 import { User } from './user'
 import { List } from './list'
 import { Tag } from './tag'
@@ -21,8 +20,6 @@ export class Board {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Team, team => team.users)
-    team: Team
 
     @ManyToMany(type => User, user => user.boards)
     @JoinTable()
@@ -43,5 +40,5 @@ export class Board {
             referencedColumnName: 'id'
         },
     })
-    tags: Promise<Tag[]>
+    tags: Tag[]
  }
