@@ -1,23 +1,26 @@
-import { getManager, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 import { NotFoundException } from './errors/NotFoundException'
 import { BadRequest } from './errors/BadRequest'
 import { ParamsExtractor } from './paramsExtractorv2'
 
 import { ListFacade } from './listFacade'
-import { UserFacade } from './userFacade'
 import { TagFacade } from './tagFacade'
 
+import { Requester } from './requester'
 import { User } from '../entities/user'
 import { Tag } from '../entities/tag'
 import { Card } from '../entities/card'
+import { Comment } from '../entities/comment'
 
 import { RealTimeFacade } from './realtimeFacade'
 import { cardCreated, cardUpdated, cardDeleted } from './realtime/realtimeCard'
 
 export class CardFacade {
 
-    static async getAllFromListId(listId: number): Promise<Card[]> {
+    static async getAllFromListId(requester: Requester, listId: number): Promise<Card[]> {
+        (await requester.shouldHaveListAccess(listId)).orElseThrowError()
+
         return await getRepository(Card)
             .createQueryBuilder('card')
             .leftJoin('card.list', 'list')
@@ -78,8 +81,10 @@ export class CardFacade {
         return max
     }
 
-    static async insertFromListId(listId: number, params: {}): Promise<Card> {
+    static async insertFromListId(requester: Requester, listId: number, params: {}): Promise<Card> {
         try {
+            (await requester.shouldHaveListAccess(listId)).orElseThrowError()
+
             const extractor = new ParamsExtractor<Card>(params)
                 .require(['name'])
                 .permit(['closed', 'desc', 'due', 'dueComplete', 'pos'])
@@ -106,8 +111,10 @@ export class CardFacade {
         }
     }
 
-    static async update(cardId: number, params: {}): Promise<Card> {
+    static async update(requester: Requester, cardId: number, params: {}): Promise<Card> {
         try {
+            (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
             const extractor = new ParamsExtractor<Card>(params)
                 .permit(['name', 'closed', 'desc', 'due', 'dueComplete', 'pos', 'listId'])
             
@@ -136,8 +143,10 @@ export class CardFacade {
         }
     }
 
-    static async delete(cardId: number): Promise<void> {
+    static async delete(requester: Requester, cardId: number): Promise<void> {
         try {
+            (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
             const card = await CardFacade.getByIdWithBoard(cardId)
 
             const boardId = card.list.board.id
@@ -155,15 +164,22 @@ export class CardFacade {
 
     // --------------- Members ---------------
 
-    static async getAllMembersFromCardId(cardId: number): Promise<User[]> {
+    static async getAllMembersFromCardId(requester: Requester, cardId: number): Promise<User[]> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
         const users = await CardFacade.getById(cardId, { relations: ['members'] })
         return users.members
     }
 
-    static async assignMember(cardId: number, params: {}): Promise<User> {
+    static async assignMember(requester: Requester, cardId: number, params: {}): Promise<User> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
         const extractor = new ParamsExtractor<Card>(params).require(['userId'])
 
-        const userToAssign = await UserFacade.getById(extractor.getParam('userId'))
+        const userToAssign = await getRepository(User).findOneById(extractor.getParam('userId'))
+        if (!userToAssign) {
+            throw new NotFoundException('User not found!')
+        }
         const cardToUpdate = await CardFacade.getById(cardId, { relations: ['members'] })
 
         cardToUpdate.members = cardToUpdate.members.concat(userToAssign)
@@ -172,8 +188,13 @@ export class CardFacade {
         return userToAssign
     }
 
-    static async unassignMemberById(cardId: number, memberId: number): Promise<void> {
-        const userToUnassign = await UserFacade.getById(memberId)
+    static async unassignMemberById(requester: Requester, cardId: number, memberId: number): Promise<void> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
+        const userToUnassign = await getRepository(User).findOneById(memberId)
+        if (!userToUnassign) {
+            throw new NotFoundException('User not found!')
+        }
         const cardToUpdate = await CardFacade.getById(cardId, { relations: ['members'] })
 
         cardToUpdate.members = cardToUpdate.members.filter(member => member.id !== userToUnassign.id)
@@ -183,62 +204,52 @@ export class CardFacade {
     
     // --------------- Labels ---------------
 
-    static async getAllLabelsFromCardId(cardId: number): Promise<Tag[]> {
-        const labels = await getManager()
-                            .getRepository(Tag)
-                            .find({
-                                where: {
-                                    'cardId': cardId
-                                }
-                            })
-        if (labels) {
-            return labels
-        } else {
-            throw new NotFoundException('No labels found')
-        }
+    static async assignLabel(requester: Requester, cardId: number, params: {}): Promise<Tag> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
+        const extractor = new ParamsExtractor<Card>(params).require(['labelId'])
+
+        const labelToAssign = await TagFacade.getById(extractor.getParam('labelId'))
+        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['tags'] })
+
+        cardToUpdate.tags = cardToUpdate.tags.concat(labelToAssign)
+        
+        await getRepository(Card).save(cardToUpdate)
+        return labelToAssign
     }
 
-    static async assignLabel(label: Tag, cardId: number): Promise<void> {
-        const cardRepository = await getManager()
-                            .getRepository(Card)
+    static async unassignLabelById(requester: Requester, cardId: number, labelId: number): Promise<void> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
 
-        var card = await cardRepository.findOneById(cardId)
-        if (card) {
-            const labels = await card.tags
-            card.tags = labels.concat(label)
-            return cardRepository.updateById(cardId, card)
-        } else {
-            throw new NotFoundException('No label was found')
-        }
+        const labelToUnassign = await TagFacade.getById(labelId)
+        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['tags'] })
+
+        cardToUpdate.tags = cardToUpdate.tags.filter(tag => tag.id !== labelToUnassign.id)
+
+        await getRepository(Card).save(cardToUpdate)
     }
 
-    static async unassignLabelById(cardId: number, labelId: number): Promise<boolean> {
-        const cardRepository = await getManager()
-                                .getRepository(Card)
+    // --------------- Comments ---------------
 
-        var card = await cardRepository.findOneById(cardId)
-        if (card) {
-            const labels = await card.tags  
-            if (labels) {
-                const label = await TagFacade.getById(labelId)  // member get by memberId
-                if (label) {
-                    card.tags = labels.slice(
-                                                        labels.indexOf(label), 
-                                                        labels.indexOf(label) + 1)
-                    const deletionSuccess =  cardRepository.save(card)
-                    if (deletionSuccess) { 
-                        return true 
-                    } else { 
-                        return false 
-                    }
-                } else {
-                    throw new NotFoundException('No label was found with this id')
-                }
-            } else {
-            throw new NotFoundException('No label was found with this id')
-            }
-        } else {
-            throw new NotFoundException('No label was found with this id')
-        }
+    static async getAllFromCardId(requester: Requester, cardId: number): Promise<Comment[]> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
+        const comments = await getRepository(Comment)
+            .createQueryBuilder('comment')
+            .leftJoin('comment.card', 'card')
+            .leftJoinAndSelect('comment.user', 'user')
+            .where('card.id = :cardId', { cardId })
+            .orderBy({ 'comment.createdDate': 'ASC' })
+            .getMany()
+        if (comments) {
+            return comments.map((comment) => ({
+                ...comment,
+                user: {
+                    id: comment.user.id,
+                    username: comment.user.username
+                } as User
+            }))
+        } 
+        return []
     }
 }

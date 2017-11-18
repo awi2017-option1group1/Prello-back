@@ -52,9 +52,9 @@ export const config: Config = {
     },
 
     databaseTest: {
-        type: process.env.DATABASE_TYPE,
+        type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.TEST_DATABASE_URL
+        url: process.env.TEST_DATABASE_URL || 'postgres://postgres:root@localhost:5434/test_prello'
     },
 
     redis: {
@@ -68,9 +68,9 @@ export const config: Config = {
     },
 
     smtp: {
-        service: 'Gmail',
+        service: '',
         auth: {
-            type: 'oauth2',
+            type: '',
             user: process.env.SMTP_USER || '',
             clientId: process.env.SMTP_CLIENT_ID || '',
             clientSecret: process.env.SMTP_CLIENT_SECRET || '',

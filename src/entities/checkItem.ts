@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
-import { TaskList } from './taskList'
+import { CheckList } from './checkList'
 
 @Entity()
-export class Task {
+export class CheckItem {
 // ------------------------------------
 // =        ENTITY DEFINITION
 // ------------------------------------
@@ -27,8 +27,8 @@ export class Task {
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => TaskList, taskList => taskList.tasks, {
+    @ManyToOne(type => CheckList, checkList => checkList.checkItems, {
         onDelete: 'CASCADE'
     })
-    taskList: TaskList
+    checkList: CheckList
  }

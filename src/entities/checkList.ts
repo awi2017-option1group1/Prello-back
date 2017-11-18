@@ -1,35 +1,31 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
-import { IsFQDN } from 'class-validator'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm'
 import { Card } from './card'
+import { CheckItem } from './checkItem'
 
 @Entity()
-export class Attachment {
+export class CheckList {
 // ------------------------------------
 // =        ENTITY DEFINITION
 // ------------------------------------
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('text')
-    @IsFQDN()
-    URL: string
-
-    @Column('int')
-    pos: number
-
     @Column({
         type: 'varchar',
     })
     name: string
 
-    @Column({
-        type: 'date'
-    })
-    date: Date
+    @Column('int')
+    pos: number
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.attachments)
+    @ManyToOne(type => Card, card => card.checkLists, {
+        onDelete: 'CASCADE'
+    })
     card: Card
+
+    @OneToMany(type => CheckItem, checkItem => checkItem.checkList)
+    checkItems: CheckItem[]
  }

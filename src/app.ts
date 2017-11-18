@@ -11,10 +11,12 @@ import { Register } from './routes/user/register'
 import { User } from './routes/user/user'
 import { Board } from './routes/board/board'
 import { Card } from './routes/card/card'
-import { Task } from './routes/task/task'
-import { Attachment } from './routes/attachment/attachment'
-import { TaskList } from './routes/taskList/taskList'
+import { Tag } from './routes/tag/tag'
+import { Comment } from './routes/comment/comment'
+import { CheckItem } from './routes/checkItem/checkItem'
+import { CheckList } from './routes/checkList/checkList'
 import { List } from './routes/list/list'
+import { Notification } from './routes/notifiaction/notification'
 
 import { websockets } from './websockets/realtime'
 
@@ -57,9 +59,9 @@ app.get('/protected', (req, res) => {
 app.post('/register', Register.register)
 app.get('/users', User.getAll)
 app.get('/users/:user_id', User.getOneById)
-app.get('/teams/:team_id/users', User.getAllFromTeamId)
-app.put('/users/:user_id', User.update)
+app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
+app.post('/users/:userId/:confirmationToken', User.confirm)
 
 // ---------    List Routes   ---------
 app.get('/boards/:boardId/lists', List.getAllFromBoardId)
@@ -70,43 +72,60 @@ app.delete('/lists/:listId', List.delete)
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
 app.get('/users/:userId/boards', Board.getAllFromUserId)
-app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
 app.post('/users/:userId/boards', Board.create)
+app.get('/boards/:boardId/members', Board.getAllMembers)
+app.post('/boards/:boardId/members', Board.assignMember)
+app.delete('/boards/:boardId/members/:memberId', Board.unassignMemberById)
 
 // ---------    Card Routes   ---------
 app.get('/lists/:listId/cards', Card.getAllFromListId)
 app.post('/lists/:listId/cards', Card.insertFromListId)
-app.get('/cards/:cardId', Card.getOneById)  
-app.put('/cards/:cardId', Card.update)  
+app.get('/cards/:cardId', Card.getOneById)
+app.put('/cards/:cardId', Card.update)
 app.delete('/cards/:cardId', Card.delete)
 
-app.get('/cards/:id/attachments', Card.getAllAttachments) 
-app.post('/cards/:id/attachments', Card.createAttachment)    
+app.get('/cards/:cardId/labels', Card.getAllLabels)
+app.post('/cards/:cardId/labels', Card.assignLabel)
+app.delete('/cards/:cardId/labels/:labelId', Card.unassignLabelById)
 
-app.get('/cards/:id/checklists', Card.getAllChecklists) 
-app.post('/cards/:id/checklists', Card.createChecklist)  
+app.get('/cards/:cardId/members', Card.getAllMembers)
+app.post('/cards/:cardId/members', Card.assignMember)
+app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById)
 
-app.get('/cards/:id/labels', Card.getAllLabels)  
-app.post('/cards/:id/labels', Card.assignLabel) 
-app.delete('/cards/:id/labels/:idLabel', Card.unassignLabelById)  
+// ---------    Tags Routes   ---------
+app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
+app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
+app.put('/labels/:labelId', Tag.update)
+app.delete('/labels/:labelId', Tag.delete)
 
-app.get('/cards/:cardId/members', Card.getAllMembers)  
-app.post('/cards/:cardId/members', Card.assignMember)  
-app.delete('/cards/:cardId/members/:memberId', Card.unassignMemberById) 
+// ---------    CheckList Routes   ---------
+app.get('/cards/:cardId/checklists', CheckList.getAllFromCardId)
+app.post('/cards/:cardId/checklists', CheckList.insertFromCardId)
+app.put('/checklists/:checklistId', CheckList.update)
+app.delete('/checklists/:checklistId', CheckList.delete)
 
-// ---------    Task Routes   ---------
-app.get('/checkitems/:id', Task.getOneById)
-app.put('/checkitems/:id', Task.update)
-app.delete('/checkitems/:id', Task.delete)
+// ---------    CheckItem Routes   ---------
+app.get('/checklists/:checklistId/checkitems', CheckItem.getAllFromChecklistId)
+app.post('/checklists/:checklistId/checkitems', CheckItem.insertFromChecklistId)
+app.put('/checkitems/:checkitemId', CheckItem.update)
+app.delete('/checkitems/:checkitemId', CheckItem.delete)
 
-// ---------    Attachment Routes   --------- 
-app.delete('/attachment/:id', Attachment.delete) 
+// ---------    Comment Routes   ---------
+app.get('/cards/:cardId/comments', Comment.getAllFromCardId)
+app.post('/cards/:cardId/comments', Comment.create)
+app.put('/comments/:commentId', Comment.update)
+app.delete('/comments/:commentId', Comment.delete)
 
-// ---------    TaskList Routes   ---------
-app.get('/checklists/:id', TaskList.getOneById) 
-app.get('/checklists/:id/checkItems', TaskList.getAllCheckItems)
-app.put('/checklists/:id', TaskList.update)
-app.post('/checklists/:id/checkItems', TaskList.createCheckItem)
-app.delete('/checklists/:id', TaskList.delete)
+// ---------    Tags Routes   ---------
+app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
+app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
+app.put('/labels/:labelId', Tag.update)
+app.delete('/labels/:labelId', Tag.delete)
+
+// ---------    Notification Routes   ---------
+app.get('/notifications/:id', Notification.getById)
+app.get('/users/:id/notifications', Notification.getAllFromUserId)
+app.delete('/notifications/:id', Notification.delete)
+app.delete('/users/:id/notifications', Notification.deleteAllFromUserId)

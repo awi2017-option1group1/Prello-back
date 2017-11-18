@@ -4,15 +4,18 @@ import { NotFoundException } from './errors/NotFoundException'
 import { BadRequest } from './errors/BadRequest'
 import { ParamsExtractor } from './paramsExtractorv2'
 
+import { Requester } from './requester'
+import { Board } from '../entities/board'
 import { List } from '../entities/list'
-import { BoardFacade } from './boardFacade'
 
 import { RealTimeFacade } from './realtimeFacade'
 import { listCreated, listUpdated, listDeleted } from './realtime/realtimeList'
 
 export class ListFacade {
 
-    static async getAllFromBoardId(boardId: number): Promise<List[]> {
+    static async getAllFromBoardId(requester: Requester, boardId: number): Promise<List[]> {
+        (await requester.shouldHaveBoardAccess(boardId)).orElseThrowError()
+
         return await getRepository(List)
             .createQueryBuilder('list')
             .leftJoin('list.board', 'board')
@@ -45,8 +48,10 @@ export class ListFacade {
         }
     }
 
-    static async insertFromBoardId(boardId: number, params: {}): Promise<List> {
+    static async insertFromBoardId(requester: Requester, boardId: number, params: {}): Promise<List> {
         try {
+            (await requester.shouldHaveBoardAccess(boardId)).orElseThrowError()
+
             const extractor = new ParamsExtractor<List>(params).permit(['name', 'pos'])
             const listToInsert = extractor.fill(new List())
 
@@ -59,7 +64,11 @@ export class ListFacade {
                 listToInsert.pos = maxPos + 1
             }
 
-            listToInsert.board = await BoardFacade.getById(boardId)
+            const board = await getRepository(Board).findOneById(boardId)
+            if (!board) {
+                throw new NotFoundException('Board not found')
+            }
+            listToInsert.board = board
 
             const list = await getRepository(List).save(listToInsert)
 
@@ -71,13 +80,15 @@ export class ListFacade {
         }
     }
 
-    static async update(listId: number, params: {}): Promise<List> {
+    static async update(requester: Requester, listId: number, params: {}): Promise<List> {
         try {
+            (await requester.shouldHaveListAccess(listId)).orElseThrowError()
+
             const extractor = new ParamsExtractor<List>(params).permit(['name', 'pos'])
 
             const listToUpdate = await ListFacade.getById(listId, { relations: ['board'] })
             extractor.fill(listToUpdate)
-            
+
             const board = listToUpdate.board
 
             const list = await getRepository(List).save(listToUpdate)
@@ -91,8 +102,10 @@ export class ListFacade {
         }
     }
 
-    static async delete(listId: number): Promise<void> {
+    static async delete(requester: Requester, listId: number): Promise<void> {
         try {
+            (await requester.shouldHaveListAccess(listId)).orElseThrowError()
+            
             const list = await ListFacade.getById(listId, { relations: ['board'] })
 
             const boardId = list.board.id
@@ -102,7 +115,7 @@ export class ListFacade {
 
             RealTimeFacade.sendEvent(listDeleted(list, boardId))
             return
-        } catch (e) { 
+        } catch (e) {
             console.error(e)
             throw new BadRequest(e)
         }

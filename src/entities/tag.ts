@@ -4,7 +4,25 @@ import { IsIn } from 'class-validator'
 import { Card } from './card'
 import { Board } from './board'
 
-const colors = ['blue', 'red', 'green', 'silver', 'yellow']
+export const colors = [
+    'red',
+    'orange',
+    'yellow',
+    'olive',
+    'green',
+    'teal',
+    'blue',
+    'violet',
+    'purple',
+    'pink',
+    'brown',
+    'grey',
+    'black'
+]
+
+export const randomColor = () => {
+    return colors[Math.floor((Math.random() * colors.length))]
+}
 
 @Entity()
 export class Tag {
@@ -25,7 +43,7 @@ export class Tag {
 //            EXTERNAL LINKS
 // ------------------------------------
     @ManyToMany(type => Card, card => card.tags)
-    cards: Promise<Card[]>
+    cards: Card[]
 
     @ManyToOne(type => Board, board => board.tags, {
         onDelete: 'CASCADE'
