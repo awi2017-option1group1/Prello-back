@@ -21,6 +21,8 @@ export class List {
     @OneToMany(type => Card, card => card.list)
     cards: Card[]
 
-    @ManyToOne(type => Board, board => board.lists)
+    @ManyToOne(type => Board, board => board.lists, {
+        onDelete: 'CASCADE'
+    })
     board: Board
  }

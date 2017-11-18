@@ -1,4 +1,4 @@
-import { getManager, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
 import * as uuid from 'uuid/v5'
@@ -9,7 +9,8 @@ import { BadRequest } from './errors/BadRequest'
 
 import { ValidationException } from './errors/ValidationException'
 
-import { User } from '../entities/user'
+import { Requester } from './requester'
+import { randomColor, User } from '../entities/user'
 import { Password } from './password'
 
 import { sendMail } from '../mail'
@@ -22,10 +23,13 @@ export class UserFacade {
         user.email = email
         user.username = username
         user.notificationsEnabled = true
-        user.confirmed = false
-        user.confirmationToken = uuidToken
+        user.avatarColor = randomColor()
         if (password) {
             user.password = Password.encrypt(password)
+            user.confirmed = false
+            user.confirmationToken = uuidToken
+        } else {
+            user.confirmed = true
         }
 
         const errors = await validate(user, { groups: ['registration'] })
@@ -42,11 +46,9 @@ export class UserFacade {
         return await getRepository(User).find()
     }
 
-    static async getAllFromTeamId(teamId: number): Promise<User[]> {
-        return await getRepository(User).find()
-    }
+    static async getById(requester: Requester, userId: number): Promise<User> {
+        requester.shouldHaveUid(userId).orElseThrowError()
 
-    static async getById(userId: number): Promise<User> {
         const user = await getRepository(User).findOneById(userId)
         if (user) {
             return user
@@ -64,30 +66,42 @@ export class UserFacade {
         }
     }
 
-    static async delete(userId: number): Promise<boolean> {
-        try {
-            const deletionSuccess = await getManager()
-                    .getRepository(User)
-                    .removeById(userId)
-            if (deletionSuccess) {
-                return true
-            } else {
-                return false
+    static async getByUsername(username: String): Promise<User> {
+        const user = await getRepository(User).findOne({
+            where: {
+                username: username
             }
-        } catch (e) {
-            throw new NotFoundException(e)
+        })
+        if (user) {
+            return user
+        } else {
+            throw new NotFoundException('User not found')
         }
     }
 
-    static async update(userId: number, params: {}): Promise<User> {
+    static async update(requester: Requester, userId: number, params: {}): Promise<User> {
         try {
+            requester.shouldHaveUid(userId).orElseThrowError()
+
             const extractor = new ParamsExtractor<User>(params).permit(['username', 'email',
                 'fullName', 'bio', 'notificationsEnabled', 'password'])
 
-            const userToUpdate = await UserFacade.getById(userId)
+            const userToUpdate = await UserFacade.getById(requester, userId)
             extractor.fill(userToUpdate)
 
             return await getRepository(User).save(userToUpdate)
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    static async delete(requester: Requester, userId: number): Promise<void> {
+        try {
+            requester.shouldHaveUid(userId).orElseThrowError()
+
+            await getRepository(User).removeById(userId)
+            return
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)
@@ -110,7 +124,6 @@ export class UserFacade {
                 user.confirmed = true
                 return await getRepository(User).save(user)
             }
-            
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)

@@ -121,9 +121,22 @@ export class WSServer {
         }))
 
         socket.on('request-connection', (to: Channel) => {
-            // TODO: check authorization
-            console.log('connection requested', to)
-            socket.join(this.channelToString(to))
+            switch (to.object) {
+                case 'board':
+                    if (socket.requester.shouldHaveBoardAccess(to.id).toBoolean()) {
+                        socket.join(this.channelToString(to))
+                    }
+                    break
+
+                case 'card':
+                    if (socket.requester.shouldHaveCardAccess(to.id).toBoolean()) {
+                        socket.join(this.channelToString(to))
+                    }
+                    break
+
+                default:
+                    break
+            }
         })
 
         socket.on('remove-connection', (to: Channel) => {

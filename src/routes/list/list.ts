@@ -8,7 +8,7 @@ export class List {
     static async getAllFromBoardId(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.boardId)) {
-                const lists = await ListFacade.getAllFromBoardId(req.params.boardId)
+                const lists = await ListFacade.getAllFromBoardId(req.requester, req.params.boardId)
                 res.status(200).json(lists)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
@@ -21,7 +21,7 @@ export class List {
     static async insertFromBoardId(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.boardId)) {
-                const list = await ListFacade.insertFromBoardId(req.params.boardId, req.body)
+                const list = await ListFacade.insertFromBoardId(req.requester, req.params.boardId, req.body)
                 res.status(201).json(list)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
@@ -34,7 +34,7 @@ export class List {
     static async update(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.listId)) {
-                const list = await ListFacade.update(req.params.listId, req.body)
+                const list = await ListFacade.update(req.requester, req.params.listId, req.body)
                 res.status(200).json(list)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
@@ -47,7 +47,7 @@ export class List {
     static async delete(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.listId)) {
-                await ListFacade.delete(req.params.listId)
+                await ListFacade.delete(req.requester, req.params.listId)
                 res.status(204).end()
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })
