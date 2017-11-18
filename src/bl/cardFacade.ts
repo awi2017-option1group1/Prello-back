@@ -43,6 +43,20 @@ export class CardFacade {
         }
     }
 
+    static async getByIdExtended(cardId: number): Promise<Card> {
+        const card = await getRepository(Card)            
+            .createQueryBuilder('card')
+            .leftJoinAndSelect('card.list', 'list')
+            .leftJoinAndSelect('list.board', 'board')
+            .where('card.id = :cardId', { cardId })
+            .getOne()
+        if (card) {
+            return card
+        } else {
+            throw new NotFoundException('Card not found')
+        }
+    }
+
     static async getByIdWithBoard(cardId: number): Promise<Card> {
         const card = await getRepository(Card)
             .createQueryBuilder('card')

@@ -25,7 +25,12 @@ export class Card {
     static async getOneById(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.cardId)) {
-                const card = await CardFacade.getById(req.params.cardId)
+                let card
+                if (req.query.extended) {
+                    card = await CardFacade.getByIdExtended(req.params.cardId)
+                } else {
+                    card = await CardFacade.getById(req.params.cardId)
+                }
                 res.status(200).json(card)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })

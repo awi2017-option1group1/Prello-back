@@ -78,7 +78,9 @@ export class Card {
     })
     members: User[]
 
-    @ManyToOne(type => List, list => list.cards)
+    @ManyToOne(type => List, list => list.cards, {
+        onDelete: 'CASCADE'
+    })
     list: List
 
     @OneToMany(type => CheckList, checkList => checkList.card)
