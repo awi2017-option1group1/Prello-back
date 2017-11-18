@@ -8,6 +8,23 @@ import { Notification } from './notification'
 import { Comment } from './comment'
 import { Card } from './card'
 
+export const colors = [
+    'red',
+    'orange',
+    'yellow',
+    'olive',
+    'green',
+    'teal',
+    'blue',
+    'violet',
+    'purple',
+    'pink'
+]
+
+export const randomColor = () => {
+    return colors[Math.floor((Math.random() * colors.length))]
+}
+
 @Entity()
 export class User {
 // ------------------------------------
@@ -102,6 +119,11 @@ export class User {
         nullable: true
     })
     confirmationToken: string | null
+
+    @Column({
+        type: 'varchar'
+    })
+    avatarColor: string
 
 // ------------------------------------
 //            EXTERNAL LINKS

@@ -9,7 +9,7 @@ import { Board } from '../entities/board'
 import { List } from '../entities/list'
 
 import { RealTimeFacade } from './realtimeFacade'
-import { listCreated, listUpdated, listDeleted } from './realtime/realtimeList'
+import { listCreated, listUpdated, listDeleted } from './realtime/list'
 
 export class ListFacade {
 

@@ -14,7 +14,7 @@ import { Card } from '../entities/card'
 import { Comment } from '../entities/comment'
 
 import { RealTimeFacade } from './realtimeFacade'
-import { cardCreated, cardUpdated, cardDeleted } from './realtime/realtimeCard'
+import { cardCreated, cardUpdated, cardDeleted } from './realtime/card'
 
 export class CardFacade {
 
