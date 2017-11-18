@@ -1,9 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, OneToMany, JoinTable } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, OneToMany } from 'typeorm'
 import { Length, IsAlphanumeric, IsEmail } from 'class-validator'
 
 import { IsUnique } from '../validators/IsUniqueValidator'
 
-import { Team } from './team'
 import { Board } from './board'
 import { Notification } from './notification'
 import { Comment } from './comment'
@@ -98,23 +97,15 @@ export class User {
     })
     confirmed: boolean
 
+    @Column({
+        type: 'varchar',
+        nullable: true
+    })
+    confirmationToken: string | null
+
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToMany(type => Team, team => team.users)
-    @JoinTable({
-        name: 'user_team',
-        joinColumn: {
-            name: 'user',
-            referencedColumnName: 'id'
-        },
-        inverseJoinColumn: {
-            name: 'team',
-            referencedColumnName: 'id'
-        },
-    })
-    teams: Promise<Team[]>
-
     @ManyToMany(type => Board, board => board.users)
     boards: Board[]
 
@@ -122,7 +113,7 @@ export class User {
     notifications: Promise<Notification[]>
 
     @OneToMany(type => Comment, comment => comment.user)
-    comments: Comment
+    comments: Comment[]
 
     @ManyToMany(type => Card, card => card.members)
     cards: Card[]

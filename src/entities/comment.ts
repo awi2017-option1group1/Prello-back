@@ -16,14 +16,21 @@ export class Comment {
     content: string
 
     @Column({
-        type: 'date'
+        type: 'timestamp'
     })
-    date: Date
+    createdDate: Date
+
+    @Column({
+        type: 'timestamp'
+    })
+    updatedDate: Date
 
 // ------------------------------------
 //            EXTERNAL LINKS
 // ------------------------------------
-    @ManyToOne(type => Card, card => card.comments)
+    @ManyToOne(type => Card, card => card.comments, {
+        onDelete: 'CASCADE'
+    })
     card: Card
 
     @ManyToOne(type => User, user => user.comments)

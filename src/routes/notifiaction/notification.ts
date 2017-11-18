@@ -6,7 +6,7 @@ export class Notification {
 
     static async getAllFromUserId(req: express.Request, res: express.Response) {
         try {
-            const notifications = {} // await NotificationFacade.getAllFromUserId(req.params.user_id)
+            const notifications = await NotificationFacade.getAllFromUserId(req.params.id)
             res.status(200).json(notifications)
         } catch (e) {
             res.status(404).json({ message: e.message})
@@ -15,7 +15,7 @@ export class Notification {
 
     static async getById(req: express.Request, res: express.Response) {
         try {
-            const notification = await NotificationFacade.getById(req.params.notification_id)
+            const notification = await NotificationFacade.getById(req.params.id)
             res.status(200).json(notification)
         } catch (e) {
             res.status(404).json({ message: e.message})
@@ -24,12 +24,17 @@ export class Notification {
 
     static async delete(req: express.Request, res: express.Response) {
         try {
-            const notification = await NotificationFacade.delete(req.params.notification_id)
-            if (notification) {
-                res.status(200).json(notification)
-            } else {
-                res.status(404).json({ message : 'Not found'})
-            }
+            const notification = await NotificationFacade.delete(req.params.id)
+            res.status(200).json(notification)
+        } catch (e) {
+            res.status(404).json({ message: e.message})
+        }
+    }
+
+    static async deleteAllFromUserId(req: express.Request, res: express.Response) {
+        try {
+            await NotificationFacade.deleteAllFromUserId(req.params.id)
+            res.status(200).json()
         } catch (e) {
             res.status(404).json({ message: e.message})
         }
