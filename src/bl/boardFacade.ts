@@ -107,8 +107,28 @@ export class BoardFacade {
         }
     }
 
-    // --------------- Members ---------------
+    static async search(value: string): Promise<Board[]> {
+        try {
+            const realValue = `%${value}%`
+            const boards = await getRepository(Board)
+            .createQueryBuilder('board')
+            .select()
+            .where('board.name LIKE :realValue', { realValue })
+            .getMany()
 
+            if (boards) {
+                const realBoards = boards.map(b => b = Object(
+                    {title: b.name, description: '', link: `/boards/${b.id}`}))
+                return realBoards
+            }
+            return []
+            
+        } catch (e) {
+            throw new BadRequest(e)
+        }
+    }
+
+    // --------------- Members ---------------
     static async getAllMembersFromBoardId(requester: Requester, boardId: number): Promise<User[]> {
         const board = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
         return board.users

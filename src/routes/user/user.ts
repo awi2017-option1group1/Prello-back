@@ -49,6 +49,15 @@ export class User {
         
     }
 
+    static async search(req: express.Request, res: express.Response) {
+        try {
+            const results = await UserFacade.search(req.params.userID, req.params.value)
+            res.status(200).json(results)
+        } catch (e) {
+            res.status(404).json({message: e.message})
+        }
+    }
+
     static async reset(req: express.Request, res: express.Response) {
         try {
             const email = req.body.email
