@@ -3,7 +3,6 @@ import { Tag } from './tag'
 import { List } from './list'
 import { CheckList } from './checkList'
 import { Comment } from './comment'
-import { Attachment } from './attachment'
 import { User } from './user'
 
 @Entity()
@@ -87,7 +86,4 @@ export class Card {
 
     @OneToMany(type => Comment, comment => comment.card)
     comments: Comment[]
-
-    @OneToMany(type => Attachment, attachment => attachment.card)
-    attachments: Attachment[]
  }

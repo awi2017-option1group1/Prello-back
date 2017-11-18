@@ -16,6 +16,7 @@ import { Comment } from './routes/comment/comment'
 import { CheckItem } from './routes/checkItem/checkItem'
 import { CheckList } from './routes/checkList/checkList'
 import { List } from './routes/list/list'
+import { Notification } from './routes/notifiaction/notification'
 
 import { websockets } from './websockets/realtime'
 
@@ -58,7 +59,6 @@ app.get('/protected', (req, res) => {
 app.post('/register', Register.register)
 app.get('/users', User.getAll)
 app.get('/users/:user_id', User.getOneById)
-app.get('/teams/:team_id/users', User.getAllFromTeamId)
 app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
 app.post('/users/:userId/:confirmationToken', User.confirm)
@@ -72,7 +72,6 @@ app.delete('/lists/:listId', List.delete)
 // ---------    Board Routes   ---------
 app.get('/boards/:boardId', Board.getOneById)
 app.get('/users/:userId/boards', Board.getAllFromUserId)
-app.get('/teams/:teamId/boards', Board.getAllFromTeamId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
 app.post('/users/:userId/boards', Board.create)
@@ -124,3 +123,9 @@ app.get('/boards/:boardId/labels', Tag.getAllFromBoardId)
 app.post('/boards/:boardId/labels', Tag.insertFromBoardId)
 app.put('/labels/:labelId', Tag.update)
 app.delete('/labels/:labelId', Tag.delete)
+
+// ---------    Notification Routes   ---------
+app.get('/notifications/:id', Notification.getById)
+app.get('/users/:id/notifications', Notification.getAllFromUserId)
+app.delete('/notifications/:id', Notification.delete)
+app.delete('/users/:id/notifications', Notification.deleteAllFromUserId)

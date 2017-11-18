@@ -4,12 +4,15 @@ import { NotFoundException } from './errors/NotFoundException'
 import { ParamsExtractor } from './paramsExtractorv2'
 import { BadRequest } from './errors/BadRequest'
 
+import { Requester } from './requester'
 import { CheckList } from '../entities/checkList'
 import { CardFacade } from './cardFacade'
 
 export class CheckListFacade {
 
-    static async getAllFromCardId(cardId: number): Promise<CheckList[]> {
+    static async getAllFromCardId(requester: Requester, cardId: number): Promise<CheckList[]> {
+        (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
         return await getRepository(CheckList)
             .createQueryBuilder('checkList')
             .leftJoin('checkList.card', 'card')
@@ -42,8 +45,10 @@ export class CheckListFacade {
         }
     }
 
-    static async insertFromCardId(cardId: number, params: {}): Promise<CheckList> {
+    static async insertFromCardId(requester: Requester, cardId: number, params: {}): Promise<CheckList> {
         try {
+            (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
+
             const extractor = new ParamsExtractor<CheckList>(params).permit(['name', 'pos'])
             const checkListToInsert = extractor.fill(new CheckList())
 
@@ -69,12 +74,15 @@ export class CheckListFacade {
         }
     }
 
-    static async update(checkListId: number, params: {}): Promise<CheckList> {
+    static async update(requester: Requester, checkListId: number, params: {}): Promise<CheckList> {
         try {
             const extractor = new ParamsExtractor<CheckList>(params).permit(['name', 'pos'])
 
             const listToUpdate = await CheckListFacade.getById(checkListId, { relations: ['card'] })
             extractor.fill(listToUpdate)
+
+            const hasAccess = await requester.shouldHaveCardAccess(listToUpdate.card.id)
+            hasAccess.orElseThrowError()
 
             // const card = listToUpdate.card
             delete listToUpdate.card
@@ -88,11 +96,15 @@ export class CheckListFacade {
         }
     }
 
-    static async delete(checkListId: number): Promise<void> {
+    static async delete(requester: Requester, checkListId: number): Promise<void> {
         try {
-            // const checkList = await CheckListFacade.getById(checkListId, { relations: ['card'] })
-            // const cardId = checkList.card.id
-            // delete checkList.card
+            const checkList = await CheckListFacade.getById(checkListId, { relations: ['card'] })
+            const cardId = checkList.card.id
+
+            const hasAccess = await requester.shouldHaveCardAccess(cardId)
+            hasAccess.orElseThrowError()
+
+            delete checkList.card
             // RealTimeFacade.sendEvent(checkListDeleted(checkList, cardId))
 
             await getRepository(CheckList).removeById(checkListId)
