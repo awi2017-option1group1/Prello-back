@@ -100,7 +100,6 @@ export class BoardFacade {
             }
             boardToInsert.users = [user]
 
-
             return getRepository(Board).save(boardToInsert)
         } catch (e) {
             console.error(e)
