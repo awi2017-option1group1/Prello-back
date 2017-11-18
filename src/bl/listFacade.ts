@@ -121,4 +121,26 @@ export class ListFacade {
         }
     }
 
+    static async search(value: string): Promise<List[]> {
+        try {
+            const realValue = `%${value}%`
+            const lists = await getRepository(List)
+            .createQueryBuilder('list')
+            .select(['board.id', 'list.name'])
+            .leftJoin('list.board', 'board')
+            .where('list.name LIKE :realValue', { realValue })
+            .getMany()
+            console.log(lists)
+            if (lists) {
+                const realLists = lists.map(l => 
+                    l = Object({title: l.name, description: '', link: `/boards/${l.board.id}`}))
+                return realLists
+            }
+            return []
+            
+        } catch (e) {
+            throw new BadRequest(e)
+        }
+    }
+
 }

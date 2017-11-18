@@ -13,6 +13,9 @@ import { Requester } from './requester'
 import { randomColor, User } from '../entities/user'
 import { Password } from './password'
 
+import { BoardFacade } from '../bl/boardFacade'
+import { ListFacade } from '../bl/listFacade'
+import { CardFacade } from '../bl/cardFacade'
 import { sendMail } from '../mail'
 import { welcome } from '../mails/welcome'
 import { resetPassword } from '../mails/resetPassword'
@@ -96,6 +99,31 @@ export class UserFacade {
         }
     }
 
+    static async search(userID: number, value: string): Promise<Object> {
+        try {
+            const results = {
+                boards: {
+                    name: 'boards', 
+                    results: await BoardFacade.search(value),
+                },
+
+                lists: {
+                    name: 'lists', 
+                    results: await ListFacade.search(value),
+                },
+                
+                cards: {
+                    name: 'cards', 
+                    results: await CardFacade.search(value),
+                },
+            
+            }
+            return results
+            
+        } catch (e) {
+           throw new BadRequest(e)
+        }
+    }
     static async delete(requester: Requester, userId: number): Promise<void> {
         try {
             requester.shouldHaveUid(userId).orElseThrowError()

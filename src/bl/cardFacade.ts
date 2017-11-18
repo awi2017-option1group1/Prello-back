@@ -252,4 +252,26 @@ export class CardFacade {
         } 
         return []
     }
+
+    static async search(value: string): Promise<Card[]> {
+        try {
+            const realValue = `%${value}%`
+            const cards = await getRepository(Card)
+            .createQueryBuilder('card')
+            .select()
+            .leftJoinAndSelect('card.list', 'list')
+            .leftJoinAndSelect('list.board', 'board')
+            .where('card.name LIKE :realValue', { realValue })
+            .getMany()
+            if (cards) {
+                const realCards = cards.map(c => 
+                    c = Object({title: c.name, description: c.desc, link: `/boards/${c.list.board.id}/cards/${c.id}`}))
+                return realCards
+            }
+            return []
+            
+        } catch (e) {
+            throw new BadRequest(e)
+        }
+    }
 }
