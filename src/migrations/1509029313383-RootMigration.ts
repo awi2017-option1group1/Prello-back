@@ -18,15 +18,15 @@ export class RootMigration1509029313383 implements MigrationInterface {
         await queryRunner.query(`CREATE INDEX "ind_d457ba794f3419fd7a00f3edb7" ON "card_tags"("card")`);
         await queryRunner.query(`CREATE INDEX "ind_9b0282c741c84786a8f46340aa" ON "card_tags"("tag")`);
         await queryRunner.query(`ALTER TABLE "notification" ADD CONSTRAINT "fk_1885ec41c81a7b0638e47dd16a0" FOREIGN KEY ("userId") REFERENCES "user"("id")`);
-        await queryRunner.query(`ALTER TABLE "comment" ADD CONSTRAINT "fk_32d498cc5f4e3ae0145483b725b" FOREIGN KEY ("cardId") REFERENCES "card"("id")`);
+        await queryRunner.query(`ALTER TABLE "comment" ADD CONSTRAINT "fk_32d498cc5f4e3ae0145483b725b" FOREIGN KEY ("cardId") REFERENCES "card"("id") ON DELETE CASCADE`);
         await queryRunner.query(`ALTER TABLE "comment" ADD CONSTRAINT "fk_e1462f7cd68fe816d2124d7a257" FOREIGN KEY ("userId") REFERENCES "user"("id")`);
-        await queryRunner.query(`ALTER TABLE "list" ADD CONSTRAINT "fk_92fd99cabd2cd7336817771307e" FOREIGN KEY ("boardId") REFERENCES "board"("id")`);
-        await queryRunner.query(`ALTER TABLE "tag" ADD CONSTRAINT "fk_9eacbff885bd58d8e13efa4f4a1" FOREIGN KEY ("boardId") REFERENCES "board"("id")`);
-        await queryRunner.query(`ALTER TABLE "card" ADD CONSTRAINT "fk_0ad426ec552cfce3192f30a1a19" FOREIGN KEY ("listId") REFERENCES "list"("id")`);
-        await queryRunner.query(`ALTER TABLE "board_users_user" ADD CONSTRAINT "fk_fc319ccace2b26c4b417631e4ef" FOREIGN KEY ("boardId") REFERENCES "board"("id")`);
-        await queryRunner.query(`ALTER TABLE "board_users_user" ADD CONSTRAINT "fk_95e8c065d099ff414045612a5dd" FOREIGN KEY ("userId") REFERENCES "user"("id")`);
-        await queryRunner.query(`ALTER TABLE "card_tags" ADD CONSTRAINT "fk_2e4b5cef7534461317dcc0e0c6f" FOREIGN KEY ("card") REFERENCES "card"("id")`);
-        await queryRunner.query(`ALTER TABLE "card_tags" ADD CONSTRAINT "fk_fec1ebd38a8db1673e9f235ef08" FOREIGN KEY ("tag") REFERENCES "tag"("id")`);
+        await queryRunner.query(`ALTER TABLE "list" ADD CONSTRAINT "fk_92fd99cabd2cd7336817771307e" FOREIGN KEY ("boardId") REFERENCES "board"("id") ON DELETE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "tag" ADD CONSTRAINT "fk_9eacbff885bd58d8e13efa4f4a1" FOREIGN KEY ("boardId") REFERENCES "board"("id") ON DELETE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "card" ADD CONSTRAINT "fk_0ad426ec552cfce3192f30a1a19" FOREIGN KEY ("listId") REFERENCES "list"("id") ON DELETE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "board_users_user" ADD CONSTRAINT "fk_fc319ccace2b26c4b417631e4ef" FOREIGN KEY ("boardId") REFERENCES "board"("id") ON DELETE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "board_users_user" ADD CONSTRAINT "fk_95e8c065d099ff414045612a5dd" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "card_tags" ADD CONSTRAINT "fk_2e4b5cef7534461317dcc0e0c6f" FOREIGN KEY ("card") REFERENCES "card"("id") ON DELETE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "card_tags" ADD CONSTRAINT "fk_fec1ebd38a8db1673e9f235ef08" FOREIGN KEY ("tag") REFERENCES "tag"("id") ON DELETE CASCADE`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
