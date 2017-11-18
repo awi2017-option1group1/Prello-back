@@ -36,9 +36,9 @@ export class CommentFacade {
             commentToInsert.updatedDate = commentToInsert.createdDate
             commentToInsert.user = await UserFacade.getById(requester, requester.getUID())
             commentToInsert.card = await CardFacade.getById(cardId)
-            
+
             // RealTimeFacade.sendEvent(commentCreated(commentToReturn, boardId))
-            
+
             const comment = await getRepository(Comment).save(commentToInsert)
             return comment
         } catch (e) {
@@ -53,7 +53,7 @@ export class CommentFacade {
 
             const commentToUpdate = await CommentFacade.getById(commentId, { relations: ['card'] })
             extractor.fill(commentToUpdate)
-            
+
             commentToUpdate.updatedDate = new Date()
 
             const hasAccess = await requester.shouldHaveCardAccess(commentToUpdate.card.id)
@@ -61,9 +61,10 @@ export class CommentFacade {
 
             delete commentToUpdate.card
             // RealTimeFacade.sendEvent(commentUpdated(comment, boardId))
-            
+
             const comment = await getRepository(Comment).save(commentToUpdate)
-            return comment
+            const fullComment = await CommentFacade.getById(comment.id, { relations: ['user'] })
+            return fullComment
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)
