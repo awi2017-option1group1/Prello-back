@@ -60,7 +60,7 @@ app.get('/users/:user_id', User.getOneById)
 app.get('/teams/:team_id/users', User.getAllFromTeamId)
 app.put('/users/:userId', User.update)
 app.delete('/users/:user_id', User.delete)
-app.get('/users/:userID/:value', User.search)
+app.get('/users/:userID/search/:value', User.search)
 
 // ---------    List Routes   ---------
 app.get('/boards/:boardId/lists', List.getAllFromBoardId)

@@ -120,7 +120,7 @@ export class ListFacade {
             console.log(lists)
             if (lists) {
                 const realLists = lists.map(l => 
-                    l = Object({name: l.name, description: '', link: `/boards/${l.board.id}`}))
+                    l = Object({title: l.name, description: '', link: `/boards/${l.board.id}`}))
                 return realLists
             }
             return []

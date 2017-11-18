@@ -169,7 +169,8 @@ export class BoardFacade {
             .getMany()
 
             if (boards) {
-                const realBoards = boards.map(b => b = Object({name: b.name, description: '', link: `/boards/${b.id}`}))
+                const realBoards = boards.map(b => b = Object(
+                    {title: b.name, description: '', link: `/boards/${b.id}`}))
                 return realBoards
             }
             return []

@@ -82,11 +82,22 @@ export class UserFacade {
     static async search(userID: number, value: string): Promise<Object> {
         try {
             const results = {
-                boards: await BoardFacade.search(value),
-                lists: await ListFacade.search(value),
-                cards: await CardFacade.search(value),
+                boards: {
+                    name: 'boards', 
+                    results: await BoardFacade.search(value),
+                },
+
+                lists: {
+                    name: 'lists', 
+                    results: await ListFacade.search(value),
+                },
+                
+                cards: {
+                    name: 'cards', 
+                    results: await CardFacade.search(value),
+                },
+            
             }
-            console.log(results)
             return results
             
         } catch (e) {

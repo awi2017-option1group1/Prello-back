@@ -234,12 +234,13 @@ export class CardFacade {
             const cards = await getRepository(Card)
             .createQueryBuilder('card')
             .select()
+            .leftJoinAndSelect('card.list', 'list')
+            .leftJoinAndSelect('list.board', 'board')
             .where('card.name LIKE :realValue', { realValue })
             .getMany()
-            console.log(cards)
             if (cards) {
                 const realCards = cards.map(c => 
-                    c = Object({name: c.name, description: c.desc, link: `/cards/${c.id}`}))
+                    c = Object({title: c.name, description: c.desc, link: `/boards/${c.list.board.id}/cards/${c.id}`}))
                 return realCards
             }
             return []
