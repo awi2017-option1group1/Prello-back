@@ -79,4 +79,45 @@ export class Board {
         }
     }
 
+    // --------------- Members ---------------
+
+    static async getAllMembers(req: express.Request, res: express.Response) {
+        try {
+            if (isInteger(req.params.boardId)) {
+                const members = await BoardFacade.getAllMembersFromBoardId(req.params.boardId)
+                res.status(200).json(members)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
+        } catch (e) {
+            res.status(400).json({ error: e.message })
+        }
+    }
+
+    static async assignMember(req: express.Request, res: express.Response) {
+        try {
+            if (isInteger(req.params.boardId)) {
+                const user = await BoardFacade.assignMember(req.params.boardId, req.body)
+                res.status(200).json(user)
+            } else {
+                res.status(400).json({ error: 'Invalid request parameter' })
+            }
+        } catch (e) {
+            res.status(400).json({ error: e.message })
+        }
+    }
+
+    static async unassignMemberById(req: express.Request, res: express.Response) {
+        try {
+            if (isInteger(req.params.boardId) && isInteger(req.params.memberId)) {
+                await BoardFacade.unassignMemberById(req.params.boardId, req.params.memberId)
+                res.status(204).end()
+            } else {
+                res.status(400).json({ error: 'Invalid request parameters' })
+            }
+        } catch (e) {
+            res.status(400).json({ error: e.message })
+        }
+    }
+
 }

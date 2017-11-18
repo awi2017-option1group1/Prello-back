@@ -75,6 +75,9 @@ app.get('/users/:userId/boards', Board.getAllFromUserId)
 app.put('/boards/:boardId', Board.update)
 app.delete('/boards/:boardId', Board.delete)
 app.post('/users/:userId/boards', Board.create)
+app.get('/boards/:boardId/members', Board.getAllMembers)
+app.post('/boards/:boardId/members', Board.assignMember)
+app.delete('/boards/:boardId/members/:memberId', Board.unassignMemberById)
 
 // ---------    Card Routes   ---------
 app.get('/lists/:listId/cards', Card.getAllFromListId)

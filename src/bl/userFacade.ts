@@ -51,6 +51,19 @@ export class UserFacade {
         }
     }
 
+    static async getByUsername(username: String): Promise<User> {
+        const user = await getRepository(User).findOne({
+            where: {
+                username: username
+            }
+        })
+        if (user) {
+            return user
+        } else {
+            throw new NotFoundException('User not found')
+        }
+    }
+
     static async update(requester: Requester, userId: number, params: {}): Promise<User> {
         try {
             requester.shouldHaveUid(userId).orElseThrowError()
