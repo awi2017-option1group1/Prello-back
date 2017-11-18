@@ -1,7 +1,6 @@
-import { BoardFacade } from '../bl/boardFacade';
-import * as http from 'http';
-import * as io from 'socket.io';
-import * as redisAdapter from 'socket.io-redis';
+import * as http from 'http'
+import * as io from 'socket.io'
+import * as redisAdapter from 'socket.io-redis'
 
 import { config } from '../config'
 
@@ -122,10 +121,21 @@ export class WSServer {
         }))
 
         socket.on('request-connection', (to: Channel) => {
-            if (to.object === 'board') {
-                if (socket.requester.shouldHaveBoardAccess(to.id).toBoolean()) {
-                    socket.join(this.channelToString(to))
-                }
+            switch (to.object) {
+                case 'board':
+                    if (socket.requester.shouldHaveBoardAccess(to.id).toBoolean()) {
+                        socket.join(this.channelToString(to))
+                    }
+                    break
+
+                case 'card':
+                    if (socket.requester.shouldHaveCardAccess(to.id).toBoolean()) {
+                        socket.join(this.channelToString(to))
+                    }
+                    break
+
+                default:
+                    break
             }
         })
 

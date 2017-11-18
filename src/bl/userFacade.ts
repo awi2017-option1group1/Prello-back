@@ -8,7 +8,7 @@ import { BadRequest } from './errors/BadRequest'
 import { ValidationException } from './errors/ValidationException'
 
 import { Requester } from './requester'
-import { User } from '../entities/user'
+import { randomColor, User } from '../entities/user'
 import { Password } from './password'
 
 import { sendMail } from '../mail'
@@ -20,10 +20,13 @@ export class UserFacade {
         user.email = email
         user.username = username
         user.notificationsEnabled = true
-        user.confirmed = false
-        user.confirmationToken = uuidToken
+        user.avatarColor = randomColor()
         if (password) {
             user.password = Password.encrypt(password)
+            user.confirmed = false
+            user.confirmationToken = uuidToken
+        } else {
+            user.confirmed = true
         }
 
         const errors = await validate(user, { groups: ['registration'] })

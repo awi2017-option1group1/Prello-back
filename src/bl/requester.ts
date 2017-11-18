@@ -81,7 +81,7 @@ class UserRequester implements Requester {
     }
 
     hasUID(userId: number): boolean {
-        return this.user.id === userId
+        return Number(this.user.id) === Number(userId)
     }
 
     shouldHaveUid(userId: number): AuthCondition {
