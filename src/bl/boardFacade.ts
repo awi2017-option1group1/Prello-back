@@ -21,6 +21,7 @@ export class BoardFacade {
             .leftJoin('board.users', 'user')
             .where('user.id = :userId', { userId })
             .andWhere('board.id = :boardId', { boardId })
+            .orWhere('board.owner = :userId', { userId })
             .getOne()
         console.log(board)
         return board !== undefined
@@ -32,7 +33,9 @@ export class BoardFacade {
         return await getRepository(Board)
             .createQueryBuilder('board')
             .leftJoin('board.users', 'user')
+            .leftJoinAndSelect('board.owner', 'owner')
             .where('user.id = :userId', { userId })
+            .orWhere('board.owner = :userId', { userId })
             .getMany()
     }
 
@@ -98,7 +101,7 @@ export class BoardFacade {
             if (!user) {
                 throw new NotFoundException('User not found!')
             }
-            boardToInsert.users = [user]
+            boardToInsert.owner = user
 
             return getRepository(Board).save(boardToInsert)
         } catch (e) {
@@ -122,7 +125,7 @@ export class BoardFacade {
                 return realBoards
             }
             return []
-            
+
         } catch (e) {
             throw new BadRequest(e)
         }
@@ -137,12 +140,12 @@ export class BoardFacade {
     static async assignMember(requester: Requester, boardId: number, params: {}): Promise<User> {
         try {
             const extractor = new ParamsExtractor<Board>(params).require(['username'])
-    
+
             const boardToUpdate = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
             const userToAssign = await UserFacade.getByUsername(extractor.getParam('username'))
-    
+
             boardToUpdate.users = boardToUpdate.users.concat(userToAssign)
-    
+
             await getRepository(Board).save(boardToUpdate)
             return userToAssign
         } catch (e) {
@@ -155,11 +158,11 @@ export class BoardFacade {
         try {
             const boardToUpdate = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
             const userToUnassign = await UserFacade.getById(requester, memberId)
-    
+
             if (boardToUpdate.users.length > 1) {
                 boardToUpdate.users = boardToUpdate.users.filter(user => user.id !== userToUnassign.id)
             }
-    
+
             await getRepository(Board).save(boardToUpdate)
         } catch (e) {
             console.error(e)

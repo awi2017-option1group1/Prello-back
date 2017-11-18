@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm'
 import { User } from './user'
 import { List } from './list'
 import { Tag } from './tag'
@@ -24,6 +24,9 @@ export class Board {
     @ManyToMany(type => User, user => user.boards)
     @JoinTable()
     users: User[]
+
+    @ManyToOne(type => User, user => user.ownedBoards)
+    owner: User
 
     @OneToMany(type => List, list => list.board)
     lists: Promise<List[]>
