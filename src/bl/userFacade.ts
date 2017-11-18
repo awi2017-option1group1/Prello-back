@@ -1,6 +1,8 @@
 import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
+import * as uuid from 'uuid/v5'
+
 import { ParamsExtractor } from './paramsExtractorv2'
 import { NotFoundException } from './errors/NotFoundException'
 import { BadRequest } from './errors/BadRequest'
@@ -16,6 +18,7 @@ import { ListFacade } from '../bl/listFacade'
 import { CardFacade } from '../bl/cardFacade'
 import { sendMail } from '../mail'
 import { welcome } from '../mails/welcome'
+import { resetPassword } from '../mails/resetPassword'
 
 export class UserFacade {
     static async register(email: string, username: string, uuidToken: string, password?: string): Promise<User>  {
@@ -50,6 +53,15 @@ export class UserFacade {
         requester.shouldHaveUid(userId).orElseThrowError()
 
         const user = await getRepository(User).findOneById(userId)
+        if (user) {
+            return user
+        } else {
+            throw new NotFoundException('User not found')
+        }
+    }
+
+    static async getByEmail(email: string): Promise<User> {
+        const user = await getRepository(User).findOne({email: email})
         if (user) {
             return user
         } else {
@@ -126,16 +138,93 @@ export class UserFacade {
 
     static async confirm(userId: number, uuidToken: string): Promise<User> {
         try {
-            const user = await getRepository(User).findOneById(userId)
-            if (user && user.confirmationToken === uuidToken) {
+            const user = await getRepository(User).findOne({
+                where: {
+                    confirmationToken: uuidToken,
+                    id: userId,
+                }
+            })
+
+            if (!user) {
+                throw new BadRequest('This page does not exist')
+            } else {
                 user.confirmationToken = null
                 user.confirmed = true
                 return await getRepository(User).save(user)
+            }
+        } catch (e) {
+            console.error(e)
+            throw new BadRequest(e)
+        }
+    }
+
+    static async reset(email: string): Promise<Boolean> {
+        if (!email) {
+            throw new BadRequest('This user does not exist')
+        }
+        try {
+            const user = await UserFacade.getByEmail(email)
+            const token = uuid('photon.igpolytech.fr', uuid.DNS)
+            user.resetToken = token
+            user.resetTimeStamp = new Date()
+            getRepository(User).save(user)
+            
+            sendMail(email, resetPassword(user.username, user.id, token))
+            
+            return true
+        } catch (e) {
+            throw new BadRequest(e)
+        }
+
+    }
+
+    static async checkResetToken(userID: number, token: string): Promise<Boolean> {
+        try {
+            const user = await await getRepository(User).findOne({
+                where: {
+                    resetToken: token,
+                    id: userID,
+                }
+            })
+
+            if (!user) {
+                throw new BadRequest('not exist')
+            }
+            const timeDifference = user.resetTimeStamp ? new Date().getTime() - user.resetTimeStamp.getTime() : 10000000
+            if (timeDifference < 300000) { // 10 minutes
+                return true
+            } else {
+                throw new NotFoundException('Page not found')
+            }
+        } catch (e) {
+            throw new BadRequest(e)
+        }
+    }
+
+    static async updatePassword(userID: number, token: string, newPassword: string): Promise<boolean> {
+        try {
+            const isGood = await UserFacade.checkResetToken(userID, token)
+            if (isGood) {
+                const user = await getRepository(User).findOne({
+                    where: {
+                        resetToken: token,
+                        id: userID,
+                    }
+                })
+
+                if (!user) {
+                    throw new BadRequest('not exist')
+                }
+                console.log(user)
+                user.resetToken = null
+                user.resetTimeStamp = null
+                user.password = Password.encrypt(newPassword)
+                getRepository(User).save(user)
+                return true
             } else {
                 throw new BadRequest('This page does not exist')
             }
         } catch (e) {
-            console.error(e)
             throw new BadRequest(e)
         }
     }
