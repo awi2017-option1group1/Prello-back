@@ -159,9 +159,7 @@ export class BoardFacade {
             const boardToUpdate = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
             const userToUnassign = await UserFacade.getById(requester, memberId)
 
-            if (boardToUpdate.users.length > 1) {
-                boardToUpdate.users = boardToUpdate.users.filter(user => user.id !== userToUnassign.id)
-            }
+            boardToUpdate.users = boardToUpdate.users.filter(user => user.id !== userToUnassign.id)
 
             await getRepository(Board).save(boardToUpdate)
         } catch (e) {
