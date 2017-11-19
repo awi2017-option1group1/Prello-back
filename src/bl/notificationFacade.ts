@@ -5,6 +5,7 @@ import { Notification } from '../entities/notification'
 import { User } from '../entities/user'
 import { ParamsExtractor } from './paramsExtractorv2'
 import { Requester } from './requester'
+import { BoardFacade } from './boardFacade'
 
 import { RealTimeFacade } from './realtimeFacade'
 import { notificationAdded, notificationDeleted } from './realtime/notifications'
@@ -67,24 +68,71 @@ export class NotificationFacade {
         }
     }
 
-    static async createBoardUpdateNotifications(boardId: number, requesterId: number): Promise<void> {
+    static async createBoardUpdateNotifications(requester: Requester, boardId: number): Promise<void> {
         try {
-            const users = await getRepository(User)
+            let users = await getRepository(User)
                 .createQueryBuilder('user')
                 .leftJoin('user.boards', 'board')
                 .where('board.id = :boardId', { boardId })
                 .getMany()
+            const board = await BoardFacade.getById(requester, boardId, {relations: ['owner']})
+            users = users.concat(board.owner)
+
             users.forEach(async user => {
-                if (user.notificationsEnabled) {
+                if (user.notificationsEnabled && user.id !== requester.getUID()) {
                     let notification = new Notification()
                     notification.type = 'board_updated'
                     notification.about = boardId
-                    notification.from = requesterId
+                    notification.from = requester.getUID()
                     notification.user = user
                     notification.date = new Date()
                     await NotificationFacade.create(notification)
                 }
             })
+            return
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
+
+    static async createCardUpdateNotifications(requester: Requester, cardId: number, boardId: number): Promise<void> {
+        try {
+            let users = await getRepository(User)
+                .createQueryBuilder('user')
+                .leftJoin('user.cards', 'card')
+                .where('card.id = :cardId', { cardId })
+                .getMany()
+
+            users.forEach(async user => {
+                if (user.notificationsEnabled && user.id !== requester.getUID()) {
+                    let notification = new Notification()
+                    notification.type = 'card_list_updated'
+                    notification.about = boardId
+                    notification.from = requester.getUID()
+                    notification.user = user
+                    notification.date = new Date()
+                    await NotificationFacade.create(notification)
+                }
+            })
+            return
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
+
+    static async createAssigneduserNotifications(requester: Requester, userId: number,
+                                                 cardId: number, boardId: number): Promise<void> {
+        try {
+            let user = await getRepository(User).findOneById(userId)
+            if (user && user.notificationsEnabled && user.id !== requester.getUID()) {
+                let notification = new Notification()
+                notification.type = 'card_user_assigned'
+                notification.about = boardId
+                notification.from = requester.getUID()
+                notification.user = user
+                notification.date = new Date()
+                await NotificationFacade.create(notification)
+            }
             return
         } catch (e) {
             throw new NotFoundException(e)
