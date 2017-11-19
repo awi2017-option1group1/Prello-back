@@ -1,5 +1,5 @@
 import * as express from 'express'
-import * as uuid from 'uuid/v5'
+import * as uuid from 'uuid/v4'
 import { UserFacade } from '../../bl/userFacade'
 
 export class Register {
@@ -7,7 +7,7 @@ export class Register {
         try {
             const user = await UserFacade.register( req.body.email, 
                                                     req.body.username, 
-                                                    uuid('photon.igpolytech.fr', uuid.DNS), 
+                                                    uuid(), 
                                                     req.body.password)
             res.status(200).json(user)
         } catch (e) {

@@ -48,17 +48,17 @@ export const config: Config = {
     database: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5434/dev_prello'
+        url: process.env.DATABASE_URL || 'postgres://postgres:root@localhost:5432/dev_prello'
     },
 
     databaseTest: {
         type: process.env.DATABASE_TYPE || 'postgres',
         ssl: process.env.DATABASE_SSL === 'true',
-        url: process.env.TEST_DATABASE_URL || 'postgres://postgres:root@localhost:5434/test_prello'
+        url: process.env.TEST_DATABASE_URL || 'postgres://postgres:root@localhost:5432/test_prello'
     },
 
     redis: {
-        host: process.env.REDIS_HOST || '192.168.99.100',
+        host: process.env.REDIS_HOST || 'localhost',
         port: process.env.REDIS_PORT || 6379,
         url: process.env.REDIS_URL
     },
@@ -72,9 +72,11 @@ export const config: Config = {
         auth: {
             type: '',
             user: process.env.SMTP_USER || '',
-            clientId: process.env.SMTP_CLIENT_ID || '',
+            clientId: process.env.SMTP_CLIENT_ID 
+                || '',
             clientSecret: process.env.SMTP_CLIENT_SECRET || '',
-            refreshToken: process.env.SMTP_REFRESH_TOKEN || ''
+            refreshToken: process.env.SMTP_REFRESH_TOKEN 
+                || ''
         }
     }
 }

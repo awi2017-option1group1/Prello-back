@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
-import * as uuid from 'uuid/v5'
+import * as uuid from 'uuid/v4'
 
 import { ParamsExtractor } from './paramsExtractorv2'
 import { NotFoundException } from './errors/NotFoundException'
@@ -164,11 +164,11 @@ export class UserFacade {
         }
         try {
             const user = await UserFacade.getByEmail(email)
-            const token = uuid('photon.igpolytech.fr', uuid.DNS)
+            const token = uuid()
             user.resetToken = token
             user.resetTimeStamp = new Date()
             getRepository(User).save(user)
-            
+            console.log('send mail')
             sendMail(email, resetPassword(user.username, user.id, token))
             
             return true
