@@ -47,6 +47,10 @@ export class BoardFacade {
                 id: boardId
             }
         })
+        console.log('//--------------------//')
+        console.log(options)
+        console.log('//--------------------//')
+        console.log(board)
         if (board) {
             return board
         } else {
@@ -68,14 +72,14 @@ export class BoardFacade {
         try {
             const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
 
-            let board = await BoardFacade.getById(requester, boardId)
+            let board = await BoardFacade.getById(requester, boardId, {relations: ['owner']})
             extractor.fill(board)
 
             board = await getRepository(Board).save(board)
 
             RealTimeFacade.sendEvent(boardUpdated(requester, board))
             NotificationFacade.createBoardUpdateNotifications(boardId, requester.getUID())
-
+            console.log(board)
             return board
         } catch (e) {
             console.error(e)
@@ -132,8 +136,8 @@ export class BoardFacade {
 
     // --------------- Members ---------------
     static async getAllMembersFromBoardId(requester: Requester, boardId: number): Promise<User[]> {
-        const board = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
-        return board.users
+        const board = await BoardFacade.getById(requester, boardId, { relations: ['users', 'owner'] })
+        return board.users.concat(board.owner)
     }
 
     static async assignMember(requester: Requester, boardId: number, params: {}): Promise<User> {
