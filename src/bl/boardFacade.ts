@@ -48,6 +48,10 @@ export class BoardFacade {
                 id: boardId
             }
         })
+        console.log('//--------------------//')
+        console.log(options)
+        console.log('//--------------------//')
+        console.log(board)
         if (board) {
             return board
         } else {
@@ -69,14 +73,14 @@ export class BoardFacade {
         try {
             const extractor = new ParamsExtractor<Board>(params).permit(['name', 'isPrivate'])
 
-            let board = await BoardFacade.getById(requester, boardId)
+            let board = await BoardFacade.getById(requester, boardId, {relations: ['owner']})
             extractor.fill(board)
 
             board = await getRepository(Board).save(board)
 
             RealTimeFacade.sendEvent(boardUpdated(board))
             NotificationFacade.createBoardUpdateNotifications(boardId, requester.getUID())
-
+            console.log(board)
             return board
         } catch (e) {
             console.error(e)

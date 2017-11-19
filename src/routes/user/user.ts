@@ -61,8 +61,8 @@ export class User {
     static async reset(req: express.Request, res: express.Response) {
         try {
             const email = req.body.email
-            const user = await UserFacade.reset(email)
-            res.status(200).json(user)
+            const isGood = await UserFacade.reset(email)
+            res.status(200).json(isGood)
         } catch (e) {
             res.status(404).json({message: e.message.message})
         }
