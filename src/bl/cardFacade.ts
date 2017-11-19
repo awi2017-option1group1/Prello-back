@@ -10,6 +10,7 @@ import { NotificationFacade } from './notificationFacade'
 
 import { Requester } from './requester'
 import { User } from '../entities/user'
+import { Board } from '../entities/board'
 import { Tag } from '../entities/tag'
 import { Card } from '../entities/card'
 import { Comment } from '../entities/comment'
@@ -134,8 +135,15 @@ export class CardFacade {
             }
 
             const card = await getRepository(Card).save(cardToUpdate)
-
-            await NotificationFacade.createCardUpdateNotifications(requester, card.id)
+            const board = await getRepository(Board)
+                                .createQueryBuilder('board')
+                                .leftJoin('board.lists', 'list')
+                                .leftJoin('list.cards', 'card')
+                                .where('card.id = :cardId', { cardId })
+                                .getOne()
+            if (board) {
+                await NotificationFacade.createCardUpdateNotifications(requester, card.id, board.id)
+            }
 
             const list = card.list
             delete card.list // Remove the list property from the card object to not send it in the response
@@ -197,7 +205,7 @@ export class CardFacade {
 
         const boardId = cardToUpdate.list.board.id
         delete cardToUpdate.list
-        await NotificationFacade.createAssigneduserNotifications(requester, userToAssign.id, cardToUpdate.id)
+        await NotificationFacade.createAssigneduserNotifications(requester, userToAssign.id, cardToUpdate.id, boardId)
         RealTimeFacade.sendEvent(cardMemberAssigned(requester, boardId, cardToUpdate, userToAssign))
 
         return userToAssign

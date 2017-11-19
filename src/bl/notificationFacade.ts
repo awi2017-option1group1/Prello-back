@@ -80,7 +80,7 @@ export class NotificationFacade {
         }
     }
 
-    static async createCardUpdateNotifications(requester: Requester, cardId: number): Promise<void> {
+    static async createCardUpdateNotifications(requester: Requester, cardId: number, boardId: number): Promise<void> {
         try {
             let users = await getRepository(User)
                 .createQueryBuilder('user')
@@ -92,7 +92,7 @@ export class NotificationFacade {
                 if (user.notificationsEnabled && user.id !== requester.getUID()) {
                     let notification = new Notification()
                     notification.type = 'card_list_updated'
-                    notification.about = cardId
+                    notification.about = boardId
                     notification.from = requester.getUID()
                     notification.user = user
                     notification.date = new Date()
@@ -105,13 +105,14 @@ export class NotificationFacade {
         }
     }
 
-    static async createAssigneduserNotifications(requester: Requester, userId: number, cardId: number): Promise<void> {
+    static async createAssigneduserNotifications(requester: Requester, userId: number,
+                                                 cardId: number, boardId: number): Promise<void> {
         try {
             let user = await getRepository(User).findOneById(userId)
             if (user && user.notificationsEnabled && user.id !== requester.getUID()) {
                 let notification = new Notification()
                 notification.type = 'card_user_assigned'
-                notification.about = cardId
+                notification.about = boardId
                 notification.from = requester.getUID()
                 notification.user = user
                 notification.date = new Date()
