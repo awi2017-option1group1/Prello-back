@@ -19,7 +19,7 @@ export class Board {
     static async getOneById(req: express.Request, res: express.Response) {
         try {
             if (isInteger(req.params.boardId)) {
-                const board = await BoardFacade.getById(req.requester, req.params.boardId)
+                const board = await BoardFacade.getById(req.requester, req.params.boardId, { relations: ['owner'] })
                 res.status(200).json(board)
             } else {
                 res.status(400).json({ error: 'Invalid request parameter' })

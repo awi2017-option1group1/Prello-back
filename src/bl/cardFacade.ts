@@ -229,8 +229,6 @@ export class CardFacade {
         await getRepository(Card).save(cardToUpdate)
     }
 
-    // --------------- Comments ---------------
-
     static async getAllFromCardId(requester: Requester, cardId: number): Promise<Comment[]> {
         (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
 
@@ -246,7 +244,8 @@ export class CardFacade {
                 ...comment,
                 user: {
                     id: comment.user.id,
-                    username: comment.user.username
+                    username: comment.user.username,
+                    avatarColor: comment.user.avatarColor
                 } as User
             }))
         } 
