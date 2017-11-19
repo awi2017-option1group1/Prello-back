@@ -137,8 +137,8 @@ export class BoardFacade {
 
     // --------------- Members ---------------
     static async getAllMembersFromBoardId(requester: Requester, boardId: number): Promise<User[]> {
-        const board = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
-        return board.users
+        const board = await BoardFacade.getById(requester, boardId, { relations: ['users', 'owner'] })
+        return board.users.concat(board.owner)
     }
 
     static async assignMember(requester: Requester, boardId: number, params: {}): Promise<User> {
