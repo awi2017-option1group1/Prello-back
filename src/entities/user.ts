@@ -144,6 +144,9 @@ export class User {
     @ManyToMany(type => Board, board => board.users)
     boards: Board[]
 
+    @OneToMany(type => Board, board => board.owner)
+    ownedBoards: Board[]
+
     @OneToMany(type => Notification, notification => notification.user)
     notifications: Promise<Notification[]>
 
