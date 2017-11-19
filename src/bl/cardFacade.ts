@@ -6,9 +6,11 @@ import { ParamsExtractor } from './paramsExtractorv2'
 
 import { ListFacade } from './listFacade'
 import { TagFacade } from './tagFacade'
+import { NotificationFacade } from './notificationFacade'
 
 import { Requester } from './requester'
 import { User } from '../entities/user'
+import { Board } from '../entities/board'
 import { Tag } from '../entities/tag'
 import { Card } from '../entities/card'
 import { Comment } from '../entities/comment'
@@ -46,7 +48,7 @@ export class CardFacade {
     }
 
     static async getByIdExtended(cardId: number): Promise<Card> {
-        const card = await getRepository(Card)            
+        const card = await getRepository(Card)
             .createQueryBuilder('card')
             .leftJoinAndSelect('card.list', 'list')
             .leftJoinAndSelect('list.board', 'board')
@@ -119,7 +121,7 @@ export class CardFacade {
 
             const extractor = new ParamsExtractor<Card>(params)
                 .permit(['name', 'closed', 'desc', 'due', 'dueComplete', 'pos', 'listId'])
-            
+
             const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
             extractor.fill(cardToUpdate)
 
@@ -133,6 +135,15 @@ export class CardFacade {
             }
 
             const card = await getRepository(Card).save(cardToUpdate)
+            const board = await getRepository(Board)
+                                .createQueryBuilder('board')
+                                .leftJoin('board.lists', 'list')
+                                .leftJoin('list.cards', 'card')
+                                .where('card.id = :cardId', { cardId })
+                                .getOne()
+            if (board) {
+                await NotificationFacade.createCardUpdateNotifications(requester, card.id, board.id)
+            }
 
             const list = card.list
             delete card.list // Remove the list property from the card object to not send it in the response
@@ -179,7 +190,7 @@ export class CardFacade {
         const extractor = new ParamsExtractor<Card>(params).require(['userId'])
 
         const userToAssign = await getRepository(User).findOneById(
-            extractor.getParam('userId'), 
+            extractor.getParam('userId'),
             { relations: ['cards'] }
         )
         if (!userToAssign) {
@@ -194,6 +205,7 @@ export class CardFacade {
 
         const boardId = cardToUpdate.list.board.id
         delete cardToUpdate.list
+        await NotificationFacade.createAssigneduserNotifications(requester, userToAssign.id, cardToUpdate.id, boardId)
         RealTimeFacade.sendEvent(cardMemberAssigned(requester, boardId, cardToUpdate, userToAssign))
 
         return userToAssign
@@ -212,7 +224,7 @@ export class CardFacade {
         const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
 
         userToUnassign.cards = userToUnassign.cards.filter(c => c.id !== cardToUpdate.id)
-        
+
         await getRepository(User).save(userToUnassign)
         delete userToUnassign.cards
 
@@ -222,7 +234,7 @@ export class CardFacade {
 
         return
     }
-    
+
     // --------------- Labels ---------------
 
     static async assignLabel(requester: Requester, cardId: number, params: {}): Promise<Tag> {
@@ -234,13 +246,13 @@ export class CardFacade {
         const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
 
         labelToAssign.cards = labelToAssign.cards.concat(cardToUpdate)
-        
+
         await getRepository(Tag).save(labelToAssign)
         delete labelToAssign.cards
 
         const boardId = cardToUpdate.list.board.id
         delete cardToUpdate.list
-        RealTimeFacade.sendEvent(tagAssigned(requester, labelToAssign, cardToUpdate, boardId))  
+        RealTimeFacade.sendEvent(tagAssigned(requester, labelToAssign, cardToUpdate, boardId))
 
         return labelToAssign
     }
@@ -258,7 +270,7 @@ export class CardFacade {
 
         const boardId = cardToUpdate.list.board.id
         delete cardToUpdate.list
-        RealTimeFacade.sendEvent(tagUnassigned(requester, labelToUnassign, cardToUpdate, boardId))  
+        RealTimeFacade.sendEvent(tagUnassigned(requester, labelToUnassign, cardToUpdate, boardId))
 
         return
     }
@@ -282,7 +294,7 @@ export class CardFacade {
                     avatarColor: comment.user.avatarColor
                 } as User
             }))
-        } 
+        }
         return []
     }
 
@@ -297,12 +309,12 @@ export class CardFacade {
             .where('card.name LIKE :realValue', { realValue })
             .getMany()
             if (cards) {
-                const realCards = cards.map(c => 
+                const realCards = cards.map(c =>
                     c = Object({title: c.name, description: c.desc, link: `/boards/${c.list.board.id}/cards/${c.id}`}))
                 return realCards
             }
             return []
-            
+
         } catch (e) {
             throw new BadRequest(e)
         }

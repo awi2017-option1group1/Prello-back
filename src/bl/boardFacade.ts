@@ -78,7 +78,7 @@ export class BoardFacade {
             board = await getRepository(Board).save(board)
 
             RealTimeFacade.sendEvent(boardUpdated(requester, board))
-            NotificationFacade.createBoardUpdateNotifications(boardId, requester.getUID())
+            NotificationFacade.createBoardUpdateNotifications(requester, boardId)
             console.log(board)
             return board
         } catch (e) {
