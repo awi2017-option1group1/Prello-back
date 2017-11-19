@@ -80,6 +80,31 @@ export class NotificationFacade {
         }
     }
 
+    static async createCardUpdateNotifications(requester: Requester, cardId: number): Promise<void> {
+        try {
+            let users = await getRepository(User)
+                .createQueryBuilder('user')
+                .leftJoin('user.cards', 'card')
+                .where('card.id = :cardId', { cardId })
+                .getMany()
+
+            users.forEach(async user => {
+                if (user.notificationsEnabled && user.id !== requester.getUID()) {
+                    let notification = new Notification()
+                    notification.type = 'card_list_updated'
+                    notification.about = cardId
+                    notification.from = requester.getUID()
+                    notification.user = user
+                    notification.date = new Date()
+                    await NotificationFacade.create(notification)
+                }
+            })
+            return
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
+
     static async createAssigneduserNotifications(requester: Requester, userId: number, cardId: number): Promise<void> {
         try {
             let user = await getRepository(User).findOneById(userId)

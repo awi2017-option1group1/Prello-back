@@ -135,6 +135,8 @@ export class CardFacade {
 
             const card = await getRepository(Card).save(cardToUpdate)
 
+            await NotificationFacade.createCardUpdateNotifications(requester, card.id)
+
             const list = card.list
             delete card.list // Remove the list property from the card object to not send it in the response
             RealTimeFacade.sendEvent(cardUpdated(requester, card, list, list.board.id))
