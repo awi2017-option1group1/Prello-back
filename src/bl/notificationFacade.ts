@@ -4,6 +4,10 @@ import { NotFoundException } from './errors/NotFoundException'
 import { Notification } from '../entities/notification'
 import { User } from '../entities/user'
 import { ParamsExtractor } from './paramsExtractorv2'
+import { Requester } from './requester'
+
+import { RealTimeFacade } from './realtimeFacade'
+import { notificationAdded, notificationDeleted } from './realtime/notifications'
 
 export class NotificationFacade {
 
@@ -16,10 +20,17 @@ export class NotificationFacade {
             .getMany()
     }
 
-    static async deleteAllFromUserId(userId: number): Promise<void> {
+    static async deleteAllFromUserId(requester: Requester, userId: number): Promise<void> {
+        requester.shouldHaveUid(userId).orElseThrowError()
+
         const notificationsToDelete = await NotificationFacade.getAllFromUserId(userId)
+
         let ids = notificationsToDelete.map(n => n.id)
-        return await getRepository(Notification).removeByIds(ids)
+        await getRepository(Notification).removeByIds(ids)
+
+        RealTimeFacade.sendEvent(notificationDeleted(userId))
+
+        return
     }
 
     static async getById(notificationId: number): Promise<Notification> {
@@ -45,7 +56,12 @@ export class NotificationFacade {
             const extractor = new ParamsExtractor<Notification>(params)
                 .permit(['about', 'from', 'type', 'user', 'date'])
             const notificationToCreate = extractor.fill(new Notification())
-            return await getRepository(Notification).save(notificationToCreate)
+
+            const notification =  await getRepository(Notification).save(notificationToCreate)
+
+            RealTimeFacade.sendEvent(notificationAdded(notification.from, notification, notification.user.id))
+
+            return notification
         } catch (e) {
             throw new NotFoundException(e)
         }

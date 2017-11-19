@@ -33,7 +33,7 @@ export class Notification {
 
     static async deleteAllFromUserId(req: express.Request, res: express.Response) {
         try {
-            await NotificationFacade.deleteAllFromUserId(req.params.id)
+            await NotificationFacade.deleteAllFromUserId(req.requester, req.params.id)
             res.status(200).json()
         } catch (e) {
             res.status(404).json({ message: e.message})
