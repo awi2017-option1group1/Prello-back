@@ -94,22 +94,21 @@ export class WSServer {
      */
     private onConnect(socket: SocketIO.Socket) {
         socket.emit('connected')
-        getRequesterFromCookies(socket.handshake.headers.cookie)
-        .then(
-            requester => {
-                if (requester.isEmptyRequester()) {
-                    this.disconnect(socket, 'unauthorized')
-                } else {
-                    socket.requester = requester
-                    this.authorize(socket)
+        try {
+            getRequesterFromCookies(socket.handshake.headers.cookie)
+            .then(
+                requester => {
+                    if (requester.isEmptyRequester()) {
+                        this.disconnect(socket, 'unauthorized')
+                    } else {
+                        socket.requester = requester
+                        this.authorize(socket)
+                    }
                 }
-            }
-        )
-        .catch(
-            error => {
-                socket.on('authorize', this.onAuthorize(socket))
-            }
-        )
+            )          
+        } catch (e) {
+            socket.on('authorize', this.onAuthorize(socket))
+        }
     }
 
     private authorize(socket: SocketIO.Socket) {
