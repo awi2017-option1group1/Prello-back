@@ -11,6 +11,9 @@ import { Board } from '../entities/board'
 
 import { Tag, randomColor } from '../entities/tag'
 
+import { RealTimeFacade } from './realtimeFacade'
+import { tagCreated, tagUpdated, tagDeleted } from './realtime/label'
+
 export class TagFacade {
 
     static async getAllFromBoardId(requester: Requester, boardId: number): Promise<Tag[]> {
@@ -61,7 +64,9 @@ export class TagFacade {
             tagToInsert.board = board
 
             const tag = await getRepository(Tag).save(tagToInsert)
+
             delete tag.board
+            RealTimeFacade.sendEvent(tagCreated(requester, tag, boardId))
 
             return tag
         } catch (e) {
@@ -81,6 +86,11 @@ export class TagFacade {
             hasAccess.orElseThrowError()
 
             const tag = await getRepository(Tag).save(tagToUpdate)
+
+            const boardId = tag.board.id
+            delete tag.board
+            RealTimeFacade.sendEvent(tagUpdated(requester, tag, boardId))
+
             return tag
         } catch (e) {
             console.error(e)
@@ -96,6 +106,12 @@ export class TagFacade {
             hasAccess.orElseThrowError()
 
             await getRepository(Tag).removeById(tagId)
+
+            const boardId = tagToDelete.board.id
+            delete tagToDelete.board
+            RealTimeFacade.sendEvent(tagDeleted(requester, tagToDelete, boardId))
+
+            return
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)

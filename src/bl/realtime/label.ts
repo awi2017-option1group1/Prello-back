@@ -2,41 +2,51 @@ import { RealTimeEvent } from '../realtimeFacade'
 
 import { Card } from '../../entities/card'
 import { Tag } from '../../entities/tag'
+import { Requester } from '../requester'
 
-export const tagCreated = (tag: Tag, boardId: number): RealTimeEvent => (
+export const tagCreated = (requester: Requester, tag: Tag, boardId: number): RealTimeEvent => (
     {
         type: 'create-label',
         about: {
             object: 'board',
             id: boardId
         },
-        payload: tag
+        payload: {
+            tag,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const tagUpdated = (tag: Tag, boardId: number): RealTimeEvent => (
+export const tagUpdated = (requester: Requester, tag: Tag, boardId: number): RealTimeEvent => (
     {
         type: 'update-label',
         about: {
             object: 'board',
             id: boardId
         },
-        payload: tag
+        payload: {
+            tag,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const tagDeleted = (tag: Tag, boardId: number): RealTimeEvent => (
+export const tagDeleted = (requester: Requester, tag: Tag, boardId: number): RealTimeEvent => (
     {
         type: 'delete-label',
         about: {
             object: 'board',
             id: boardId
         },
-        payload: tag
+        payload: {
+            tag,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const tagAssigned = (tag: Tag, card: Card, boardId: number): RealTimeEvent => (
+export const tagAssigned = (requester: Requester, tag: Tag, card: Card, boardId: number): RealTimeEvent => (
     {
         type: 'assign-label',
         about: {
@@ -45,12 +55,13 @@ export const tagAssigned = (tag: Tag, card: Card, boardId: number): RealTimeEven
         },
         payload: {
             tag,
-            card
+            card,
+            requester: requester.getUID()
         }
     }
 )
 
-export const tagUnassigned = (tag: Tag, card: Card, boardId: number): RealTimeEvent => (
+export const tagUnassigned = (requester: Requester, tag: Tag, card: Card, boardId: number): RealTimeEvent => (
     {
         type: 'unassign-label',
         about: {
@@ -59,7 +70,8 @@ export const tagUnassigned = (tag: Tag, card: Card, boardId: number): RealTimeEv
         },
         payload: {
             tag,
-            card
+            card,
+            requester: requester.getUID()
         }
     }
 )

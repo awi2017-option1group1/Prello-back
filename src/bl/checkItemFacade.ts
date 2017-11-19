@@ -9,6 +9,9 @@ import { Requester } from './requester'
 import { CheckItem } from '../entities/checkItem'
 import { CheckListFacade } from './checkListFacade'
 
+import { RealTimeFacade } from './realtimeFacade'
+import { checkItemCreated, checkItemUpdated, checkItemDeleted } from './realtime/checkItem'
+
 export class CheckItemFacade {
 
     static async getAllFromCheckListId(requester: Requester, checkListId: number): Promise<CheckItem[]> {
@@ -76,12 +79,16 @@ export class CheckItemFacade {
                 checkItemToInsert.state = false
             }
 
-            checkItemToInsert.checkList = await CheckListFacade.getById(checkListId)
-
-            // RealTimeFacade.sendEvent(checkItemCreated(checkItem, checkListId))
+            checkItemToInsert.checkList = await CheckListFacade.getById(checkListId, { relations: ['card'] })
 
             const checkItem = await getRepository(CheckItem).save(checkItemToInsert)
+            
+            const cardId = checkItem.checkList.card.id
+            const checkList = checkItem.checkList
+            delete checkList.card
             delete checkItem.checkList
+            RealTimeFacade.sendEvent(checkItemCreated(requester, checkItem, checkList, cardId))
+
             return checkItem
         } catch (e) {
             console.error(e)
@@ -99,11 +106,14 @@ export class CheckItemFacade {
             const hasAccess = await requester.shouldHaveCardAccess(checkItemToUpdate.checkList.card.id)
             hasAccess.orElseThrowError()
 
-            // const checkList = checkItemToUpdate.checkList
-            delete checkItemToUpdate.checkList
-            // RealTimeFacade.sendEvent(checkItemUpdated(checkItem, checkList.id))
-            
             const checkItem = await getRepository(CheckItem).save(checkItemToUpdate)
+
+            const cardId = checkItem.checkList.card.id
+            const checkList = checkItem.checkList
+            delete checkList.card
+            delete checkItem.checkList
+            RealTimeFacade.sendEvent(checkItemUpdated(requester, checkItem, checkList, cardId))
+            
             return checkItem
         } catch (e) {
             console.error(e)
@@ -119,6 +129,13 @@ export class CheckItemFacade {
             hasAccess.orElseThrowError()
 
             await getRepository(CheckItem).removeById(checkItemId)
+
+            const cardId = checkItemToDelete.checkList.card.id
+            const checkList = checkItemToDelete.checkList
+            delete checkList.card
+            delete checkItemToDelete.checkList
+            RealTimeFacade.sendEvent(checkItemDeleted(requester, checkItemToDelete, checkList, cardId))
+
             return
         } catch (e) {
             console.error(e)

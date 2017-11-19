@@ -1,14 +1,18 @@
 import { RealTimeEvent } from '../realtimeFacade'
 
 import { Board } from '../../entities/board'
+import { Requester } from '../requester'
 
-export const boardUpdated = (board: Board): RealTimeEvent => (
+export const boardUpdated = (requester: Requester, board: Board): RealTimeEvent => (
     {
         type: 'update-board',
         about: {
             object: 'board',
             id: board.id
         },
-        payload: board
+        payload: {
+            board,
+            requester: requester.getUID()
+        }
     }
 )

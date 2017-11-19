@@ -23,7 +23,6 @@ export class BoardFacade {
             .andWhere('board.id = :boardId', { boardId })
             .orWhere('board.owner = :userId', { userId })
             .getOne()
-        console.log(board)
         return board !== undefined
     }
 
@@ -74,7 +73,7 @@ export class BoardFacade {
 
             board = await getRepository(Board).save(board)
 
-            RealTimeFacade.sendEvent(boardUpdated(board))
+            RealTimeFacade.sendEvent(boardUpdated(requester, board))
             NotificationFacade.createBoardUpdateNotifications(boardId, requester.getUID())
 
             return board

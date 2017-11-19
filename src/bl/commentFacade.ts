@@ -9,6 +9,9 @@ import { CardFacade } from './cardFacade'
 import { UserFacade } from './userFacade'
 import { Requester } from './requester'
 
+import { RealTimeFacade } from './realtimeFacade'
+import { commentCreated, commentUpdated, commentDeleted } from './realtime/comment'
+
 export class CommentFacade {
 
     static async getById(commentId: number, options?: {}): Promise<Comment> {
@@ -37,9 +40,11 @@ export class CommentFacade {
             commentToInsert.user = await UserFacade.getById(requester, requester.getUID())
             commentToInsert.card = await CardFacade.getById(cardId)
 
-            // RealTimeFacade.sendEvent(commentCreated(commentToReturn, boardId))
-
             const comment = await getRepository(Comment).save(commentToInsert)
+
+            delete comment.card 
+            RealTimeFacade.sendEvent(commentCreated(requester, comment, cardId))
+
             return comment
         } catch (e) {
             console.error(e)
@@ -51,7 +56,7 @@ export class CommentFacade {
         try {
             const extractor = new ParamsExtractor<Comment>(params).require(['content'])
 
-            const commentToUpdate = await CommentFacade.getById(commentId, { relations: ['card'] })
+            const commentToUpdate = await CommentFacade.getById(commentId, { relations: ['card', 'user'] })
             extractor.fill(commentToUpdate)
 
             commentToUpdate.updatedDate = new Date()
@@ -59,12 +64,11 @@ export class CommentFacade {
             const hasAccess = await requester.shouldHaveCardAccess(commentToUpdate.card.id)
             hasAccess.orElseThrowError()
 
-            delete commentToUpdate.card
-            // RealTimeFacade.sendEvent(commentUpdated(comment, boardId))
-
             const comment = await getRepository(Comment).save(commentToUpdate)
-            const fullComment = await CommentFacade.getById(comment.id, { relations: ['user'] })
-            return fullComment
+            RealTimeFacade.sendEvent(commentUpdated(requester, comment, comment.card.id))
+            delete comment.card
+
+            return comment
         } catch (e) {
             console.error(e)
             throw new BadRequest(e)
@@ -77,7 +81,10 @@ export class CommentFacade {
 
             const hasAccess = await requester.shouldHaveCardAccess(comment.card.id)
             hasAccess.orElseThrowError()
-            // RealTimeFacade.sendEvent(commentDeleted(comment, cardId))
+
+            const cardId = comment.card.id
+            delete comment.card
+            RealTimeFacade.sendEvent(commentDeleted(requester, comment, cardId))
 
             await getRepository(Comment).removeById(commentId)
             return

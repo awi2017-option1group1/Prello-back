@@ -14,6 +14,8 @@ import { Card } from '../entities/card'
 import { Comment } from '../entities/comment'
 
 import { RealTimeFacade } from './realtimeFacade'
+import { tagAssigned, tagUnassigned } from './realtime/label'
+import { cardMemberAssigned, cardMemberUnassigned } from './realtime/member'
 import { cardCreated, cardUpdated, cardDeleted } from './realtime/card'
 
 export class CardFacade {
@@ -102,8 +104,8 @@ export class CardFacade {
 
             const board = attachedList.board
             delete card.list // Remove the list property from the card object to not send it in the response
+            RealTimeFacade.sendEvent(cardCreated(requester, card, attachedList, board.id))
 
-            RealTimeFacade.sendEvent(cardCreated(card, board.id))
             return card
         } catch (e) {
             console.error(e)
@@ -132,10 +134,10 @@ export class CardFacade {
 
             const card = await getRepository(Card).save(cardToUpdate)
 
-            const board = card.list.board
+            const list = card.list
             delete card.list // Remove the list property from the card object to not send it in the response
+            RealTimeFacade.sendEvent(cardUpdated(requester, card, list, list.board.id))
 
-            RealTimeFacade.sendEvent(cardUpdated(card, board.id))
             return card
         } catch (e) {
             console.error(e)
@@ -154,7 +156,7 @@ export class CardFacade {
 
             await getRepository(Card).removeById(cardId)
 
-            RealTimeFacade.sendEvent(cardDeleted(card, boardId))
+            RealTimeFacade.sendEvent(cardDeleted(requester, card, boardId))
             return
         } catch (e) {
             console.error(e)
@@ -176,30 +178,49 @@ export class CardFacade {
 
         const extractor = new ParamsExtractor<Card>(params).require(['userId'])
 
-        const userToAssign = await getRepository(User).findOneById(extractor.getParam('userId'))
+        const userToAssign = await getRepository(User).findOneById(
+            extractor.getParam('userId'), 
+            { relations: ['cards'] }
+        )
         if (!userToAssign) {
             throw new NotFoundException('User not found!')
         }
-        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['members'] })
+        const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
 
-        cardToUpdate.members = cardToUpdate.members.concat(userToAssign)
+        userToAssign.cards = userToAssign.cards.concat(cardToUpdate)
 
-        await getRepository(Card).save(cardToUpdate)
+        await getRepository(User).save(userToAssign)
+        delete userToAssign.cards
+
+        const boardId = cardToUpdate.list.board.id
+        delete cardToUpdate.list
+        RealTimeFacade.sendEvent(cardMemberAssigned(requester, boardId, cardToUpdate, userToAssign))
+
         return userToAssign
     }
 
     static async unassignMemberById(requester: Requester, cardId: number, memberId: number): Promise<void> {
         (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
 
-        const userToUnassign = await getRepository(User).findOneById(memberId)
+        const userToUnassign = await getRepository(User).findOneById(
+            memberId,
+            { relations: ['cards'] }
+        )
         if (!userToUnassign) {
             throw new NotFoundException('User not found!')
         }
-        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['members'] })
+        const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
 
-        cardToUpdate.members = cardToUpdate.members.filter(member => member.id !== userToUnassign.id)
+        userToUnassign.cards = userToUnassign.cards.filter(c => c.id !== cardToUpdate.id)
+        
+        await getRepository(User).save(userToUnassign)
+        delete userToUnassign.cards
 
-        await getRepository(Card).save(cardToUpdate)
+        const boardId = cardToUpdate.list.board.id
+        delete cardToUpdate.list
+        RealTimeFacade.sendEvent(cardMemberUnassigned(requester, boardId, cardToUpdate, userToUnassign))
+
+        return
     }
     
     // --------------- Labels ---------------
@@ -209,24 +230,37 @@ export class CardFacade {
 
         const extractor = new ParamsExtractor<Card>(params).require(['labelId'])
 
-        const labelToAssign = await TagFacade.getById(extractor.getParam('labelId'))
-        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['tags'] })
+        const labelToAssign = await TagFacade.getById(extractor.getParam('labelId'), { relations: ['cards'] })
+        const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
 
-        cardToUpdate.tags = cardToUpdate.tags.concat(labelToAssign)
+        labelToAssign.cards = labelToAssign.cards.concat(cardToUpdate)
         
-        await getRepository(Card).save(cardToUpdate)
+        await getRepository(Tag).save(labelToAssign)
+        delete labelToAssign.cards
+
+        const boardId = cardToUpdate.list.board.id
+        delete cardToUpdate.list
+        RealTimeFacade.sendEvent(tagAssigned(requester, labelToAssign, cardToUpdate, boardId))  
+
         return labelToAssign
     }
 
     static async unassignLabelById(requester: Requester, cardId: number, labelId: number): Promise<void> {
         (await requester.shouldHaveCardAccess(cardId)).orElseThrowError()
 
-        const labelToUnassign = await TagFacade.getById(labelId)
-        const cardToUpdate = await CardFacade.getById(cardId, { relations: ['tags'] })
+        const labelToUnassign = await TagFacade.getById(labelId, { relations: ['cards'] })
+        const cardToUpdate = await CardFacade.getByIdWithBoard(cardId)
 
-        cardToUpdate.tags = cardToUpdate.tags.filter(tag => tag.id !== labelToUnassign.id)
+        labelToUnassign.cards =  labelToUnassign.cards.filter(card => card.id !== cardToUpdate.id)
 
-        await getRepository(Card).save(cardToUpdate)
+        await getRepository(Tag).save(labelToUnassign)
+        delete labelToUnassign.cards
+
+        const boardId = cardToUpdate.list.board.id
+        delete cardToUpdate.list
+        RealTimeFacade.sendEvent(tagUnassigned(requester, labelToUnassign, cardToUpdate, boardId))  
+
+        return
     }
 
     static async getAllFromCardId(requester: Requester, cardId: number): Promise<Comment[]> {

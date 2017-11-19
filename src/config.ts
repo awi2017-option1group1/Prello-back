@@ -68,9 +68,9 @@ export const config: Config = {
     },
     
     smtp: {
-        service: '',
+        service: process.env.SMTP_SERVICE || '',
         auth: {
-            type: '',
+            type: process.env.SMTP_AUTH_TYPE || '',
             user: process.env.SMTP_USER || '',
             clientId: process.env.SMTP_CLIENT_ID || '',
             clientSecret: process.env.SMTP_CLIENT_SECRET || '',

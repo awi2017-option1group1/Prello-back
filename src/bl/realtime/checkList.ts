@@ -1,36 +1,46 @@
 import { RealTimeEvent } from '../realtimeFacade'
 
 import { CheckList } from '../../entities/checkList'
+import { Requester } from '../requester'
 
-export const checkListCreated = (checkList: CheckList, cardId: number): RealTimeEvent => (
+export const checkListCreated = (requester: Requester, checkList: CheckList, cardId: number): RealTimeEvent => (
     {
         type: 'create-checkList',
         about: {
             object: 'card',
             id: cardId
         },
-        payload: checkList
+        payload: {
+            checkList,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const checkListUpdated = (checkList: CheckList, cardId: number): RealTimeEvent => (
+export const checkListUpdated = (requester: Requester, checkList: CheckList, cardId: number): RealTimeEvent => (
     {
         type: 'update-checkList',
         about: {
             object: 'card',
             id: cardId
         },
-        payload: checkList
+        payload: {
+            checkList,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const checkListDeleted = (checkList: CheckList, cardId: number): RealTimeEvent => (
+export const checkListDeleted = (requester: Requester, checkList: CheckList, cardId: number): RealTimeEvent => (
     {
         type: 'delete-checkList',
         about: {
             object: 'card',
             id: cardId
         },
-        payload: checkList
+        payload: {
+            checkList,
+            requester: requester.getUID()
+        }
     }
 )

@@ -120,16 +120,18 @@ export class WSServer {
             id: socket.requester.getUID()
         }))
 
-        socket.on('request-connection', (to: Channel) => {
+        socket.on('request-connection', async (to: Channel) => {
             switch (to.object) {
                 case 'board':
-                    if (socket.requester.shouldHaveBoardAccess(to.id).toBoolean()) {
+                    const hasBoardAccess = await socket.requester.shouldHaveBoardAccess(to.id)
+                    if (hasBoardAccess.toBoolean()) {
                         socket.join(this.channelToString(to))
                     }
                     break
 
                 case 'card':
-                    if (socket.requester.shouldHaveCardAccess(to.id).toBoolean()) {
+                    const hasCardAccess = await socket.requester.shouldHaveCardAccess(to.id)
+                    if (hasCardAccess.toBoolean()) {
                         socket.join(this.channelToString(to))
                     }
                     break

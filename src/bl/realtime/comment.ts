@@ -1,36 +1,46 @@
 import { RealTimeEvent } from '../realtimeFacade'
 
 import { Comment } from '../../entities/comment'
+import { Requester } from '../requester'
 
-export const commentCreated = (comment: Comment, cardId: number): RealTimeEvent => (
+export const commentCreated = (requester: Requester, comment: Comment, cardId: number): RealTimeEvent => (
     {
         type: 'create-comment',
         about: {
             object: 'card',
             id: cardId
         },
-        payload: comment
+        payload: {
+            comment,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const commentUpdated = (comment: Comment, cardId: number): RealTimeEvent => (
+export const commentUpdated = (requester: Requester, comment: Comment, cardId: number): RealTimeEvent => (
     {
         type: 'update-comment',
         about: {
             object: 'card',
             id: cardId
         },
-        payload: comment
+        payload: {
+            comment,
+            requester: requester.getUID()
+        }
     }
 )
 
-export const commentDeleted = (comment: Comment, cardId: number): RealTimeEvent => (
+export const commentDeleted = (requester: Requester, comment: Comment, cardId: number): RealTimeEvent => (
     {
         type: 'delete-comment',
         about: {
             object: 'card',
             id: cardId
         },
-        payload: comment
+        payload: {
+            comment,
+            requester: requester.getUID()
+        }
     }
 )

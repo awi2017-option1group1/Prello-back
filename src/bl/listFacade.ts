@@ -72,7 +72,8 @@ export class ListFacade {
 
             const list = await getRepository(List).save(listToInsert)
 
-            RealTimeFacade.sendEvent(listCreated(list, boardId))
+            RealTimeFacade.sendEvent(listCreated(requester, list, boardId))
+            
             return list
         } catch (e) {
             console.error(e)
@@ -94,7 +95,8 @@ export class ListFacade {
             const list = await getRepository(List).save(listToUpdate)
             delete list.board
 
-            RealTimeFacade.sendEvent(listUpdated(list, board.id))
+            RealTimeFacade.sendEvent(listUpdated(requester, list, board.id))
+
             return list
         } catch (e) {
             console.error(e)
@@ -113,7 +115,8 @@ export class ListFacade {
 
             await getRepository(List).removeById(listId)
 
-            RealTimeFacade.sendEvent(listDeleted(list, boardId))
+            RealTimeFacade.sendEvent(listDeleted(requester, list, boardId))
+
             return
         } catch (e) {
             console.error(e)

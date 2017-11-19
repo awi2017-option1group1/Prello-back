@@ -8,6 +8,9 @@ import { Requester } from './requester'
 import { CheckList } from '../entities/checkList'
 import { CardFacade } from './cardFacade'
 
+import { RealTimeFacade } from './realtimeFacade'
+import { checkListCreated, checkListUpdated, checkListDeleted } from './realtime/checkList'
+
 export class CheckListFacade {
 
     static async getAllFromCardId(requester: Requester, cardId: number): Promise<CheckList[]> {
@@ -63,10 +66,10 @@ export class CheckListFacade {
 
             checkListToInsert.card = await CardFacade.getById(cardId)
 
-            // RealTimeFacade.sendEvent(checkListCreated(checkList, cardId))
-            
             const checkList = await getRepository(CheckList).save(checkListToInsert)
             delete checkList.card
+            RealTimeFacade.sendEvent(checkListCreated(requester, checkListToInsert, cardId))
+            
             return checkList
         } catch (e) {
             console.error(e)
@@ -84,11 +87,12 @@ export class CheckListFacade {
             const hasAccess = await requester.shouldHaveCardAccess(listToUpdate.card.id)
             hasAccess.orElseThrowError()
 
-            // const card = listToUpdate.card
-            delete listToUpdate.card
-            // RealTimeFacade.sendEvent(checkListUpdated(list, card.id))
-            
             const list = await getRepository(CheckList).save(listToUpdate)
+
+            const card = list.card
+            delete list.card
+            RealTimeFacade.sendEvent(checkListUpdated(requester, list, card.id))
+            
             return list
         } catch (e) {
             console.error(e)
@@ -103,11 +107,11 @@ export class CheckListFacade {
 
             const hasAccess = await requester.shouldHaveCardAccess(cardId)
             hasAccess.orElseThrowError()
+            
+            await getRepository(CheckList).removeById(checkListId)
 
             delete checkList.card
-            // RealTimeFacade.sendEvent(checkListDeleted(checkList, cardId))
-
-            await getRepository(CheckList).removeById(checkListId)
+            RealTimeFacade.sendEvent(checkListDeleted(requester, checkList, cardId))
 
             return
         } catch (e) {
