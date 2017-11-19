@@ -79,4 +79,22 @@ export class NotificationFacade {
             throw new NotFoundException(e)
         }
     }
+
+    static async createAssigneduserNotifications(requester: Requester, userId: number, cardId: number): Promise<void> {
+        try {
+            let user = await getRepository(User).findOneById(userId)
+            if (user && user.notificationsEnabled && user.id !== requester.getUID()) {
+                let notification = new Notification()
+                notification.type = 'card_user_assigned'
+                notification.about = cardId
+                notification.from = requester.getUID()
+                notification.user = user
+                notification.date = new Date()
+                await NotificationFacade.create(notification)
+            }
+            return
+        } catch (e) {
+            throw new NotFoundException(e)
+        }
+    }
 }
