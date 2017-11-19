@@ -52,6 +52,15 @@ See nginx installation part to finish the setup.
 
 - - - - - - - - -
 
+## Dependencies
+
+- Prello back end application is written in `Typescript`.  
+- It is built with `Express`.
+- We use `TypeORM` as ORM for the application.  
+- To test the application we use `Jest`.
+
+- - - - - - - - -
+
 ## Contributing
 
 Please follow the Google Angular guidelines: 
