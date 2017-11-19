@@ -4,6 +4,8 @@ import { NotFoundException } from './errors/NotFoundException'
 import { Notification } from '../entities/notification'
 import { User } from '../entities/user'
 import { ParamsExtractor } from './paramsExtractorv2'
+import { BoardFacade } from './boardFacade'
+import { Requester } from './requester'
 
 export class NotificationFacade {
 
@@ -51,19 +53,22 @@ export class NotificationFacade {
         }
     }
 
-    static async createBoardUpdateNotifications(boardId: number, requesterId: number): Promise<void> {
+    static async createBoardUpdateNotifications(requester: Requester, boardId: number): Promise<void> {
         try {
-            const users = await getRepository(User)
+            let users = await getRepository(User)
                 .createQueryBuilder('user')
                 .leftJoin('user.boards', 'board')
                 .where('board.id = :boardId', { boardId })
                 .getMany()
+            const board = await BoardFacade.getById(requester, boardId, {relations: ['owner']})
+            users = users.concat(board.owner)
+
             users.forEach(async user => {
-                if (user.notificationsEnabled) {
+                if (user.notificationsEnabled && user.id !== requester.getUID()) {
                     let notification = new Notification()
                     notification.type = 'board_updated'
                     notification.about = boardId
-                    notification.from = requesterId
+                    notification.from = requester.getUID()
                     notification.user = user
                     notification.date = new Date()
                     await NotificationFacade.create(notification)
