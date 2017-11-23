@@ -19,9 +19,8 @@ export class BoardFacade {
         const board = await getRepository(Board)
             .createQueryBuilder('board')
             .leftJoin('board.users', 'user')
-            .where('user.id = :userId', { userId })
+            .where('(user.id = :userId OR board.owner = :userId)', { userId })
             .andWhere('board.id = :boardId', { boardId })
-            .orWhere('board.owner = :userId', { userId })
             .getOne()
         return board !== undefined
     }
@@ -47,10 +46,6 @@ export class BoardFacade {
                 id: boardId
             }
         })
-        console.log('//--------------------//')
-        console.log(options)
-        console.log('//--------------------//')
-        console.log(board)
         if (board) {
             return board
         } else {
@@ -160,8 +155,11 @@ export class BoardFacade {
     static async unassignMemberById(requester: Requester, boardId: number, memberId: number): Promise<void> {
         try {
             const boardToUpdate = await BoardFacade.getById(requester, boardId, { relations: ['users'] })
-            const userToUnassign = await UserFacade.getById(requester, memberId)
-
+            
+            const userToUnassign = await getRepository(User).findOneById(memberId)
+            if (!userToUnassign) {
+                throw new NotFoundException('User not found!')
+            }
             boardToUpdate.users = boardToUpdate.users.filter(user => user.id !== userToUnassign.id)
 
             await getRepository(Board).save(boardToUpdate)
